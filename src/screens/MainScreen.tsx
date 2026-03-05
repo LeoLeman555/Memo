@@ -24,7 +24,10 @@ import {
   computeGlobalSystemState,
 } from '../domain/systemStatus';
 
+import { Logger } from "../services/logger/logger";
+
 const ble = new BleService();
+const MODULE = "MAIN_SCREEN";
 
 type Props = {
   selectedTtsPath: string | null;
@@ -39,6 +42,11 @@ export function MainScreen({
   onCreateReminder,
   onEditReminder,
 }: Props) {
+
+  useEffect(() => {
+    Logger.trace(MODULE, "SCREEN_RENDERED");
+  });
+
   useBlePermissions();
 
   const scheme = useColorScheme();
@@ -47,9 +55,32 @@ export function MainScreen({
   const [snapshot, setSnapshot] = useState<SystemSnapshot>(
     createInitialSystemSnapshot(),
   );
+
   const [progress, setProgress] = useState(0);
 
   const globalState = computeGlobalSystemState(snapshot);
+
+  useEffect(() => {
+
+    Logger.info(MODULE, "SCREEN_MOUNTED");
+
+    return () => {
+      Logger.info(MODULE, "SCREEN_UNMOUNTED");
+    };
+
+  }, []);
+
+  useEffect(() => {
+
+    Logger.debug(MODULE, "SYSTEM_STATE_UPDATED", {
+      ble: snapshot.ble,
+      espState: snapshot.espState,
+      globalState,
+      hasBleError: !!snapshot.bleError,
+      hasEspError: !!snapshot.lastEspError
+    });
+
+  }, [snapshot, globalState]);
 
   const systemLabel: Record<typeof globalState, string> = {
     offline: 'Offline',
@@ -64,9 +95,21 @@ export function MainScreen({
    * Apply ESP runtime messages to the system snapshot.
    */
   const applyEspMessage = useCallback((msg: EspStatusMessage) => {
+
+    Logger.trace(MODULE, "ESP_MESSAGE_RECEIVED", {
+      type: msg.type
+    });
+
     setSnapshot(prev => {
+
       switch (msg.type) {
+
         case 'state':
+
+          Logger.debug(MODULE, "ESP_STATE_UPDATE", {
+            state: msg.state
+          });
+
           return {
             ...prev,
             espState: msg.state,
@@ -76,6 +119,12 @@ export function MainScreen({
           };
 
         case 'error':
+
+          Logger.error(MODULE, "ESP_RUNTIME_ERROR", {
+            code: msg.code,
+            message: msg.message
+          });
+
           return {
             ...prev,
             lastEspError: msg,
@@ -83,6 +132,9 @@ export function MainScreen({
           };
 
         case 'telemetry':
+
+          Logger.trace(MODULE, "ESP_TELEMETRY_UPDATE");
+
           return {
             ...prev,
             telemetry: msg,
@@ -90,9 +142,15 @@ export function MainScreen({
           };
 
         case 'progress':
+
+          Logger.trace(MODULE, "ESP_PROGRESS_EVENT");
+
           return prev;
 
         default:
+
+          Logger.warn(MODULE, "UNKNOWN_ESP_MESSAGE");
+
           return prev;
       }
     });
@@ -103,20 +161,36 @@ export function MainScreen({
    */
   const connectBle = useCallback(
     async (fromUser: boolean = false) => {
+
+      Logger.info(MODULE, "BLE_CONNECT_REQUEST", {
+        fromUser
+      });
+
       const bleState = ble.getBluetoothState();
+
+      Logger.debug(MODULE, "BLE_ADAPTER_STATE", {
+        state: bleState
+      });
 
       if (
         fromUser &&
         bleState === 'PoweredOff'
       ) {
+
+        Logger.warn(MODULE, "BLE_POWERED_OFF");
+
         Alert.alert(
           'Bluetooth désactivé',
           'Veuillez activer le Bluetooth dans les paramètres Android.',
         );
+
         return;
       }
 
       if (await ble.isDeviceConnected()) {
+
+        Logger.info(MODULE, "BLE_ALREADY_CONNECTED");
+
         setSnapshot(s => ({
           ...s,
           ble: 'connected',
@@ -125,12 +199,18 @@ export function MainScreen({
           bleError: null,
           updatedAt: Date.now(),
         }));
+
         return;
       }
 
       if (snapshot.ble === 'connecting') {
+
+        Logger.debug(MODULE, "BLE_ALREADY_CONNECTING");
+
         return;
       }
+
+      Logger.info(MODULE, "BLE_CONNECTING");
 
       setSnapshot(s => ({
         ...s,
@@ -140,16 +220,28 @@ export function MainScreen({
       }));
 
       try {
+
+        Logger.debug(MODULE, "BLE_SCAN_START");
+
         const device = await ble.scanAndConnect();
 
         if (!device) {
+
+          Logger.warn(MODULE, "BLE_DEVICE_NOT_FOUND");
+
           setSnapshot(s => ({
             ...s,
             ble: 'disconnected',
             updatedAt: Date.now(),
           }));
+
           return;
         }
+
+        Logger.info(MODULE, "BLE_CONNECTED", {
+          deviceId: device.id,
+          deviceName: device.name
+        });
 
         setSnapshot(s => ({
           ...s,
@@ -159,9 +251,15 @@ export function MainScreen({
           bleError: null,
           updatedAt: Date.now(),
         }));
+
       } catch (caught: unknown) {
+
         const message =
           caught instanceof Error ? caught.message : String(caught);
+
+        Logger.error(MODULE, "BLE_CONNECTION_FAILED", {
+          message
+        });
 
         setSnapshot(s => ({
           ...s,
@@ -177,31 +275,59 @@ export function MainScreen({
   }, [snapshot.ble]);
 
   /**
-   * Auto-connect BLE on mount and after disconnection
-   * (unless an error is already present).
+   * Auto BLE connection lifecycle
    */
   useEffect(() => {
-    ble.onBleReady = () => connectBle(false);
+
+    Logger.trace(MODULE, "BLE_AUTOCONNECT_EFFECT");
+
+    ble.onBleReady = () => {
+
+      Logger.debug(MODULE, "BLE_READY_CALLBACK");
+
+      connectBle(false);
+    };
 
     if (snapshot.ble === 'disconnected' && !snapshot.bleError) {
+
+      Logger.info(MODULE, "BLE_AUTOCONNECT_TRIGGER");
+
       connectBle(false);
     }
 
     return () => {
+
+      Logger.trace(MODULE, "BLE_AUTOCONNECT_CLEANUP");
+
       ble.onBleReady = undefined;
     };
+
   }, [snapshot.ble, snapshot.bleError, connectBle]);
 
+  /**
+   * Synchronization
+   */
   const handleSyncWithEsp = async () => {
+
+    Logger.info(MODULE, "SYNC_REQUESTED");
+
     if (!(await ble.isDeviceConnected())) {
+
+      Logger.warn(MODULE, "SYNC_ABORT_DEVICE_NOT_CONNECTED");
+
       Alert.alert(
         'MEMO non connecté',
         'Veuillez connecter MEMO avant la synchronisation.',
       );
+
       return;
     }
 
     try {
+
+      const start = Date.now();
+      Logger.info(MODULE, "SYNC_START");
+
       setProgress(0);
 
       await syncWithEsp({
@@ -210,15 +336,25 @@ export function MainScreen({
         onEspMessage: applyEspMessage,
       });
 
+      Logger.info(MODULE, "SYNC_COMPLETED", {
+        durationMs: Date.now() - start
+      });
+
       Alert.alert('Success', 'Synchronization completed successfully');
+
     } catch (error) {
+
+      Logger.error(MODULE, "SYNC_FAILED", {
+        message: String(error)
+      });
+
       Alert.alert('Error', String(error));
     }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* ===== HEADER ===== */}
+      {/* HEADER */}
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>
           Talking Box - Prototype
@@ -238,6 +374,7 @@ export function MainScreen({
 
         {/* Technical line */}
         <View style={styles.techContainer}>
+
           <View style={styles.techItem}>
             <View
               style={[
@@ -252,7 +389,7 @@ export function MainScreen({
               {snapshot.ble.toUpperCase()}
             </Text>
           </View>
-          
+
           <View style={styles.techItem}>
             <View
               style={[
@@ -290,19 +427,33 @@ export function MainScreen({
             />
           </View>
         )}
-
       </View>
 
-      {/* ===== REMINDER LIST ===== */}
+      {/* LIST */}
       <View style={styles.listContainer}>
-        <ReminderList onSelect={onEditReminder} />
+        <ReminderList
+          onSelect={(r) => {
+
+            Logger.info(MODULE, "USER_SELECT_REMINDER", {
+              reminderId: r.reminderId
+            });
+
+            onEditReminder(r);
+          }}
+        />
       </View>
 
-      {/* ===== FOOTER ===== */}
+      {/* FOOTER */}
       <View style={styles.footer}>
+
         <PrimaryButton
           title="Créer un reminder"
-          onPress={onCreateReminder}
+          onPress={() => {
+
+            Logger.info(MODULE, "USER_CREATE_REMINDER");
+
+            onCreateReminder();
+          }}
           color={colors.accent}
           textColor={colors.buttonText}
         />
@@ -313,6 +464,7 @@ export function MainScreen({
           color={colors.accent}
           textColor={colors.buttonText}
         />
+
       </View>
     </View>
   );

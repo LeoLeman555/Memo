@@ -5,6 +5,9 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { ReminderForm } from '../components/reminder/ReminderForm';
 import { useReminderEditor } from '../hooks/useReminderEditor';
 import { getColors } from '../utils/colors';
+import { Logger } from '../services/logger/logger';
+
+const MODULE = "REMINDER_EDITOR_SCREEN";
 
 type Props = {
   onBack: () => void;
@@ -15,6 +18,16 @@ export function ReminderEditorScreen({ onBack }: Props) {
   const colors = getColors(scheme);
 
   const editor = useReminderEditor(onBack);
+
+  const handleSave = async () => {
+    Logger.trace(MODULE, "SAVE_INITIATED");
+    try {
+      await editor.save();
+      Logger.info(MODULE, "SAVE_SUCCESS");
+    } catch (error) {
+      Logger.error(MODULE, "SAVE_FAILED", { error });
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -40,7 +53,7 @@ export function ReminderEditorScreen({ onBack }: Props) {
 
       <PrimaryButton
         title="Enregistrer"
-        onPress={editor.save}
+        onPress={handleSave}
         color={colors.accent}
         textColor={colors.buttonText}
       />

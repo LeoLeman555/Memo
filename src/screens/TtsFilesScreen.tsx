@@ -11,6 +11,9 @@ import {
 import { PrimaryButton } from '../components/PrimaryButton';
 import { getColors } from '../utils/colors';
 import { listTtsAudioFiles } from '../services/tts/ttsFileSystem';
+import { Logger } from '../services/logger/logger';
+
+const MODULE = 'TTS_FILES_SCREEN';
 
 type Props = {
   selectedTtsPath: string | null;
@@ -29,8 +32,21 @@ export function TtsFilesScreen({
   const [files, setFiles] = useState<string[]>([]);
 
   useEffect(() => {
-    listTtsAudioFiles().then(setFiles);
+    Logger.trace(MODULE, 'LOAD_TTS_FILES_START');
+    listTtsAudioFiles()
+      .then(f => {
+        setFiles(f);
+        Logger.info(MODULE, 'LOAD_TTS_FILES_SUCCESS', { count: f.length });
+      })
+      .catch(err => {
+        Logger.error(MODULE, 'LOAD_TTS_FILES_FAILED', { error: err });
+      });
   }, []);
+
+  const handleSelect = (path: string) => {
+    Logger.debug(MODULE, 'TTS_FILE_SELECTED', { path });
+    onSelectTts(path);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -53,7 +69,7 @@ export function TtsFilesScreen({
 
           return (
             <Pressable
-              onPress={() => onSelectTts(item)}
+              onPress={() => handleSelect(item)}
               style={{
                 padding: 14,
                 borderRadius: 8,
