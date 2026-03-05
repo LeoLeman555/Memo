@@ -12,6 +12,9 @@ import {
 } from '../domain/reminder';
 import { formatDate, formatTime } from '../utils/dateFormat';
 import { FieldErrors, RecurrenceUI } from '../domain/reminderUI';
+import { Logger } from '../services/logger/logger';
+
+const MODULE = 'REMINDER_EDITOR_HOOK';
 
 function mapValidationErrors(errors: ReminderValidationError[]): FieldErrors {
   const result: FieldErrors = {};
@@ -59,29 +62,31 @@ export function useReminderEditor(onBack: () => void) {
       _: DateTimePickerEvent,
       selected?: Date,
     ) {
-      setShowDatePicker(false);
+    setShowDatePicker(false);
   
-      if (selected) {
-        setStartDate(formatDate(selected));
-        if (errors.startDate) {
-          setErrors(prev => ({ ...prev, startDate: undefined }));
-        }
+    if (selected) {
+      setStartDate(formatDate(selected));
+      if (errors.startDate) {
+        setErrors(prev => ({ ...prev, startDate: undefined }));
       }
+      Logger.debug(MODULE, 'DATE_SELECTED', { startDate: formatDate(selected) });
     }
+  }
 
   function onTimeChange(
       _: DateTimePickerEvent,
       selected?: Date,
     ) {
-      setShowTimePicker(false);
+    setShowTimePicker(false);
   
-      if (selected) {
-        setTime(formatTime(selected));
-        if (errors.time) {
-          setErrors(prev => ({ ...prev, time: undefined }));
-        }
+    if (selected) {
+      setTime(formatTime(selected));
+      if (errors.time) {
+        setErrors(prev => ({ ...prev, time: undefined }));
       }
+      Logger.debug(MODULE, 'TIME_SELECTED', { time: formatTime(selected) });
     }
+  }
 
   function buildRecurrence(): RecurrenceRule | undefined {
     if (!recurrenceUI.enabled) return undefined;
@@ -117,10 +122,13 @@ export function useReminderEditor(onBack: () => void) {
       rule.byMonthDay = recurrenceUI.byMonthDay;
     }
 
+    Logger.trace(MODULE, 'BUILD_RECURRENCE', { recurrenceRule: rule });
     return rule;
   }
 
   async function save() {
+    Logger.trace(MODULE, 'SAVE_START', { title, message, startDate, time });
+
     const recurrence = buildRecurrence();
 
     const draft: Reminder = {
@@ -131,6 +139,8 @@ export function useReminderEditor(onBack: () => void) {
       startDate,
       time,
       recurrence,
+      audioHash:'',
+      audioFile:'',
       status: ReminderStatus.DRAFT,
       syncStatus: SyncStatus.NOT_SENT,
       revision: 0,
@@ -142,7 +152,10 @@ export function useReminderEditor(onBack: () => void) {
     const mapped = mapValidationErrors(validationErrors);
     setErrors(mapped);
 
-    if (validationErrors.length > 0) return;
+    if (validationErrors.length > 0) {
+      Logger.warn(MODULE, 'VALIDATION_FAILED', { errors: mapped });
+      return;
+    }
 
     try {
       await createReminderService({
@@ -153,10 +166,10 @@ export function useReminderEditor(onBack: () => void) {
         time,
         recurrence,
       });
-
+      Logger.info(MODULE, 'SAVE_SUCCESS', { title, startDate, time });
       onBack();
     } catch (e) {
-      console.error('[REMINDER][ERROR]', e);
+      Logger.error(MODULE, 'SAVE_FAILED', { error: e });
     }
   }
 
@@ -181,7 +194,7 @@ export function useReminderEditor(onBack: () => void) {
       setShowTimePicker,
       setShowUntilPicker,
       onDateChange,
-      onTimeChange
+      onTimeChange,
     },
     save,
   };

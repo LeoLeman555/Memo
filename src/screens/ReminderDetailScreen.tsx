@@ -5,7 +5,10 @@ import {
   StyleSheet,
   useColorScheme,
   ScrollView,
+  Alert,
+  Pressable,
 } from 'react-native';
+import RNFS from 'react-native-fs';
 
 import { Reminder } from '../domain/reminder';
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -13,10 +16,10 @@ import { getColors } from '../utils/colors';
 import { formatDateHuman } from '../utils/dateFormat';
 import { formatRecurrenceHuman, formatSyncStatus } from '../utils/recurrenceFormat';
 import { deleteReminderService } from '../services/reminder/reminderDeletionService';
-import RNFS from 'react-native-fs';
-import { Alert } from 'react-native';
 import { TtsService } from '../services/tts/ttsService';
-import { Pressable } from 'react-native';
+import { Logger } from '../services/logger/logger';
+
+const MODULE = "REMINDER_DETAIL_SCREEN";
 
 type Props = {
   reminder: Reminder;
@@ -28,6 +31,8 @@ export function ReminderDetailScreen({ reminder, onBack }: Props) {
   const colors = getColors(scheme);
 
   const handleDeleteReminder = (): void => {
+    Logger.trace(MODULE, "DELETE_REQUEST_INITIATED", { reminderId: reminder.reminderId });
+
     Alert.alert(
       'Supprimer le reminder',
       'Cette action est définitive.',
@@ -39,9 +44,10 @@ export function ReminderDetailScreen({ reminder, onBack }: Props) {
           onPress: async () => {
             try {
               await deleteReminderService(reminder.reminderId);
+              Logger.info(MODULE, "REMINDER_DELETED", { reminderId: reminder.reminderId });
               onBack();
             } catch (error) {
-              console.error('[REMINDER][DELETE_ERROR]', error);
+              Logger.error(MODULE, "DELETE_FAILED", { reminderId: reminder.reminderId, error });
               Alert.alert(
                 'Erreur',
                 'Impossible de supprimer le reminder.',
@@ -53,23 +59,25 @@ export function ReminderDetailScreen({ reminder, onBack }: Props) {
     );
   };
 
-
   const handlePlayAudio = async (): Promise<void> => {
     if (!reminder.audioFile) {
+      Logger.warn(MODULE, "PLAY_AUDIO_UNAVAILABLE", { reminderId: reminder.reminderId });
       Alert.alert('Audio indisponible', 'Aucun audio associé à ce reminder.');
       return;
     }
 
     const audioPath = `${RNFS.DocumentDirectoryPath}/tts/${reminder.audioFile}`;
 
+    Logger.debug(MODULE, "PLAY_AUDIO_REQUEST", { reminderId: reminder.reminderId, path: audioPath });
+
     try {
       await TtsService.play(audioPath);
+      Logger.info(MODULE, "AUDIO_PLAY_STARTED", { reminderId: reminder.reminderId });
     } catch (error) {
-      console.error('[REMINDER][PLAY_AUDIO_ERROR]', error);
+      Logger.error(MODULE, "PLAY_AUDIO_ERROR", { reminderId: reminder.reminderId, error });
       Alert.alert('Erreur audio', 'Impossible de lire le message.');
     }
   };
-
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

@@ -10,6 +10,9 @@ import {
   getReminderById,
 } from './reminderRepository';
 import { generateReminderAudio } from '../reminder/generateReminderAudio';
+import { Logger } from '../logger/logger';
+
+const MODULE = "REMINDER_SERVICE";
 
 /**
  * Raw input coming from the UI.
@@ -51,8 +54,17 @@ function generateUuid(): string {
 export async function createReminderService(
   input: CreateReminderInput,
 ): Promise<ReminderServiceResult> {
-  const now = new Date().toISOString();
 
+  Logger.info(MODULE, "CREATE_REMINDER_REQUEST", {
+    input: {
+      category: input.category,
+      title: input.title,
+      startDate: input.startDate,
+      time: input.time,
+    }
+  });
+
+  const now = new Date().toISOString();
   let audioHash: string;
   let audioFile: string;
 
@@ -60,12 +72,22 @@ export async function createReminderService(
     const audio = await generateReminderAudio(input.message);
     audioHash = audio.audioHash;
     audioFile = audio.audioFile;
-  } catch (error) {
-  console.error('[REMINDER][AUDIO_GENERATION_FAILED]', error);
-  return {
-    errors: [{ field: 'message', message: 'Failed to generate audio.' }],
-  };
-}
+
+    Logger.debug(MODULE, "AUDIO_GENERATED", {
+      audioHash,
+      audioFile
+    });
+
+  } catch (error: any) {
+
+    Logger.error(MODULE, "AUDIO_GENERATION_FAILED", {
+      message: error?.message ?? String(error)
+    });
+
+    return {
+      errors: [{ field: 'message', message: 'Failed to generate audio.' }],
+    };
+  }
 
   const reminder: Reminder = {
     reminderId: generateUuid(),
@@ -93,10 +115,20 @@ export async function createReminderService(
   const errors = validateReminder(reminder);
 
   if (errors.length > 0) {
+
+    Logger.warn(MODULE, "VALIDATION_FAILED", {
+      reminderId: reminder.reminderId,
+      errors
+    });
+
     return { errors };
   }
 
   await createReminder(reminder);
+
+  Logger.info(MODULE, "REMINDER_CREATED", {
+    reminderId: reminder.reminderId
+  });
 
   return { reminder };
 }
@@ -109,9 +141,20 @@ export async function updateReminderService(
   reminderId: string,
   input: Partial<CreateReminderInput>,
 ): Promise<ReminderServiceResult> {
+
+  Logger.info(MODULE, "UPDATE_REMINDER_REQUEST", {
+    reminderId,
+    input
+  });
+
   const existing = await getReminderById(reminderId);
 
   if (!existing) {
+
+    Logger.warn(MODULE, "UPDATE_REMINDER_NOT_FOUND", {
+      reminderId
+    });
+
     return {
       errors: [{ field: 'reminderId', message: 'Reminder not found.' }],
     };
@@ -138,6 +181,12 @@ export async function updateReminderService(
   const errors = validateReminder(candidate);
 
   if (errors.length > 0) {
+
+    Logger.warn(MODULE, "UPDATE_VALIDATION_FAILED", {
+      reminderId,
+      errors
+    });
+
     return { errors };
   }
 
@@ -152,6 +201,12 @@ export async function updateReminderService(
   };
 
   await updateReminder(updated);
+
+  Logger.info(MODULE, "REMINDER_UPDATED", {
+    reminderId: updated.reminderId,
+    revision: updated.revision,
+    syncStatus: updated.syncStatus
+  });
 
   return { reminder: updated };
 }
