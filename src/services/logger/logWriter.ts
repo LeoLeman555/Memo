@@ -1,11 +1,18 @@
 import RNFS from "react-native-fs";
 
 const LOG_DIR = `${RNFS.DocumentDirectoryPath}/logs`;
-const LOG_FILE = `${LOG_DIR}/app.log`;
 
 let initialized = false;
 
-/** Ensure the log directory and file exist */
+/** Return log filename for current day */
+function getTodayLogFile(): string {
+
+  const today = new Date().toISOString().slice(0, 10);
+  return `${LOG_DIR}/app-${today}.log`;
+
+}
+
+/** Ensure the log directory exists */
 async function ensureInitialized(): Promise<void> {
 
   if (initialized) {
@@ -20,12 +27,6 @@ async function ensureInitialized(): Promise<void> {
       await RNFS.mkdir(LOG_DIR);
     }
 
-    const fileExists = await RNFS.exists(LOG_FILE);
-
-    if (!fileExists) {
-      await RNFS.writeFile(LOG_FILE, "", "utf8");
-    }
-
     initialized = true;
 
   } catch {
@@ -33,15 +34,23 @@ async function ensureInitialized(): Promise<void> {
   }
 }
 
-/** Append a line to the log file */
+/** Append a line to today's log file */
 export async function writeLog(line: string): Promise<void> {
 
   try {
 
     await ensureInitialized();
 
+    const file = getTodayLogFile();
+
+    const exists = await RNFS.exists(file);
+
+    if (!exists) {
+      await RNFS.writeFile(file, "", "utf8");
+    }
+
     await RNFS.appendFile(
-      LOG_FILE,
+      file,
       line + "\n",
       "utf8"
     );
@@ -52,18 +61,20 @@ export async function writeLog(line: string): Promise<void> {
 
 }
 
-/** Read the entire log file */
-export async function readLogs(): Promise<string | null> {
+/** Read today's logs */
+export async function readTodayLogs(): Promise<string | null> {
 
   try {
 
-    const exists = await RNFS.exists(LOG_FILE);
+    const file = getTodayLogFile();
+
+    const exists = await RNFS.exists(file);
 
     if (!exists) {
       return null;
     }
 
-    return await RNFS.readFile(LOG_FILE, "utf8");
+    return await RNFS.readFile(file, "utf8");
 
   } catch {
     return null;
@@ -71,7 +82,65 @@ export async function readLogs(): Promise<string | null> {
 
 }
 
-/** Return log file path (useful for export) */
-export function getLogFilePath(): string {
-  return LOG_FILE;
+/** Read all logs across all days */
+export async function readAllLogs(): Promise<string | null> {
+
+  try {
+
+    await ensureInitialized();
+
+    const files = await RNFS.readDir(LOG_DIR);
+
+    let combined = "";
+
+    for (const file of files) {
+
+      if (file.name.endsWith(".log")) {
+
+        const content = await RNFS.readFile(file.path, "utf8");
+
+        combined += content + "\n";
+
+      }
+
+    }
+
+    return combined || null;
+
+  } catch {
+    return null;
+  }
+
+}
+
+/** Export all logs to a single file */
+export async function exportLogs(): Promise<string | null> {
+
+  try {
+
+    const logs = await readAllLogs();
+
+    if (!logs) {
+      return null;
+    }
+
+    const exportPath = `${LOG_DIR}/export_logs.txt`;
+
+    await RNFS.writeFile(
+      exportPath,
+      logs,
+      "utf8"
+    );
+
+    return exportPath;
+
+  } catch {
+    return null;
+  }
+
+}
+
+/** Return logs directory path */
+export function getLogsDirectory(): string {
+  return LOG_DIR;
 }

@@ -18,6 +18,7 @@ export type LogContext = Record<string, unknown>;
 // Standard log entry structure
 export interface LogEntry {
   ts: string;
+  session: string;
   level: LogLevel;
   source: LogSource;
   module: string;
