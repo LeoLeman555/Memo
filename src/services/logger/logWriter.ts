@@ -1,4 +1,5 @@
 import RNFS from "react-native-fs";
+import { zip } from "react-native-zip-archive";
 
 const LOG_DIR = `${RNFS.DocumentDirectoryPath}/logs`;
 
@@ -138,6 +139,50 @@ export async function exportLogs(): Promise<string | null> {
     return null;
   }
 
+}
+
+/** Return all log files paths */
+export async function getAllLogFiles(): Promise<string[]> {
+
+  try {
+
+    await ensureInitialized();
+
+    const files = await RNFS.readDir(LOG_DIR);
+
+    return files
+      .filter(f => f.name.endsWith(".log"))
+      .map(f => f.path);
+
+  } catch {
+
+    return [];
+  }
+
+}
+
+/** Export all logs into a zip file inside the user Download folder */
+export async function exportLogsZip(): Promise<string | null> {
+  
+  try {
+    const EXPORT_NAME = `memo_logs_${Date.now()}.zip`;
+    const logDir = getLogsDirectory();
+    const logFiles = await getAllLogFiles();
+
+    if (logFiles.length === 0) {
+      return null;
+    }
+
+    const tempZipPath = `${RNFS.CachesDirectoryPath}/${EXPORT_NAME}`;
+    await zip(logDir, tempZipPath);
+    const downloadPath = `${RNFS.DownloadDirectoryPath}/${EXPORT_NAME}`;
+    await RNFS.copyFile(tempZipPath, downloadPath);
+
+    return downloadPath;
+
+  } catch {
+    return null;
+  }
 }
 
 /** Return logs directory path */

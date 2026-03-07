@@ -25,6 +25,7 @@ import {
 } from '../domain/systemStatus';
 
 import { Logger } from "../services/logger/logger";
+import { exportLogsZip } from '../services/logger/logWriter';
 
 const ble = new BleService();
 const MODULE = "MAIN_SCREEN";
@@ -51,14 +52,12 @@ export function MainScreen({
 
   const scheme = useColorScheme();
   const colors = getColors(scheme);
-
   const [snapshot, setSnapshot] = useState<SystemSnapshot>(
     createInitialSystemSnapshot(),
   );
-
   const [progress, setProgress] = useState(0);
-
   const globalState = computeGlobalSystemState(snapshot);
+  const [titleTapCount, setTitleTapCount] = useState(0);
 
   useEffect(() => {
 
@@ -304,6 +303,56 @@ export function MainScreen({
 
   }, [snapshot.ble, snapshot.bleError, connectBle]);
 
+  const handleExportLogs = async () => {
+    Alert.alert(
+      "Exporter les logs",
+      "Télécharger tous les logs de diagnostic ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Exporter",
+          onPress: async () => {
+
+            Logger.info(MODULE, "LOG_EXPORT_REQUESTED");
+
+            const path = await exportLogsZip();
+
+            if (!path) {
+
+              Logger.warn(MODULE, "LOG_EXPORT_FAILED");
+
+              Alert.alert(
+                "Erreur",
+                "Impossible d'exporter les logs"
+              );
+
+              return;
+            }
+
+            Logger.info(MODULE, "LOG_EXPORT_SUCCESS", {
+              path
+            });
+
+            Alert.alert(
+              "Logs exportés",
+              `Fichier sauvegardé dans Downloads:\n${path}`
+            );
+          }
+        }
+      ]
+    );
+  };
+
+  const handleTitlePress = () => {
+    const newCount = titleTapCount + 1;
+    if (newCount >= 5) {
+      setTitleTapCount(0);
+      handleExportLogs();
+    } else {
+      setTitleTapCount(newCount);
+    }
+  };
+
   /**
    * Synchronization
    */
@@ -356,7 +405,10 @@ export function MainScreen({
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>
+        <Text
+          style={[styles.title, { color: colors.text }]}
+          onPress={handleTitlePress}
+        >
           Talking Box - Prototype
         </Text>
 

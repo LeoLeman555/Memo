@@ -19,7 +19,9 @@
     "react-native-ble-plx": "^3.5.0",
     "react-native-fs": "^2.20.0",
     "react-native-safe-area-context": "^5.5.2",
-    "react-native-sound": "^0.13.0"
+    "react-native-share": "^12.2.5",
+    "react-native-sound": "^0.13.0",
+    "react-native-zip-archive": "^7.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
