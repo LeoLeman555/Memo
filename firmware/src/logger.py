@@ -5,8 +5,16 @@ import urandom
 
 
 class Logger:
-    """Structured JSON logger for ESP32."""
+    """Static structured JSON logger for ESP firmware."""
+
     LOG_DIR = "/sd/logs"
+
+    SOURCE = "ESP"
+
+    SESSION = hex(urandom.getrandbits(32))[2:]
+
+    MIN_LEVEL = "INFO"
+
     LEVEL_PRIORITY = {
         "TRACE": 10,
         "DEBUG": 20,
@@ -15,101 +23,141 @@ class Logger:
         "ERROR": 50,
         "FATAL": 60,
     }
-    def __init__(self, source="ESP", min_level="INFO"):
-        """Initialize logger."""
-        self.source = source
-        self.min_level = min_level
-        self.session = hex(urandom.getrandbits(32))[2:]
-        self.initialized = False
 
-    def _now_iso(self):
+    _initialized = False
+
+    # -------------------------------------------------
+    # Internal helpers
+    # -------------------------------------------------
+
+    @staticmethod
+    def _now_iso():
         """Return ISO8601 timestamp."""
+
         t = time.localtime()
+
         return "%04d-%02d-%02dT%02d:%02d:%02dZ" % (
             t[0], t[1], t[2],
             t[3], t[4], t[5]
         )
 
-    def _today_file(self):
-        """Return log file path for current day."""
+    @staticmethod
+    def _today_file():
+        """Return today's log file path."""
+
         t = time.localtime()
+
         filename = "esp-%04d-%02d-%02d.log" % (
             t[0], t[1], t[2]
         )
-        return "%s/%s" % (self.LOG_DIR, filename)
 
-    def _ensure_initialized(self):
+        return "%s/%s" % (Logger.LOG_DIR, filename)
+
+    @staticmethod
+    def _ensure_initialized():
         """Ensure log directory exists."""
-        if self.initialized:
+
+        if Logger._initialized:
             return
+
         try:
-            os.mkdir(self.LOG_DIR)
+            os.mkdir(Logger.LOG_DIR)
         except:
             pass
-        self.initialized = True
 
-    def _should_log(self, level):
-        """Check if log level should be recorded."""
+        Logger._initialized = True
+
+    @staticmethod
+    def _should_log(level):
+        """Check if level should be logged."""
+
         return (
-            self.LEVEL_PRIORITY[level]
-            >= self.LEVEL_PRIORITY[self.min_level]
+            Logger.LEVEL_PRIORITY[level]
+            >= Logger.LEVEL_PRIORITY[Logger.MIN_LEVEL]
         )
 
-    def _build_entry(self, level, module, event, context):
-        """Build structured log entry."""
+    @staticmethod
+    def _build_entry(level, module, event, context):
+        """Create structured log entry."""
+
         entry = {
-            "ts": self._now_iso(),
-            "session": self.session,
+            "ts": Logger._now_iso(),
+            "session": Logger.SESSION,
             "level": level,
-            "source": self.source,
+            "source": Logger.SOURCE,
             "module": module,
             "event": event
         }
+
         if context and len(context) > 0:
             entry["context"] = context
+
         return json.dumps(entry)
 
-    def _write(self, line):
-        """Append log line to file."""
+    @staticmethod
+    def _write(line):
+        """Append log line to SD."""
+
         try:
-            self._ensure_initialized()
-            path = self._today_file()
+
+            Logger._ensure_initialized()
+
+            path = Logger._today_file()
+
             with open(path, "a") as f:
                 f.write(line + "\n")
+
         except:
             pass
 
-    def _log(self, level, module, event, context=None):
-        """Core logging function."""
-        if not self._should_log(level):
+    @staticmethod
+    def _log(level, module, event, context=None):
+        """Core logging method."""
+
+        if not Logger._should_log(level):
             return
+
         try:
-            line = self._build_entry(level, module, event, context)
+
+            line = Logger._build_entry(level, module, event, context)
+
             print(line)
-            self._write(line)
+
+            Logger._write(line)
+
         except:
             pass
 
-    def trace(self, module, event, context=None):
+    # -------------------------------------------------
+    # Public API
+    # -------------------------------------------------
+
+    @staticmethod
+    def trace(module, event, context=None):
         """TRACE level log."""
-        self._log("TRACE", module, event, context)
+        Logger._log("TRACE", module, event, context)
 
-    def debug(self, module, event, context=None):
+    @staticmethod
+    def debug(module, event, context=None):
         """DEBUG level log."""
-        self._log("DEBUG", module, event, context)
+        Logger._log("DEBUG", module, event, context)
 
-    def info(self, module, event, context=None):
+    @staticmethod
+    def info(module, event, context=None):
         """INFO level log."""
-        self._log("INFO", module, event, context)
+        Logger._log("INFO", module, event, context)
 
-    def warn(self, module, event, context=None):
+    @staticmethod
+    def warn(module, event, context=None):
         """WARN level log."""
-        self._log("WARN", module, event, context)
+        Logger._log("WARN", module, event, context)
 
-    def error(self, module, event, context=None):
+    @staticmethod
+    def error(module, event, context=None):
         """ERROR level log."""
-        self._log("ERROR", module, event, context)
+        Logger._log("ERROR", module, event, context)
 
-    def fatal(self, module, event, context=None):
+    @staticmethod
+    def fatal(module, event, context=None):
         """FATAL level log."""
-        self._log("FATAL", module, event, context)
+        Logger._log("FATAL", module, event, context)
