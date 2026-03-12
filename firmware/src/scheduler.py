@@ -59,7 +59,8 @@ class MemoScheduler:
                 "month": month,
                 "day": day,
                 "hour": hour,
-                "minute": minute
+                "minute": minute,
+                "second": second
             }
         )
 
@@ -86,7 +87,8 @@ class MemoScheduler:
             "MEMO_EVALUATION",
             {
                 "memoId": memo.get("memoId"),
-                "time": memo.get("time")
+                "memoTime": memo.get("time"),
+                "now": now
             }
         )
 

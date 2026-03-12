@@ -111,14 +111,12 @@ class Logger:
         try:
             line = Logger._build_entry(level, module, event, context)
             print(line)
-            Logger._write(line)
+            # Logger._write(line)
 
         except:
             pass
 
-    # -------------------------------------------------
     # Public API
-    # -------------------------------------------------
 
     @staticmethod
     def trace(module, event, context=None):
