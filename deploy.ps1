@@ -136,41 +136,6 @@ try {
 Success "Connection successful"
 
 # ------------------------------------------------------------------
-# Optional RTC update (offline, host-driven)
-# ------------------------------------------------------------------
-$setRtc = Read-Host "Update RTC time from host clock? (y/N)"
-if ($setRtc -match '^(y|yes)$') {
-
-  Info "Updating RTC from host system time..."
-
-  $dt = Get-Date
-
-  # .NET: Sunday=0 → MicroPython: Monday=0
-  $weekday = ($dt.DayOfWeek.value__ + 6) % 7
-
-  $python = "from rtc import TimeRead; " +
-            "rtc=TimeRead(); " +
-            "rtc.set_datetime(" +
-            "$($dt.Year),$($dt.Month),$($dt.Day)," +
-            "$weekday,$($dt.Hour),$($dt.Minute),$($dt.Second)); " +
-            "print('RTC updated successfully.')"
-
-  try {
-    mpremote connect $ComPort exec $python
-    if ($LASTEXITCODE -ne 0) {
-      throw 'RTC python execution failed'
-    }
-    Success "RTC successfully updated"
-  }
-  catch {
-    Fail "RTC update failed"
-  }
-}
-else {
-  Info "RTC update skipped"
-}
-
-# ------------------------------------------------------------------
 # Deployment confirmation
 # ------------------------------------------------------------------
 Info "Deployment summary:"
@@ -210,5 +175,41 @@ Success "All files successfully copied"
 Info "Resetting ESP32..."
 mpremote connect $ComPort reset
 Success "ESP32 reset completed"
+
+
+# ------------------------------------------------------------------
+# Optional RTC update (offline, host-driven)
+# ------------------------------------------------------------------
+$setRtc = Read-Host "Update RTC time from host clock? (y/N)"
+if ($setRtc -match '^(y|yes)$') {
+
+  Info "Updating RTC from host system time..."
+
+  $dt = Get-Date
+
+  # .NET: Sunday=0 → MicroPython: Monday=0
+  $weekday = ($dt.DayOfWeek.value__ + 6) % 7
+
+  $python = "from rtc import TimeRead; " +
+            "rtc=TimeRead(); " +
+            "rtc.set_datetime(" +
+            "$($dt.Year),$($dt.Month),$($dt.Day)," +
+            "$weekday,$($dt.Hour),$($dt.Minute),$($dt.Second)); " +
+            "print('RTC updated successfully.')"
+
+  try {
+    mpremote connect $ComPort exec $python
+    if ($LASTEXITCODE -ne 0) {
+      throw 'RTC python execution failed'
+    }
+    Success "RTC successfully updated"
+  }
+  catch {
+    Fail "RTC update failed"
+  }
+}
+else {
+  Info "RTC update skipped"
+}
 
 Write-Host "Deployment completed successfully." -ForegroundColor Green

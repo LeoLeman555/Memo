@@ -13,6 +13,8 @@ class TimeRead:
     """DS3231 RTC module controller."""
 
     _DS3231_I2C_ADDR = 0x68
+    _STATUS_REGISTER = 0x0F
+    _OSF_MASK = 0x80
 
     def __init__(self, scl_pin=22, sda_pin=21, bus_id=0):
         self.i2c = I2C(
@@ -41,7 +43,7 @@ class TimeRead:
             }
         )
 
-        if self._DS3231_I2C_ADDR not in self.i2c.scan():
+        if self._DS3231_I2C_ADDR not in devices:
             Logger.error(
                 MODULE,
                 "RTC_NOT_FOUND",
@@ -52,7 +54,7 @@ class TimeRead:
             )
 
             raise RTCNotFoundError("DS3231 not found on I2C bus")
-        
+
         Logger.info(
             MODULE,
             "RTC_DETECTED",
@@ -61,17 +63,77 @@ class TimeRead:
             }
         )
 
+        self._check_oscillator_status()
+
     def _decode_bcd(self, value):
         """Decode BCD value to integer."""
-        return (value // 16) * 10 + (value % 16)
+        return (value >> 4) * 10 + (value & 0x0F)
 
     def _encode_bcd(self, value):
         """Encode integer to BCD format."""
-        return (value // 10) * 16 + (value % 10)
+        return ((value // 10) << 4) | (value % 10)
+
+    def _check_oscillator_status(self):
+        """Check and clear oscillator stop flag."""
+        status = self.i2c.readfrom_mem(
+            self._DS3231_I2C_ADDR,
+            self._STATUS_REGISTER,
+            1
+        )[0]
+
+        osf = (status & self._OSF_MASK) >> 7
+
+        Logger.trace(
+            MODULE,
+            "RTC_STATUS_REGISTER",
+            {
+                "status": status,
+                "OSF": osf
+            }
+        )
+
+        if osf:
+            Logger.warn(
+                MODULE,
+                "RTC_OSCILLATOR_STOPPED"
+            )
+
+            status &= ~self._OSF_MASK
+
+            self.i2c.writeto_mem(
+                self._DS3231_I2C_ADDR,
+                self._STATUS_REGISTER,
+                bytes([status])
+            )
+
+            Logger.info(
+                MODULE,
+                "RTC_OSF_CLEARED"
+            )
+
+            # read current registers
+            data = self.i2c.readfrom_mem(self._DS3231_I2C_ADDR, 0x00, 7)
+
+            # rewrite them to restart oscillator
+            self.i2c.writeto_mem(self._DS3231_I2C_ADDR, 0x00, data)
+
+            Logger.info(
+                MODULE,
+                "RTC_OSCILLATOR_RESTARTED"
+            )
+
+    def _read_registers_atomic(self):
+        """Read RTC registers atomically to avoid rollover glitches."""
+        while True:
+            data1 = self.i2c.readfrom_mem(self._DS3231_I2C_ADDR, 0x00, 7)
+            data2 = self.i2c.readfrom_mem(self._DS3231_I2C_ADDR, 0x00, 7)
+
+            if data1[0] == data2[0]:
+                return data1
 
     def get_datetime(self):
         """Return current RTC datetime as tuple."""
-        data = self.i2c.readfrom_mem(self._DS3231_I2C_ADDR, 0x00, 7)
+        data = self._read_registers_atomic()
 
         second = self._decode_bcd(data[0] & 0x7F)
         minute = self._decode_bcd(data[1])
@@ -80,7 +142,7 @@ class TimeRead:
         date = self._decode_bcd(data[4])
         month = self._decode_bcd(data[5] & 0x1F)
 
-        century = (data[5] & 0x80) >> 7
+        century = (data[5] >> 7) & 1
         year = self._decode_bcd(data[6])
         year += 2000 + (100 if century else 0)
 
@@ -89,6 +151,15 @@ class TimeRead:
             "RTC_RAW_DATA",
             {
                 "data": list(data)
+            }
+        )
+
+        Logger.trace(
+            MODULE,
+            "RTC_STATUS",
+            {
+                "secondsRegister": data[0],
+                "clockHalt": (data[0] >> 7) & 1
             }
         )
 
@@ -135,8 +206,10 @@ class TimeRead:
         )
 
         self.i2c.writeto_mem(self._DS3231_I2C_ADDR, 0x00, data)
-        
+
         Logger.debug(
             MODULE,
             "RTC_WRITE_COMPLETE"
         )
+
+        self._check_oscillator_status()
