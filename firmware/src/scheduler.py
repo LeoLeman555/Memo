@@ -1,4 +1,7 @@
 import _thread
+from logger import Logger
+
+MODULE = "SCHEDULER"
 
 
 class MemoScheduler:
@@ -21,19 +24,44 @@ class MemoScheduler:
         data = self.storage.safe_read_json(self.MEMO_FILE, default=None)
 
         if not data or "items" not in data:
+            Logger.warn(
+                MODULE,
+                "MEMO_FILE_INVALID",
+                {"file": self.MEMO_FILE}
+            )
             self.memos = []
             return
 
         self.memos = data["items"]
+        Logger.info(
+            MODULE,
+            "MEMOS_LOADED",
+            {"count": len(self.memos)}
+        )
 
     def reload(self):
         """Reload memo file."""
+        Logger.info(
+            MODULE,
+            "MEMOS_RELOAD_REQUEST"
+        )
         self._load_memos()
 
     def tick(self):
         """Evaluate memos once per minute."""
         now = self.rtc.get_datetime()
         year, month, day, weekday, hour, minute, second = now
+        Logger.trace(
+            MODULE,
+            "SCHED_TICK",
+            {
+                "year": year,
+                "month": month,
+                "day": day,
+                "hour": hour,
+                "minute": minute
+            }
+        )
 
         current_key = (year, month, day, hour, minute)
 
@@ -53,7 +81,23 @@ class MemoScheduler:
         audio_file = memo.get("audioFile")
         recurrence = memo.get("recurrence")
 
+        Logger.debug(
+            MODULE,
+            "MEMO_EVALUATION",
+            {
+                "memoId": memo.get("memoId"),
+                "time": memo.get("time")
+            }
+        )
+
         if not memo_id or not start_date or not memo_time or not audio_file:
+            Logger.warn(
+                MODULE,
+                "MEMO_INVALID",
+                {
+                    "memo": memo
+                }
+            )
             return
 
         year, month, day, weekday, hour, minute, _ = now
@@ -62,10 +106,27 @@ class MemoScheduler:
             start_y, start_m, start_d = map(int, start_date.split("-"))
             memo_hour, memo_minute = map(int, memo_time.split(":"))
         except Exception:
+            Logger.error(
+                MODULE,
+                "MEMO_PARSE_ERROR",
+                {
+                    "memoId": memo_id,
+                    "startDate": start_date,
+                    "time": memo_time
+                }
+            )
             return
 
         # Must be after start date
         if (year, month, day) < (start_y, start_m, start_d):
+            Logger.debug(
+                MODULE,
+                "MEMO_SKIPPED_BEFORE_START",
+                {
+                    "memoId": memo_id,
+                    "startDate": start_date
+                }
+            )
             return
 
         if hour != memo_hour or minute != memo_minute:
@@ -87,6 +148,14 @@ class MemoScheduler:
             try:
                 uy, um, ud = map(int, until.split("-"))
                 if (year, month, day) > (uy, um, ud):
+                    Logger.debug(
+                        MODULE,
+                        "MEMO_UNTIL_EXPIRED",
+                        {
+                            "memoId": memo_id,
+                            "until": until
+                        }
+                    )
                     return
             except Exception:
                 pass
@@ -148,6 +217,15 @@ class MemoScheduler:
     def _fire(self, memo, audio_file):
         """Trigger and increment count."""
         self._trigger(audio_file)
+        Logger.info(
+            MODULE,
+            "MEMO_TRIGGERED",
+            {
+                "memoId": memo.get("memoId"),
+                "audioFile": audio_file,
+                "triggerCount": memo.get("_triggerCount", 0) + 1
+            }
+        )
         memo["_triggerCount"] = memo.get("_triggerCount", 0) + 1
 
     def _within_count(self, memo, count):
@@ -231,9 +309,22 @@ class MemoScheduler:
                 self.audio.play_wav,
                 (path,)
             )
-            print("[SCHED] Trigger:", path)
+            Logger.info(
+                MODULE,
+                "AUDIO_TRIGGER_REQUEST",
+                {
+                    "path": path
+                }
+            )
         except Exception as e:
-            print("[SCHED] Thread start failed:", e)
+            Logger.error(
+                MODULE,
+                "AUDIO_THREAD_START_FAILED",
+                {
+                    "path": path,
+                    "error": str(e)
+                }
+            )
 
     def reload(self):
         """Reload memos from storage."""

@@ -4,25 +4,61 @@ from audio import AudioPlayer
 from storage import Storage
 from rtc import TimeRead
 from scheduler import MemoScheduler
+from logger import Logger
+
+MODULE = "BOOT"
+HEARTBEAT_INTERVAL = 300
 
 
 def main():
     """Main firmware entry point."""
-    print("[START] Talking Box firmware booting")
+    Logger.info(
+        MODULE,
+        "FIRMWARE_BOOT",
+    )
 
     storage = Storage()
+    Logger.info(
+        MODULE,
+        "STORAGE_READY",
+        {
+            "backend": storage.get_backend()
+        }
+    )
 
     try:
         audio = AudioPlayer()
     except Exception as e:
-        print("[START] Audio disabled:", e)
+        Logger.error(
+            MODULE,
+            "AUDIO_INIT_FAILED",
+            {
+                "error": str(e)
+            }
+        )
         audio = None
 
     ble = BleService(storage)
     rtc = TimeRead()
     scheduler = MemoScheduler(rtc, storage, audio)
 
-    print("[START] Ready")
+    Logger.info(
+        MODULE,
+        "SERVICES_STARTED",
+        {
+            "ble": True,
+            "rtc": True,
+            "scheduler": True,
+            "audio": audio is not None
+        }
+    )
+
+    Logger.info(
+        MODULE,
+        "FIRMWARE_READY"
+    )
+
+    last_heartbeat = time.time()
 
     while True:
         # Run scheduler
@@ -35,7 +71,13 @@ def main():
                 try:
                     storage.append_chunk(chunk)
                 except Exception as e:
-                    print("[START] SD write error:", e)
+                    Logger.error(
+                        MODULE,
+                        "SD_WRITE_FAILED",
+                        {
+                            "error": str(e)
+                        }
+                    )
 
         # Finalize BLE file when requested
         if ble.end_requested:
@@ -43,9 +85,33 @@ def main():
             try:
                 ble.finalize_file()
                 scheduler.reload()
-                print("[START] Memos reloaded after BLE sync")
+                Logger.info(
+                    MODULE,
+                    "MEMOS_RELOADED_AFTER_SYNC"
+                )
             except Exception as e:
-                print("[START] Finalize failed:", e)
+                Logger.error(
+                    MODULE,
+                    "BLE_FINALIZE_FAILED",
+                    {
+                        "error": str(e)
+                    }
+                )
+
+        # Heartbeat every 5 minutes
+        now = time.time()
+        if now - last_heartbeat >= HEARTBEAT_INTERVAL:
+            Logger.debug(
+                MODULE,
+                "SYSTEM_HEARTBEAT",
+                {
+                    "storage": storage.get_backend(),
+                    "bleConnected": ble.conn_handle is not None,
+                    "audioAvailable": audio.available if audio else False,
+                    "memosLoaded": len(scheduler.memos)
+                }
+            )
+            last_heartbeat = now
 
         time.sleep(0.05)
 
