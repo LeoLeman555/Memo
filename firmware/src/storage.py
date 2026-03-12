@@ -4,6 +4,9 @@ import sdcard
 import uhashlib
 import ubinascii
 import ujson
+from logger import Logger
+
+MODULE = "STORAGE"
 
 
 class Storage:
@@ -24,10 +27,19 @@ class Storage:
 
         self._ensure_flash_root()
         self._try_mount_sd()
+        Logger.configure(self.root)
         self._ensure_directories()
         self._cleanup_temp_files()
 
-        print("[STORAGE] Initialized backend:", self.get_backend())
+
+        Logger.info(
+            MODULE,
+            "STORAGE_INITIALIZED",
+            {
+                "backend": self.get_backend(),
+                "root": self.root
+            }
+        )
 
     def _ensure_flash_root(self):
         """Ensure flash root exists."""
@@ -35,11 +47,21 @@ class Storage:
             os.stat(self.FLASH_ROOT)
         except OSError:
             os.mkdir(self.FLASH_ROOT)
-            print("[STORAGE] Created flash root", self.FLASH_ROOT)
+            Logger.info(
+                MODULE,
+                "FLASH_ROOT_CREATED",
+                {
+                    "path": self.FLASH_ROOT
+                }
+            )
 
     def _try_mount_sd(self):
         """Attempt to mount SD card."""
         try:
+            Logger.debug(
+                MODULE,
+                "SD_MOUNT_ATTEMPT"
+            )
             spi = SPI(
                 2,
                 baudrate=10_000_000,
@@ -52,12 +74,26 @@ class Storage:
 
             sd = sdcard.SDCard(spi, Pin(13))  # CS = GPIO13
             os.mount(sd, self.SD_ROOT)
+            Logger.info(
+                MODULE,
+                "SD_MOUNT_SUCCESS",
+                {
+                    "mountPoint": self.SD_ROOT
+                }
+            )
 
             self.use_sd = True
             self.root = self.SD_ROOT
             os.stat(self.SD_ROOT)
 
         except Exception:
+            Logger.warn(
+                MODULE,
+                "SD_MOUNT_FAILED",
+                {
+                    "fallback": self.FLASH_ROOT
+                }
+            )
             self.use_sd = False
             self.root = self.FLASH_ROOT
 
@@ -85,6 +121,13 @@ class Storage:
         """Ensure required directories exist."""
         for path in (self._audio_dir(), self._data_dir()):
             try:
+                Logger.debug(
+                    MODULE,
+                    "DIRECTORY_CREATED",
+                    {
+                        "path": path
+                    }
+                )
                 os.stat(path)
             except OSError:
                 os.mkdir(path)
@@ -94,11 +137,28 @@ class Storage:
         path = self.get_audio_path(filename)
         with self._safe_open(path, "wb") as f:
             f.write(data)
+            Logger.info(
+                MODULE,
+                "AUDIO_FILE_SAVED",
+                {
+                    "filename": filename,
+                    "path": path,
+                    "size": len(data)
+                }
+            )
 
     def start_temp_file(self, filename):
         """Create temp file for chunked transfer."""
         self._tmp_path = "{}/{}{}".format(
             self._audio_dir(), self.TMP_PREFIX, filename
+        )
+        Logger.info(
+            MODULE,
+            "TEMP_FILE_CREATED",
+            {
+                "filename": filename,
+                "tempPath": self._tmp_path
+            }
         )
         with self._safe_open(self._tmp_path, "wb"):
             pass
@@ -109,6 +169,14 @@ class Storage:
             raise RuntimeError("No temp file started")
         with self._safe_open(self._tmp_path, "ab") as f:
             f.write(data)
+            Logger.trace(
+                MODULE,
+                "CHUNK_WRITTEN",
+                {
+                    "size": len(data),
+                    "tempPath": self._tmp_path
+                }
+            )
 
     def finalize_temp_file(self, filename):
         """Finalize temp file and route to audio or data directory."""
@@ -146,7 +214,14 @@ class Storage:
             os.rename(self._tmp_path, final_path)
 
         self._tmp_path = None
-        print("[STORAGE] Finalized file:", final_path)
+        Logger.info(
+            MODULE,
+            "FILE_FINALIZED",
+            {
+                "path": final_path,
+                "sha256": digest
+            }
+        )
         return digest
 
     def audio_exists(self, filename):
@@ -161,6 +236,13 @@ class Storage:
         """Delete audio file."""
         try:
             os.remove(self.get_audio_path(filename))
+            Logger.info(
+                MODULE,
+                "AUDIO_FILE_DELETED",
+                {
+                    "filename": filename
+                }
+            )
             return True
         except OSError:
             return False
@@ -207,10 +289,25 @@ class Storage:
             f.write("\n")
 
         os.rename(tmp, final)
+        Logger.info(
+            MODULE,
+            "JSON_WRITTEN",
+            {
+                "filename": filename,
+                "path": final
+            }
+        )
 
     def read_json(self, filename):
         """Read JSON file."""
         with self._safe_open(self.get_json_path(filename), "r") as f:
+            Logger.debug(
+                MODULE,
+                "JSON_READ",
+                {
+                    "filename": filename
+                }
+            )
             return ujson.load(f)
 
     def safe_read_json(self, filename, default=None):
@@ -218,6 +315,13 @@ class Storage:
         try:
             return self.read_json(filename)
         except Exception:
+            Logger.warn(
+                MODULE,
+                "JSON_READ_FAILED",
+                {
+                    "filename": filename
+                }
+            )
             return default
 
     def update_json(self, filename, update_fn):
@@ -230,6 +334,13 @@ class Storage:
         """Delete JSON file."""
         try:
             os.remove(self.get_json_path(filename))
+            Logger.info(
+                MODULE,
+                "JSON_DELETED",
+                {
+                    "filename": filename
+                }
+            )
             return True
         except OSError:
             return False
@@ -242,6 +353,13 @@ class Storage:
                     if fname.startswith(self.TMP_PREFIX):
                         try:
                             os.remove("{}/{}".format(directory, fname))
+                            Logger.warn(
+                                MODULE,
+                                "TEMP_FILE_REMOVED",
+                                {
+                                    "path": "{}/{}".format(directory, fname)
+                                }
+                            )
                         except OSError:
                             pass
             except OSError:

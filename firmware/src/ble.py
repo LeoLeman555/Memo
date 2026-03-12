@@ -3,7 +3,9 @@ import bluetooth
 import ujson as json
 import ubinascii
 from micropython import const
+from logger import Logger
 
+MODULE = "BLE"
 
 class BleService:
     """BLE service handling file reception."""
@@ -74,7 +76,11 @@ class BleService:
         self.ble.gatts_set_buffer(self._handle_chunk, 512, True)
 
         self.ble.gap_advertise(100_000, self._adv_payload())
-        print("[BLE] Advertising as", self.BLE_NAME)
+        Logger.info(
+            MODULE,
+            "ADVERTISING_STARTED",
+            {"deviceName": self.BLE_NAME}
+        )
 
     def _adv_payload(self):
         payload = bytearray(b"\x02\x01\x06")
@@ -87,11 +93,18 @@ class BleService:
     def _irq(self, event, data):
         if event == self._IRQ_CENTRAL_CONNECT:
             self.conn_handle = data[0]
-            print("[BLE] Central connected")
+            Logger.info(
+                MODULE,
+                "CENTRAL_CONNECTED",
+                {"connHandle": self.conn_handle}
+            )
 
         elif event == self._IRQ_CENTRAL_DISCONNECT:
             self.conn_handle = None
-            print("[BLE] Central disconnected")
+            Logger.warn(
+                MODULE,
+                "CENTRAL_DISCONNECTED"
+            )
             self.ble.gap_advertise(100_000, self._adv_payload())
 
         elif event == self._IRQ_GATTS_WRITE:
@@ -106,14 +119,33 @@ class BleService:
     def _on_start_write(self):
         raw = self.ble.gatts_read(self._handle_start)
 
-        print("[BLE] START raw len:", len(raw), raw)
+        Logger.debug(
+            MODULE,
+            "START_FRAME_RECEIVED",
+            {"length": len(raw),
+            "raw": raw}
+        )
 
         # END frame
         if raw == b"\x02":
+            Logger.info(
+                MODULE,
+                "TRANSFER_END_REQUESTED"
+            )
             self.end_requested = True
             return
 
         if len(raw) < 18 or raw[0] != 0x01:
+            Logger.error(
+                MODULE,
+                "INVALID_START_FRAME",
+                {
+                    "rawLength": len(raw),
+                    "firstByte": raw[0] if raw else None,
+                    "connHandle": self.conn_handle,
+                    "expectedMinLength": 18
+                }
+            )
             self._emit_error(
                 subsystem="ble",
                 code="START_ERROR",
@@ -139,6 +171,16 @@ class BleService:
         expected_len = 10 + filename_length + 8
 
         if len(raw) != expected_len:
+            Logger.error(
+                MODULE,
+                "PROTOCOL_LENGTH_ERROR",
+                {
+                    "receivedLength": len(raw),
+                    "expectedLength": expected_len,
+                    "filenameLength": filename_length,
+                    "connHandle": self.conn_handle
+                }
+            )
             self._emit_error(
                 subsystem="ble",
                 code="PROTOCOL_ERROR",
@@ -157,6 +199,16 @@ class BleService:
         ).decode()
 
         if total_size <= 0 or total_size > self.MAX_FILE_SIZE:
+            Logger.error(
+                MODULE,
+                "INVALID_FILE_SIZE",
+                {
+                    "size": total_size,
+                    "maxAllowed": self.MAX_FILE_SIZE,
+                    "filename": filename,
+                    "connHandle": self.conn_handle
+                }
+            )
             self._emit_error(
                 subsystem="storage",
                 code="INVALID_STATE",
@@ -180,7 +232,17 @@ class BleService:
         self.bytes_written = 0
         self.end_requested = False
 
-        print("[BLE] START OK:", filename)
+        Logger.info(
+            MODULE,
+            "TRANSFER_STARTED",
+            {
+                "filename": filename,
+                "totalChunks": total_chunks,
+                "totalSize": total_size,
+                "chunkSize": chunk_size,
+                "sha256Short": sha_short
+            }
+        )
 
         self._emit_state("receiving")
 
@@ -189,10 +251,27 @@ class BleService:
         seq = int.from_bytes(raw[0:4], "big")
         payload = raw[4:]
 
-        print("Chunk len:", len(raw))
+        Logger.trace(
+            MODULE,
+            "CHUNK_RECEIVED",
+            {
+                "sequence": seq,
+                "size": len(payload)
+            }
+        )
 
         if seq != self.expected_seq:
-            print("[BLE] seq error", seq, self.expected_seq)
+            Logger.error(
+                MODULE,
+                "CHUNK_SEQUENCE_MISMATCH",
+                {
+                    "receivedSeq": seq,
+                    "expectedSeq": self.expected_seq,
+                    "bytesWritten": self.bytes_written,
+                    "queueSize": len(self._chunk_queue),
+                    "filename": self.metadata["filename"] if self.metadata else None
+                }
+            )
             self._emit_error(
                 subsystem="ble",
                 code="SEQ_MISMATCH",
@@ -224,6 +303,12 @@ class BleService:
             self._emit_state("error")
             return
         
+        Logger.info(
+            MODULE,
+            "TRANSFER_FINALIZE_STARTED",
+            {"filename": self.metadata["filename"]}
+        )
+        
         self._emit_state("verifying")
 
         calc = self.storage.finalize_temp_file(
@@ -231,6 +316,17 @@ class BleService:
         )
 
         if not calc.startswith(self.metadata["sha256_short"]):
+            Logger.error(
+                MODULE,
+                "FILE_HASH_MISMATCH",
+                {
+                    "filename": self.metadata["filename"],
+                    "expectedSha": self.metadata["sha256_short"],
+                    "calculatedSha": calc,
+                    "bytesWritten": self.bytes_written,
+                    "expectedSize": self.metadata["total_size"]
+                }
+            )
             self._emit_error(
                 subsystem="storage",
                 code="HASH_MISMATCH",
@@ -239,6 +335,14 @@ class BleService:
             self._emit_state("error")
             return
 
+        Logger.info(
+            MODULE,
+            "TRANSFER_COMPLETED",
+            {
+                "filename": self.metadata["filename"],
+                "sha256": calc
+            }
+        )
         self._emit_state("ready", sha256=calc)
 
         self.metadata = None

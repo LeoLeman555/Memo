@@ -2,6 +2,9 @@
 from machine import I2S, Pin
 import time
 import _thread
+from logger import Logger
+
+MODULE = "AUDIO"
 
 
 class AudioPlayer:
@@ -34,17 +37,42 @@ class AudioPlayer:
                 ibuf=ibuf,
             )
             self.available = True
-            print("[AUDIO] I2S interface enabled")
+            Logger.info(
+                MODULE,
+                "I2S_INITIALIZED",
+                {
+                    "sckPin": sck_pin,
+                    "wsPin": ws_pin,
+                    "sdPin": sd_pin,
+                    "sampleRate": rate,
+                    "bufferSize": ibuf
+                }
+            )
 
         except Exception as e:
             self.available = False
             self.audio = None
-            print("[AUDIO] I2S unavailable, audio disabled:", e)
+            Logger.error(
+                MODULE,
+                "I2S_INIT_FAILED",
+                {
+                    "sckPin": sck_pin,
+                    "wsPin": ws_pin,
+                    "sdPin": sd_pin,
+                    "sampleRate": rate,
+                    "bufferSize": ibuf,
+                    "error": str(e)
+                }
+            )
 
     def play_wav(self, filename: str):
         """Play a WAV file if audio is available."""
         if not self.available:
-            print("[AUDIO] play_wav ignored (audio disabled)")
+            Logger.warn(
+                MODULE,
+                "PLAY_REQUEST_IGNORED",
+                {"reason": "audio_disabled"}
+            )
             return
 
         with self._lock:
@@ -54,6 +82,11 @@ class AudioPlayer:
             self._paused = False
 
         try:
+            Logger.info(
+                MODULE,
+                "PLAYBACK_STARTED",
+                {"filename": filename}
+            )
             with open(filename, "rb") as f:
                 f.seek(44)  # Skip WAV header
 
@@ -74,21 +107,46 @@ class AudioPlayer:
                     try:
                         self.audio.write(data)
                     except Exception as e:
-                        print("[AUDIO] I2S write failed:", e)
+                        Logger.error(
+                            MODULE,
+                            "I2S_WRITE_FAILED",
+                            {
+                                "filename": filename,
+                                "error": str(e)
+                            }
+                        )
                         break
 
         except OSError as e:
-            print("[AUDIO] File error:", e)
+            Logger.error(
+                MODULE,
+                "AUDIO_FILE_ERROR",
+                {
+                    "filename": filename,
+                    "error": str(e)
+                }
+            )
 
         except Exception as e:
-            print("[AUDIO] Playback error:", e)
+            Logger.error(
+                MODULE,
+                "PLAYBACK_ERROR",
+                {
+                    "filename": filename,
+                    "error": str(e)
+                }
+            )
 
         finally:
             with self._lock:
                 self._playing = False
                 self._paused = False
 
-            print("[AUDIO] Playback ended")
+            Logger.info(
+                MODULE,
+                "PLAYBACK_FINISHED",
+                {"filename": filename}
+            )
 
     def pause(self):
         """Pause playback."""
@@ -96,6 +154,10 @@ class AudioPlayer:
             return
         with self._lock:
             if self._playing:
+                Logger.debug(
+                    MODULE,
+                    "PLAYBACK_PAUSED"
+                )
                 self._paused = True
 
     def resume(self):
@@ -104,6 +166,10 @@ class AudioPlayer:
             return
         with self._lock:
             if self._playing:
+                Logger.debug(
+                    MODULE,
+                    "PLAYBACK_RESUMED"
+                )
                 self._paused = False
 
     def stop(self):
@@ -111,6 +177,10 @@ class AudioPlayer:
         if not self.available:
             return
         with self._lock:
+            Logger.info(
+                MODULE,
+                "PLAYBACK_STOPPED"
+            )
             self._playing = False
             self._paused = False
 
