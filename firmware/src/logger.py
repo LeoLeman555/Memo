@@ -6,7 +6,7 @@ import urandom
 
 class Logger:
     """Static structured JSON logger for ESP firmware."""
-    LOG_DIR = "/sd/logs"
+
     SOURCE = "ESP"
     SESSION = hex(urandom.getrandbits(32))[2:]
     MIN_LEVEL = "DEBUG"
@@ -18,46 +18,22 @@ class Logger:
         "ERROR": 50,
         "FATAL": 60,
     }
-    _initialized = False
-    _write_lock = False
+
+    # --- RAM BUFFER ---
+    BUFFER_SIZE = 100
+    _buffer = []
+
+    # --- FLASH SNAPSHOT CONFIG ---
+    SNAPSHOT_SIZE = 30
+    SNAPSHOT_COOLDOWN = 30  # seconds
+    _last_snapshot_ts = 0
+
+    SNAPSHOT_DIR = "/flash/logs"
 
     @staticmethod
-    def configure(root):
-        """Configure log directory from storage backend."""
-        Logger.LOG_DIR = "%s/logs" % root
-
-    @staticmethod
-    def _now_iso():
-        """Return ISO8601 timestamp."""
-        t = time.localtime()
-        return "%04d-%02d-%02dT%02d:%02d:%02dZ" % (
-            t[0], t[1], t[2],
-            t[3], t[4], t[5]
-        )
-
-    @staticmethod
-    def _today_file():
-        """Return today's log file path."""
-        if Logger.LOG_DIR is None:
-            return None
-        t = time.localtime()
-        filename = "esp-%04d-%02d-%02d.log" % (
-            t[0], t[1], t[2]
-        )
-        return "%s/%s" % (Logger.LOG_DIR, filename)
-
-    @staticmethod
-    def _ensure_initialized():
-        """Ensure log directory exists."""
-        if Logger._initialized:
-            return
-
-        try:
-            os.stat(Logger.LOG_DIR)
-        except OSError:
-            os.mkdir(Logger.LOG_DIR)
-
-        Logger._initialized = True
+    def _now_ms():
+        """Return ms since boot (always valid)."""
+        return time.ticks_ms()
 
     @staticmethod
     def _should_log(level):
@@ -70,38 +46,55 @@ class Logger:
     @staticmethod
     def _build_entry(level, module, event, context):
         """Create structured log entry."""
-        entry = {
-            "ts": Logger._now_iso(),
+        return {
+            "ms": Logger._now_ms(),
             "session": Logger.SESSION,
             "level": level,
             "source": Logger.SOURCE,
             "module": module,
-            "event": event
+            "event": event,
+            "context": context or {}
         }
-        if context and len(context) > 0:
-            entry["context"] = context
-        return json.dumps(entry)
 
     @staticmethod
-    def _write(line):
-        """Append log line to storage."""
-        if Logger._write_lock:
+    def _push(entry):
+        """Push entry into RAM buffer."""
+        if len(Logger._buffer) >= Logger.BUFFER_SIZE:
+            Logger._buffer.pop(0)
+        Logger._buffer.append(entry)
+
+    @staticmethod
+    def _snapshot():
+        """Write last logs to flash."""
+        now = Logger._now()
+
+        # Anti-spam
+        if now - Logger._last_snapshot_ts < Logger.SNAPSHOT_COOLDOWN:
             return
-        if not Logger.LOG_DIR:
-            return
+
+        Logger._last_snapshot_ts = now
 
         try:
-            Logger._write_lock = True
-            Logger._ensure_initialized()
+            # Ensure directory
+            try:
+                os.stat(Logger.SNAPSHOT_DIR)
+            except OSError:
+                os.mkdir(Logger.SNAPSHOT_DIR)
 
-            path = Logger._today_file()
-            with open(path, "a") as f:
-                f.write(line + "\n")
+            # Snapshot last N logs
+            snapshot = Logger._buffer[-Logger.SNAPSHOT_SIZE:]
+
+            filename = "%s/log_%d.json" % (
+                Logger.SNAPSHOT_DIR,
+                now
+            )
+
+            with open(filename, "w") as f:
+                for entry in snapshot:
+                    f.write(json.dumps(entry) + "\n")
 
         except:
             pass
-        finally:
-            Logger._write_lock = False
 
     @staticmethod
     def _log(level, module, event, context=None):
@@ -109,9 +102,17 @@ class Logger:
         if not Logger._should_log(level):
             return
         try:
-            line = Logger._build_entry(level, module, event, context)
-            print(line)
-            # Logger._write(line)
+            entry = Logger._build_entry(level, module, event, context)
+
+            # console (debug dev)
+            print(json.dumps(entry))
+
+            # RAM buffer
+            Logger._push(entry)
+
+            # Snapshot only on error/fatal
+            if level in ("ERROR", "FATAL"):
+                Logger._snapshot()
 
         except:
             pass

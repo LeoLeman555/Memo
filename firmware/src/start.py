@@ -101,7 +101,7 @@ def main():
         # Heartbeat every 5 minutes
         now = time.time()
         if now - last_heartbeat >= HEARTBEAT_INTERVAL:
-            Logger.debug(
+            Logger.info(
                 MODULE,
                 "SYSTEM_HEARTBEAT",
                 {
