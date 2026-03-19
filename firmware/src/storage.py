@@ -27,10 +27,8 @@ class Storage:
 
         self._ensure_flash_root()
         self._try_mount_sd()
-        Logger.configure(self.root)
         self._ensure_directories()
         self._cleanup_temp_files()
-
 
         Logger.info(
             MODULE,
