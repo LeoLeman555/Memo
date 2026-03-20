@@ -1,4 +1,4 @@
-package com.talkingboxapp.tts;
+package com.memocontroller.tts;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

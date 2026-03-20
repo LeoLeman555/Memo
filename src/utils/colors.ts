@@ -3,36 +3,42 @@ import { EspState } from '../domain/espStatus';
 import { BleConnectionState } from '../domain/systemStatus';
 
 export function getColors(scheme: string | null) {
+  const isDark = scheme === 'dark';
+
   return {
-    background: scheme === 'dark' ? '#000' : '#FFF',
-    text: scheme === 'dark' ? '#FFF' : '#000',
-    inputBorder: scheme === 'dark' ? '#444' : '#DDD',
-    buttonBg: '#135da8ff',
-    buttonText: '#FFF',
-    mock: '#434547ff',
-    accent: '#009688',
-    warning: '#ff6607ff',
-    error: '#ff0000'
+    background: isDark ? '#000000' : '#FFFFFF',
+    text: isDark ? '#FFFFFF' : '#1A1A1A',
+    inputBorder: isDark ? '#555555' : '#E0E0E0',
+    buttonBg: '#C62828',
+    buttonText: '#FFFFFF',
+    mock: '#9E9E9E',
+    accent: '#C62828',
+    warning: '#FFD600',
+    error: '#D50000',
   };
 }
 
 export const getStateColor = (
   state: GlobalSystemState,
-) => {
+): string => {
   switch (state) {
     case 'ready':
-      return '#2ECC71';
+      return '#00C853';
+
     case 'busy':
-      return '#F39C12';
+      return '#FFD600';
+
     case 'booting':
-      return '#3498DB';
+      return '#2979FF'; 
     case 'degraded':
-      return '#E67E22';
+      return '#FF6D00';
+
     case 'error':
-      return '#E74C3C';
+      return '#D50000';
+
     case 'offline':
     default:
-      return '#7F8C8D';
+      return '#616161';
   }
 };
 
@@ -41,38 +47,38 @@ export const getBleColor = (
 ): string => {
   switch (bleState) {
     case 'connected':
-      return '#2ECC71';
+      return '#00C853';
 
     case 'connecting':
     case 'reconnecting':
-      return '#F39C12';
+      return '#FFD600';
 
     case 'disconnected':
     default:
-      return '#E74C3C';
+      return '#D50000';
   }
 };
 
 export const getEspColor = (
   espState: EspState | null,
 ): string => {
-  if (!espState) return '#7F8C8D';
+  if (!espState) return '#616161';
 
   switch (espState) {
     case 'ready':
-      return '#2ECC71';
+      return '#00C853';
 
     case 'receiving':
     case 'processing':
     case 'verifying':
-      return '#F39C12';
+      return '#FFD600';
 
     case 'error':
-      return '#E74C3C';
+      return '#D50000';
 
     case 'booting':
     case 'idle':
     default:
-      return '#7F8C8D';
+      return '#616161';
   }
 };
