@@ -224,7 +224,7 @@ public class AndroidTtsModule extends ReactContextBaseJavaModule {
       values.put(MediaStore.Audio.Media.MIME_TYPE, mime);
       values.put(
         MediaStore.Audio.Media.RELATIVE_PATH,
-        Environment.DIRECTORY_MUSIC + "/TalkingBox/TTS"
+        Environment.DIRECTORY_MUSIC + "/MemoController/TTS"
       );
 
       ContentResolver resolver = getReactApplicationContext().getContentResolver();

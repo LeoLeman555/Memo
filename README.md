@@ -1,4 +1,4 @@
-# Talking Box
+# Memo
 
 This project is developed within the Make:able Challenge, which focuses on designing and building assistive technologies that improve daily life and autonomy for people with disabilities, using a user-centered and ethical design approach.
 
@@ -35,8 +35,8 @@ The system is designed to work fully offline, without cloud services, ensuring p
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/LeoLeman555/TalkingBox.git
-cd TalkingBox/
+git clone https://github.com/LeoLeman555/Memo.git
+cd Memo/
 ```
 
 ### 2. Install dependencies

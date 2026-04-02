@@ -409,7 +409,7 @@ export function MainScreen({
           style={[styles.title, { color: colors.text }]}
           onPress={handleTitlePress}
         >
-          Talking Box - Prototype
+          Memo Controller
         </Text>
 
         {/* Global state badge */}
@@ -458,13 +458,13 @@ export function MainScreen({
           </View>
 
           {/* Error indicator */}
-          {(snapshot.lastEspError || snapshot.bleError) && (
+          {/* {(snapshot.lastEspError || snapshot.bleError) && (
             <View style={styles.errorBadge}>
               <Text style={styles.errorBadgeText}>
                 ERROR
               </Text>
             </View>
-          )}
+          )} */}
 
         </View>
 
