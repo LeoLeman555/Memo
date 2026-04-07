@@ -132,3 +132,8 @@ body {
 .footer-content h3 {
   margin-bottom: 10px;
 }
+
+.navigation a.active {
+  border-bottom: 2px solid white;
+  padding-bottom: 4px;
+}

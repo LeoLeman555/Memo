@@ -5,6 +5,10 @@
 __pycache__/
 *.pyc
 main.py
+android/
+firmware/
+src/
+docs/
 
 *.log
 
