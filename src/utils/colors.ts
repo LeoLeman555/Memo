@@ -1,6 +1,7 @@
 import { GlobalSystemState } from '../domain/systemStatus';
 import { EspState } from '../domain/espStatus';
 import { BleConnectionState } from '../domain/systemStatus';
+import { ReminderStatus, SyncStatus } from '../domain/reminder';
 
 export function getColors(scheme: string | null) {
   const isDark = scheme === 'dark';
@@ -78,6 +79,34 @@ export const getEspColor = (
 
     case 'booting':
     case 'idle':
+    default:
+      return '#616161';
+  }
+};
+
+export const getReminderColor = (
+  status: ReminderStatus,
+  syncStatus: SyncStatus,
+): string => {
+
+  if (status !== 'VALID') {
+    return '#616161';
+  }
+
+  switch (syncStatus) {
+
+    case 'SYNCED':
+      return '#00C853';
+
+    case 'NOT_SENT':
+      return '#FF6D00';
+
+    case 'SENDING':
+      return '#FFD600';
+
+    case 'ERROR':
+      return '#D50000';
+
     default:
       return '#616161';
   }

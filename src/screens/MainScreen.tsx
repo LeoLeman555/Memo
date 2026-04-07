@@ -15,6 +15,7 @@ import { useBlePermissions } from '../hooks/useBlePermissions';
 import { BleService } from '../services/ble/bleService';
 import { getColors, getStateColor, getEspColor, getBleColor } from '../utils/colors';
 import { syncWithEsp } from '../services/ble/syncWithEsp';
+import { markAllRemindersSending, markAllRemindersSynced } from '../services/reminder/reminderRepository';
 import { Reminder } from '../domain/reminder';
 import { EspStatusMessage } from '../domain/espStatus';
 
@@ -58,6 +59,7 @@ export function MainScreen({
   const [progress, setProgress] = useState(0);
   const globalState = computeGlobalSystemState(snapshot);
   const [titleTapCount, setTitleTapCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
 
@@ -378,6 +380,8 @@ export function MainScreen({
       Logger.info(MODULE, "SYNC_START");
 
       setProgress(0);
+      await markAllRemindersSending();
+      setRefreshKey(v => v + 1);
 
       await syncWithEsp({
         ble,
@@ -385,11 +389,14 @@ export function MainScreen({
         onEspMessage: applyEspMessage,
       });
 
+      await markAllRemindersSynced();
+      setRefreshKey(v => v + 1);
+
       Logger.info(MODULE, "SYNC_COMPLETED", {
         durationMs: Date.now() - start
       });
 
-      Alert.alert('Success', 'Synchronization completed successfully');
+      Alert.alert("Succès", "La synchronisation des Reminders vers MEMO s'est déroulée avec succès");
 
     } catch (error) {
 
@@ -484,8 +491,8 @@ export function MainScreen({
       {/* LIST */}
       <View style={styles.listContainer}>
         <ReminderList
+          refreshKey={refreshKey}
           onSelect={(r) => {
-
             Logger.info(MODULE, "USER_SELECT_REMINDER", {
               reminderId: r.reminderId
             });

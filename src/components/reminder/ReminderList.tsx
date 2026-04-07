@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { getColors } from '../../utils/colors';
+import { getColors, getReminderColor } from '../../utils/colors';
 import { getAllReminders } from '../../services/reminder/reminderRepository';
 import { Reminder } from '../../domain/reminder';
+import { formatSyncStatus } from '../../utils/recurrenceFormat';
 
 type Props = {
   onSelect: (reminder: Reminder) => void;
-  refreshKey?: number; // optional: force reload from parent
+  refreshKey?: number;
 };
 
 export function ReminderList({ onSelect, refreshKey }: Props) {
@@ -61,8 +62,13 @@ export function ReminderList({ onSelect, refreshKey }: Props) {
         {item.message}
       </Text>
 
-      <Text style={[styles.status, { color: colors.text }]}>
-        {item.status} | {item.syncStatus}
+      <Text
+        style={[
+          styles.status,
+          { color: getReminderColor(item.status, item.syncStatus) }
+        ]}
+      >
+        {formatSyncStatus(item.syncStatus)}
       </Text>
     </TouchableOpacity>
   );
@@ -110,12 +116,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   title: {
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '800',
   },
   meta: {
     fontSize: 14,
     marginTop: 4,
+    opacity: 0.8,
+    fontWeight: '600',
   },
   message: {
     fontSize: 15,
@@ -124,6 +132,6 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 12,
     marginTop: 8,
-    opacity: 0.7,
+    fontWeight: '600',
   },
 });
