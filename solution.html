@@ -12,26 +12,116 @@
 
 <div id="header"></div>
 
-<main>
+<main class="doc-layout">
 
-<section class="project">
-  <div class="container">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+  <nav>
+    <h3>Sommaire</h3>
+    <ul id="toc"></ul>
+  </nav>
+</aside>
 
-    <h1>Notre solution</h1>
+  <!-- MAIN CONTENT -->
+  <div class="doc-content container">
 
-    <p>
-      MEMO permet de programmer des rappels vocaux via une application mobile
-      et de les envoyer à un appareil autonome basé sur ESP32.
-    </p>
+    <section id="intro">
+      <h1>Notre solution</h1>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+        Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </section>
+
+    <section id="problem">
+      <h2>1. Problématique</h2>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+    </section>
+
+    <section id="solution">
+      <h2>2. Solution proposée</h2>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+
+      <!-- IMAGE AVEC LEGENDE -->
+      <figure class="doc-figure">
+        <img src="assets/placeholder.jpg" alt="Schéma solution">
+        <figcaption>
+          Schéma global du système MEMO.
+        </figcaption>
+      </figure>
+
+    </section>
+
+    <section id="architecture">
+      <h2>3. Architecture du système</h2>
+
+      <p>
+        Description de l’architecture globale.
+      </p>
+
+      <!-- BLOC CODE / SCHEMA -->
+      <div class="doc-block">
+<pre>
+[ Application Mobile ]
+        ↓
+[ BLE ]
+        ↓
+[ ESP32 ]
+        ↓
+[ Module Audio ]
+</pre>
+      </div>
+
+    </section>
+
+    <section id="tech">
+      <h2>4. Détails techniques</h2>
+
+      <h3>4.1 Application mobile</h3>
+      <p>Lorem ipsum dolor sit amet.</p>
+
+      <h3>4.2 Communication BLE</h3>
+      <p>Lorem ipsum dolor sit amet.</p>
+
+      <figure class="doc-figure">
+        <img src="assets/placeholder.jpg" alt="BLE schema">
+        <figcaption>
+          Transfert des données en chunks via BLE.
+        </figcaption>
+      </figure>
+
+    </section>
+
+    <section id="results">
+      <h2>5. Résultats et perspectives</h2>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </p>
+
+      <!-- LISTE -->
+      <ul class="doc-list">
+        <li>Résultat 1</li>
+        <li>Résultat 2</li>
+        <li>Amélioration future</li>
+      </ul>
+
+    </section>
 
   </div>
-</section>
 
 </main>
 
 <div id="footer"></div>
 
-<script src="js/components.js"></script>
+<script src="js/main.js"></script>
 
 </body>
 </html>
