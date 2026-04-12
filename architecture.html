@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO - Architecture Technique</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="doc-layout">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+  <nav>
+    <h3>Sommaire</h3>
+    <ul id="toc"></ul>
+  </nav>
+</aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="doc-content container">
+
+    <section id="intro">
+      <h1>Architecture Technique</h1>
+    </section>
+
+		<section id="architecture">
+      <h2>Architecture du système</h2>
+			<figure class="doc-figure">
+        <img src="assets/architecture_globale.png" alt="Schéma solution">
+        <figcaption>
+          Schéma global de l'application qui controle MEMO.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="problem">
+      <h2>ESP32</h2>
+			<figure class="doc-figure">
+        <img src="assets/esp32.png" alt="Schéma solution">
+        <figcaption>
+          Schéma global de du firmware avec ESP32.
+        </figcaption>
+      </figure>
+
+
+    </section>
+
+    <section id="solution">
+      <h2>Application Mobile</h2>
+      <!-- IMAGE AVEC LEGENDE -->
+      <figure class="doc-figure">
+        <img src="assets/appli_mobile.png" alt="Schéma solution">
+        <figcaption>
+          Schéma global de l'application qui controle MEMO.
+        </figcaption>
+      </figure>
+
+    </section>
+
+    <section id="tech">
+      <h2>Fonctionnalités</h2>
+
+      <h3>Création Reminder</h3>
+			<figure class="doc-figure">
+        <img src="assets/creation_reminder.png" alt="BLE schema">
+        <figcaption>
+        </figcaption>
+      </figure>
+
+      <h3>Text-to-Speech</h3>
+      <figure class="doc-figure">
+        <img src="assets/tts.png" alt="BLE schema">
+        <figcaption>
+        </figcaption>
+      </figure>
+
+    </section>
+
+  </div>
+
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
