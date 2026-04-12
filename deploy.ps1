@@ -29,7 +29,8 @@ $Files = @(
   "storage.py",
   "rtc.py",
   "scheduler.py",
-  "logger.py"
+  "logger.py",
+  "battery.py",
   "sdcard.py",
   "start.py"
 )
