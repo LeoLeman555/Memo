@@ -39,16 +39,29 @@ def main():
         audio = None
 
     ble = BleService(storage)
-    rtc = TimeRead()
-    scheduler = MemoScheduler(rtc, storage, audio)
+    try:
+        rtc = TimeRead()
+        rtc_available = True
+    except Exception as e:
+        Logger.warn(
+            MODULE,
+            "RTC_INIT_FAILED",
+            {
+                "error": str(e)
+            }
+        )
+        rtc = None
+        rtc_available = False
+
+    scheduler = MemoScheduler(rtc, storage, audio) if rtc else None
 
     Logger.info(
         MODULE,
         "SERVICES_STARTED",
         {
             "ble": True,
-            "rtc": True,
-            "scheduler": True,
+            "rtc": rtc_available,
+            "scheduler": scheduler is not None,
             "audio": audio is not None
         }
     )
@@ -61,8 +74,9 @@ def main():
     last_heartbeat = time.time()
 
     while True:
-        # Run scheduler
-        scheduler.tick()
+        # Run scheduler only if RTC available
+        if scheduler:
+            scheduler.tick()
 
         # Flush BLE chunk queue (NO SD access in IRQ anymore)
         if hasattr(ble, "has_pending_chunk") and ble.has_pending_chunk():
@@ -108,7 +122,7 @@ def main():
                     "storage": storage.get_backend(),
                     "bleConnected": ble.conn_handle is not None,
                     "audioAvailable": audio.available if audio else False,
-                    "memosLoaded": len(scheduler.memos)
+                    "memosLoaded": len(scheduler.memos) if scheduler else 0
                 }
             )
             last_heartbeat = now
