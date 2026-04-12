@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import { Reminder } from '../../domain/reminder';
+import { Reminder, SyncStatus } from '../../domain/reminder';
 import { Logger } from '../logger/logger';
 
 const MODULE = "REMINDER_REPOSITORY";
@@ -109,6 +109,36 @@ export async function getReminderById(
   const found = storage.items.find(r => r.reminderId === reminderId) ?? null;
   Logger.trace(MODULE, "GET_REMINDER_BY_ID", { reminderId, found: !!found });
   return found;
+}
+
+export async function markAllRemindersSending(): Promise<void> {
+  const storage = await loadStorage();
+
+  storage.items = storage.items.map(r => ({
+    ...r,
+    syncStatus: SyncStatus.SENDING,
+  }));
+
+  await saveStorage(storage);
+
+  Logger.info(MODULE, "ALL_REMINDERS_MARKED_SENDING", {
+    count: storage.items.length
+  });
+}
+
+export async function markAllRemindersSynced(): Promise<void> {
+  const storage = await loadStorage();
+
+  storage.items = storage.items.map(r => ({
+    ...r,
+    syncStatus: SyncStatus.SYNCED,
+  }));
+
+  await saveStorage(storage);
+
+  Logger.info(MODULE, "ALL_REMINDERS_MARKED_SYNCED", {
+    count: storage.items.length
+  });
 }
 
 /**

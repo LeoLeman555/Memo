@@ -1,6 +1,6 @@
-package com.talkingboxapp
+package com.memocontroller
 
-import com.talkingboxapp.tts.AndroidTtsPackage
+import com.memocontroller.tts.AndroidTtsPackage
 import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication

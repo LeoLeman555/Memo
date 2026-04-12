@@ -1,4 +1,4 @@
-package com.talkingboxapp.tts;
+package com.memocontroller.tts;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
