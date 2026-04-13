@@ -59,7 +59,6 @@ def main():
     
     battery = Battery(samples=30, calibration=1.0)
     data = battery.read()
-    print(data)
 
     Logger.info(
         MODULE,
@@ -149,6 +148,7 @@ def main():
 
         if now - last_battery >= BATTERY_INTERVAL:
             data = battery.read()
+            Logger.log_battery(data)
             Logger.info(
                 "BATTERY",
                 "BATTERY_STATUS",

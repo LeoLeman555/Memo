@@ -5,10 +5,11 @@ import urandom
 
 
 class Logger:
-    """Static structured JSON logger for ESP firmware."""
+    """Efficient structured logger with flash persistence."""
 
     SOURCE = "ESP"
     SESSION = hex(urandom.getrandbits(32))[2:]
+
     MIN_LEVEL = "DEBUG"
     LEVEL_PRIORITY = {
         "TRACE": 10,
@@ -19,21 +20,28 @@ class Logger:
         "FATAL": 60,
     }
 
-    # --- RAM BUFFER ---
-    BUFFER_SIZE = 100
-    _buffer = []
+    LOG_DIR = "/flash/logs"
+    SYSTEM_FILE = LOG_DIR + "/system.log"
+    BATTERY_FILE = LOG_DIR + "/battery.log"
 
-    # --- FLASH SNAPSHOT CONFIG ---
-    SNAPSHOT_SIZE = 30
-    SNAPSHOT_COOLDOWN = 30  # seconds
-    _last_snapshot_ts = 0
+    BUFFER = []
+    BUFFER_LIMIT = 10
 
-    SNAPSHOT_DIR = "/flash/logs"
+    LAST_FLUSH = 0
+    LAST_LOG_TIME = 0
+
+    FLUSH_INTERVAL = 5  # seconds
+    LONG_INTERVAL_THRESHOLD = 120  # seconds
+
+    MAX_FILE_SIZE = 200_000  # 200 KB
+
+    DIR_READY = False
+    ENABLE_CONSOLE = True
 
     @staticmethod
-    def _now_ms():
-        """Return ms since boot (always valid)."""
-        return time.ticks_ms()
+    def _now():
+        """Return timestamp."""
+        return int(time.time())
 
     @staticmethod
     def _should_log(level):
@@ -47,7 +55,7 @@ class Logger:
     def _build_entry(level, module, event, context):
         """Create structured log entry."""
         return {
-            "ms": Logger._now_ms(),
+            "time": Logger._now(),
             "session": Logger.SESSION,
             "level": level,
             "source": Logger.SOURCE,
@@ -57,65 +65,121 @@ class Logger:
         }
 
     @staticmethod
-    def _push(entry):
-        """Push entry into RAM buffer."""
-        if len(Logger._buffer) >= Logger.BUFFER_SIZE:
-            Logger._buffer.pop(0)
-        Logger._buffer.append(entry)
+    def _ensure_dir():
+        """Ensure log directory exists."""
+        if Logger.DIR_READY:
+            return
+        try:
+            os.stat(Logger.LOG_DIR)
+        except Exception:
+            try:
+                os.mkdir(Logger.LOG_DIR)
+            except Exception as e:
+                print("Logger mkdir error:", e)
+        Logger.DIR_READY = True
 
     @staticmethod
-    def _snapshot():
-        """Write last logs to flash."""
-        now = Logger._now()
+    def _rotate_if_needed(path):
+        """Rotate file if too large."""
+        try:
+            size = os.stat(path)[6]
+            if size > Logger.MAX_FILE_SIZE:
+                old_path = path + ".old"
 
-        # Anti-spam
-        if now - Logger._last_snapshot_ts < Logger.SNAPSHOT_COOLDOWN:
+                try:
+                    os.stat(old_path)
+                    os.remove(old_path)
+                except Exception:
+                    pass
+
+                os.rename(path, old_path)
+        except Exception as e:
+            print("Logger rotate error:", e)
+
+    @staticmethod
+    def _flush():
+        """Write buffer to flash."""
+        if not Logger.BUFFER:
             return
 
-        Logger._last_snapshot_ts = now
+        Logger._ensure_dir()
 
         try:
-            # Ensure directory
-            try:
-                os.stat(Logger.SNAPSHOT_DIR)
-            except OSError:
-                os.mkdir(Logger.SNAPSHOT_DIR)
+            with open(Logger.SYSTEM_FILE, "a") as f:
+                for entry in Logger.BUFFER:
+                    f.write(json.dumps(entry, separators=(",", ":")) + "\n")
 
-            # Snapshot last N logs
-            snapshot = Logger._buffer[-Logger.SNAPSHOT_SIZE:]
+            Logger._rotate_if_needed(Logger.SYSTEM_FILE)
 
-            filename = "%s/log_%d.json" % (
-                Logger.SNAPSHOT_DIR,
-                now
-            )
+        except Exception as e:
+            print("Logger flush error:", e)
 
-            with open(filename, "w") as f:
-                for entry in snapshot:
-                    f.write(json.dumps(entry) + "\n")
+        Logger.BUFFER = []
+        Logger.LAST_FLUSH = Logger._now()
 
-        except:
-            pass
+    @staticmethod
+    def log_battery(data):
+        """Dedicated battery log."""
+        Logger._ensure_dir()
+
+        entry = {
+            "time": int(data.get("time", Logger._now())),
+            "voltage": round(data.get("voltage", 0), 3),
+            "percent": round(data.get("percent", 0), 1),
+            "state": data.get("state"),
+            "consumption_vph": round(data.get("consumption_v_per_h", 0), 4),
+            "raw": round(data.get("raw", 0), 1),
+            "dt": data.get("dt"),
+            "dv": data.get("dv")
+        }
+
+        try:
+            with open(Logger.BATTERY_FILE, "a") as f:
+                f.write(json.dumps(entry, separators=(",", ":")) + "\n")
+
+            Logger._rotate_if_needed(Logger.BATTERY_FILE)
+
+        except Exception as e:
+            print("Battery log error:", e)
 
     @staticmethod
     def _log(level, module, event, context=None):
         """Core logging method."""
         if not Logger._should_log(level):
             return
+
         try:
+            now = Logger._now()
             entry = Logger._build_entry(level, module, event, context)
 
-            # console (debug dev)
-            print(json.dumps(entry))
+            # Optional console output
+            if Logger.ENABLE_CONSOLE:
+                print(json.dumps(entry))
 
-            # RAM buffer
-            Logger._push(entry)
+            # Detect long gap between logs
+            long_gap = (
+                Logger.LAST_LOG_TIME != 0
+                and (now - Logger.LAST_LOG_TIME) >= Logger.LONG_INTERVAL_THRESHOLD
+            )
+            Logger.LAST_LOG_TIME = now
 
-            # Snapshot only on error/fatal
-            if level in ("ERROR", "FATAL"):
-                Logger._snapshot()
+            # Force flush on long gap or critical logs
+            if long_gap or level in ("ERROR", "FATAL"):
+                Logger.BUFFER.append(entry)
+                Logger._flush()
+                return
 
-        except:
-            pass
+            # Normal buffering
+            Logger.BUFFER.append(entry)
+
+            if (
+                len(Logger.BUFFER) >= Logger.BUFFER_LIMIT
+                or now - Logger.LAST_FLUSH >= Logger.FLUSH_INTERVAL
+            ):
+                Logger._flush()
+
+        except Exception as e:
+            print("Logger error:", e)
 
     # Public API
 
