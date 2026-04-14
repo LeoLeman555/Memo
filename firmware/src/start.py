@@ -90,21 +90,29 @@ def main():
         if scheduler:
             scheduler.tick()
 
-        # Flush BLE chunk queue (NO SD access in IRQ anymore)
-        if hasattr(ble, "has_pending_chunk") and ble.has_pending_chunk():
-            chunk = ble.pop_chunk()
-            if chunk:
-                try:
-                    storage.append_chunk(chunk)
-                except Exception as e:
-                    Logger.error(
-                        MODULE,
-                        "SD_WRITE_FAILED",
-                        {
-                            "error": str(e)
-                        }
-                    )
-
+        # Process START frames
+        if ble.has_pending_start():
+            try:
+                ble.process_start()
+            except Exception as e:
+                Logger.error(
+                    MODULE,
+                    "START_PROCESS_FAILED",
+                    {
+                        "error": str(e)
+                    }
+                )
+        if ble.has_pending_chunk():
+            try:
+                ble.process_chunk()
+            except Exception as e:
+                Logger.error(
+                    MODULE,
+                    "CHUNK_PROCESS_FAILED",
+                    {
+                        "error": str(e)
+                    }
+                )
         # Finalize BLE file when requested
         if ble.end_requested:
             ble.end_requested = False

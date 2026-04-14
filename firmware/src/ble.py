@@ -44,6 +44,9 @@ class BleService:
         self._chunk_queue = []
         self._has_pending_chunk = False
 
+        self._start_queue = []
+        self._has_pending_start = False
+
         self._setup()
         self._emit_state("booting")
         self._emit_state("idle")
@@ -109,24 +112,38 @@ class BleService:
 
         elif event == self._IRQ_GATTS_WRITE:
             conn, attr = data
+
             if attr == self._handle_start:
-                self._on_start_write()
+                raw = self.ble.gatts_read(self._handle_start)
+                self._start_queue.append(raw)
+                self._has_pending_start = True
+
             elif attr == self._handle_chunk:
-                self._on_chunk_write()
+                raw = self.ble.gatts_read(self._handle_chunk)
+                self._chunk_queue.append(raw)
+                self._has_pending_chunk = True
 
-    # ---------- Handlers ----------
+    # ---------- START processing (hors IRQ) ----------
 
-    def _on_start_write(self):
-        raw = self.ble.gatts_read(self._handle_start)
+    def process_start(self):
+        if not self._start_queue:
+            self._has_pending_start = False
+            return
+
+        raw = self._start_queue.pop(0)
+
+        if not self._start_queue:
+            self._has_pending_start = False
 
         Logger.debug(
             MODULE,
             "START_FRAME_RECEIVED",
-            {"length": len(raw),
-            "raw": raw}
+            {
+                "length": len(raw),
+                "raw": ubinascii.hexlify(raw).decode()
+            }
         )
 
-        # END frame
         if raw == b"\x02":
             Logger.info(
                 MODULE,
@@ -191,7 +208,12 @@ class BleService:
             return
 
         filename_bytes = raw[10:10 + filename_length]
-        filename = filename_bytes.decode()
+
+        try:
+            filename = filename_bytes.decode("utf-8")
+        except UnicodeError:
+            filename = filename_bytes.decode("utf-8", "replace")
+            Logger.warn(MODULE, "FILENAME_DECODE_FALLBACK")
 
         sha_start = 10 + filename_length
         sha_short = ubinascii.hexlify(
@@ -246,8 +268,29 @@ class BleService:
 
         self._emit_state("receiving")
 
-    def _on_chunk_write(self):
-        raw = self.ble.gatts_read(self._handle_chunk)
+    # ---------- CHUNK processing ----------
+
+    def process_chunk(self):
+        if not self._chunk_queue:
+            self._has_pending_chunk = False
+            return
+        
+        if not self.metadata:
+            Logger.warn(
+                MODULE,
+                "CHUNK_RECEIVED_BEFORE_START"
+            )
+            return
+
+        raw = self._chunk_queue.pop(0)
+
+        if not self._chunk_queue:
+            self._has_pending_chunk = False
+
+        if len(raw) < 4:
+            Logger.error(MODULE, "INVALID_CHUNK")
+            return
+
         seq = int.from_bytes(raw[0:4], "big")
         payload = raw[4:]
 
@@ -280,9 +323,7 @@ class BleService:
             self._emit_state("error")
             return
 
-        # Queue chunk instead of writing in IRQ
-        self._chunk_queue.append(payload)
-        self._has_pending_chunk = True
+        self.storage.append_chunk(payload)
 
         self.bytes_written += len(payload)
         self.expected_seq += 1
@@ -292,6 +333,8 @@ class BleService:
             current=self.expected_seq,
             total=self.metadata["total_chunks"],
         )
+
+    # ---------- FINALIZE ----------
 
     def finalize_file(self):
         if not self.metadata:
@@ -348,31 +391,25 @@ class BleService:
         self.metadata = None
         self.bytes_written = 0
 
+    # ---------- Utils ----------
+
+    def has_pending_start(self):
+        return self._has_pending_start
+
     def has_pending_chunk(self):
         return self._has_pending_chunk
 
-    def pop_chunk(self):
-        if not self._chunk_queue:
-            self._has_pending_chunk = False
-            return None
-
-        chunk = self._chunk_queue.pop(0)
-
-        if not self._chunk_queue:
-            self._has_pending_chunk = False
-
-        return chunk
-
-
-    # ---------- Utils ----------
-
     def _notify(self, obj):
         if self.conn_handle is not None:
-            self.ble.gatts_notify(
-                self.conn_handle,
-                self._handle_status,
-                json.dumps(obj),
-            )
+            try:
+                payload = json.dumps(obj).encode()
+                self.ble.gatts_notify(
+                    self.conn_handle,
+                    self._handle_status,
+                    payload,
+                )
+            except Exception as e:
+                Logger.error(MODULE, "NOTIFY_FAILED", {"error": str(e)})
 
     def _emit_state(self, state, sha256=None):
         payload = {
@@ -403,16 +440,3 @@ class BleService:
             "current": current,
             "total": total,
         })
-
-
-    def _emit_telemetry(self, battery=None, rtc=None, audio=None, storage=None):
-        payload = {"type": "telemetry"}
-        if battery:
-            payload["battery"] = battery
-        if rtc:
-            payload["rtc"] = rtc
-        if audio:
-            payload["audio"] = audio
-        if storage:
-            payload["storage"] = storage
-        self._notify(payload)
