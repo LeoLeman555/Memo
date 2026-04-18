@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO - Firmware</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="layout">
+
+	<aside class="sidebar">
+    <nav>
+      <h3>Sommaire</h3>
+      <ul id="toc"></ul>
+    </nav>
+  </aside>
+
+	<div class="content">
+
+		<section class="section">
+			<div class="container">
+				<h1 class="section-title">Firmware ESP32</h1>
+				<div class="section-divider"></div>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+			<h2>Rôle et architecture</h2>
+				<p>
+					Le firmware implémenté en 
+					<a href="https://micropython.org/" class="link" target="_blank" rel="noopener noreferrer">
+						MicroPython
+					</a>
+					constitue le cœur du système embarqué. Il assure l’exécution autonome de l’ensemble des fonctionnalités, sans dépendance à une connexion permanente avec l’application mobile.
+				</p>
+				<p>
+					Son rôle principal est de garantir le fonctionnement fiable et continu du dispositif, en prenant en charge la gestion des données, l’exécution des alarmes et la coordination des différents modules logiciels.
+				</p>
+				<p>
+					Concrètement, le firmware reçoit les données transmises par l’application via Bluetooth Low Energy (BLE), les reconstruit et les valide avant de les stocker localement. Il exploite ensuite ces informations pour planifier et déclencher les alertes à l’heure définie, en s’appuyant sur une logique de planification interne.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Architecture logicielle</h2>
+				<p>
+					L’architecture logicielle du firmware repose sur une organisation modulaire, conçue pour séparer clairement les responsabilités et garantir une maintenabilité élevée. Chaque composant logiciel est dédié à une fonction précise, on retrouve : la communication, gestion des données, gestion du temps, planification et restitution audio.
+				</p>
+				<p>Le firmware est structuré de la manière suivante :</p>
+				<div class="card">
+					<pre>
+firmware/src/
+	├─ start.py
+	├─ ble.py
+	├─ rtc.py
+	├─ scheduler.py
+	├─ storage.py
+	├─ sdcard.py
+	├─ audio.py
+	└─ logger.py
+					</pre>
+				</div>
+				<br>
+				<p>
+					Le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/start.py"" class="link" target="_blank" rel="noopener noreferrer">
+						start.py
+					</a> 
+					constitue le point d’entrée du système. Il orchestre le démarrage du firmware, initialise les différents services et exécute la boucle principale.
+				</p>
+				<p>
+					Le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/ble.py"" class="link" target="_blank" rel="noopener noreferrer">
+						ble.py
+					</a> 
+					gère la communication Bluetooth Low Energy. Il prend en charge la réception des données, leur reconstruction ainsi que la gestion du protocole d’échange avec l’application mobile. Les modules
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/storage.py"" class="link" target="_blank" rel="noopener noreferrer">
+						storage.py
+					</a> et <a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/sdcard.py"" class="link" target="_blank" rel="noopener noreferrer">
+						sdcard.py
+					</a> 
+					assurent donc la gestion du stockage persistant. Ils permettent l’écriture des fichiers audio ainsi que des données de configuration.
+				</p>
+				<p>
+					Le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/rtc.py" class="link" target="_blank" rel="noopener noreferrer">
+						rtc.py
+					</a> 
+					fournit une abstraction de la gestion du temps. Il permet d’accéder à une référence temporelle fiable utilisée pour la planification des événements. Tandis que le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/scheduler.py"" class="link" target="_blank" rel="noopener noreferrer">
+						scheduler.py
+					</a>  implémente la logique de planification. Il compare les événements programmés avec l’heure courante et déclenche les actions correspondantes.
+				</p>
+				<p>
+					Le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/audio.py"" class="link" target="_blank" rel="noopener noreferrer">
+					audio.py
+					</a>
+					est quant à lui responsable de la lecture des fichiers audio et du contrôle des opérations associées.
+				</p>
+				<p>
+					Enfin, le module 
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/logger.py"" class="link" target="_blank" rel="noopener noreferrer">
+						logger.py
+					</a>
+					centralise la journalisation du système, facilitant le suivi des événements et le diagnostic en cas d’erreur.
+				</p>
+				<p>
+					Cette organisation permet une isolation claire des couches fonctionnelles, une testabilité accrue et une évolution indépendante des différents composants logiciels.
+				</p>
+			</div>
+		</section>
+
+
+		<section class="section">
+			<div class="container">
+				<h2>Fonctionnalités des modules</h2>
+				<h3>Initialisation système</h3>
+				<p>
+					Le module <span class="chip">start.py</span> constitue le point d’entrée du firmware et assure l’initialisation globale du système. Il met en place les différents services nécessaires au fonctionnement : stockage, audio, communication BLE, gestion du temps et planification. Chaque composant est instancié de manière sécurisée, avec une gestion explicite des erreurs permettant d’activer des modes dégradés (par exemple, fonctionnement sans audio ou sans RTC) sans bloquer l’exécution globale.
+				</p>
+
+				<p>
+					Une fois les modules initialisés, le module entre dans une boucle principale qui orchestre le comportement du système. Celle-ci exécute périodiquement le scheduler pour surveiller les alarmes, traite les données reçues via BLE, et gère la finalisation des fichiers ainsi que le rechargement du planning.
+				</p>
+
+				<p>
+					Enfin, <span class="chip">start.py</span> intègre un mécanisme de supervision via un heartbeat périodique permettant de journaliser l’état interne du système (stockage, connexion BLE, disponibilité audio, nombre d’alarmes). Cette approche assure une meilleure traçabilité, facilite le diagnostic et contribue à la robustesse globale du firmware dans un contexte embarqué contraint.
+				</p>
+
+				<h3>Communication BLE</h3>
+				<p>
+					Le module <span class="chip">ble.py</span> implémente une pile de communication 
+					<a href="https://www.bluetooth.com/wp-content/uploads/2022/05/the-bluetooth-le-primer-v1.2.0.pdf" class="link" target="_blank" rel="noopener noreferrer">
+						Bluetooth Low Energy
+					</a>
+					complète en s’appuyant sur l’API bas niveau de MicroPython. Il définit un service GATT propriétaire structuré autour de trois caractéristiques : une caractéristique d’initialisation, une caractéristique de transfert de données <span class="chip">CHUNK</span> et une caractéristique de retour d’état <span class="chip">STATUS</span>. La configuration inclut une augmentation du MTU et des buffers spécifiques par caractéristique afin d’optimiser le débit et permettre le transfert de fichiers de taille significative dans un environnement contraint.
+				</p>
+
+				<p>
+					Le protocole repose sur une machine d’état explicite et sur un enchaînement strict de commandes. La trame <span class="chip">START</span> initialise un transfert en encapsulant les métadonnées critiques : nombre total de fragments, taille totale du fichier, taille des blocs, nom du fichier et empreinte partielle (SHA). Cette trame est validée de manière stricte (taille, format, bornes), garantissant la cohérence du transfert dès son initialisation. Les données sont ensuite transmises via une série de chunks contenant chacun un identifiant de séquence sur 32 bits et une charge utile. Le contrôle de séquence permet de détecter toute désynchronisation (perte, duplication ou inversion de paquet), entraînant immédiatement une erreur bloquante afin d’éviter toute corruption des données. La trame <span class="chip">END</span> déclenche la phase de finalisation, incluant la validation d’intégrité via comparaison de hash avec la valeur attendue.
+				</p>
+
+				<p>
+					L’implémentation est conçue pour respecter les contraintes temps réel du BLE sur microcontrôleur. Les interruptions (IRQ) sont utilisées uniquement pour la réception et le parsing minimal des paquets, tandis que les opérations critiques (écriture sur stockage) sont externalisées via une file de traitement. Ce découplage évite tout accès bloquant ou concurrent au système de fichiers, garantissant la stabilité du firmware. Le module expose également un canal de retour via notifications JSON permettant de remonter l’état du système (progression, erreurs, états internes).
+				</p>
+				
+				<h3>Gestion du stockage</h3>
+				<p>
+					Le module <span class="chip">storage.py</span> implémente une couche d’abstraction complète du système de fichiers, conçue pour fonctionner de manière transparente entre deux backends : carte microSD (prioritaire) et mémoire flash interne (fallback). Lors de l’initialisation, le système tente de monter la carte SD via <span class="chip">SPI</span> avec une configuration matérielle dédiée. En cas d’échec, un basculement vers la mémoire interne est effectué. Cette stratégie garantit une continuité de service tout en optimisant la capacité de stockage lorsque le support externe est présent.
+				</p>
+				<p>
+					Il fournit une API unifiée pour la gestion des fichiers audio et des fichiers de configuration (JSON). Les opérations critiques d’écriture sont sécurisées via des mécanismes atomiques : utilisation de fichiers temporaires <span class="chip">.tmp_</span> pour les transferts fragmentés, écriture séquentielle des chunks, puis finalisation avec renommage. Lors de cette phase, une empreinte <span class="chip">SHA-256</span> est calculée sur le fichier afin de garantir son intégrité. Des mécanismes de nettoyage permettent également de supprimer les fichiers temporaires résiduels après redémarrage.
+				</p>
+				<p>
+					Le module <a href="https://github.com/micropython/micropython-lib/blob/master/micropython/drivers/storage/sdcard/sdcard.py" class="link" target="_blank" rel="noopener noreferrer">
+						sdcard.py
+					</a> agit comme un driver bas niveau permettant l’intégration de la carte SD comme périphérique bloc, compatible avec le système de fichiers MicroPython. Il expose les primitives nécessaires pour permettre le montage via <span class="chip">os.mount</span>.
+				</p>
+
+				<h3>Gestion du temps</h3>
+				<p>
+					Le module <span class="chip">rtc.py</span> implémente une interface bas niveau de gestion du temps en s’appuyant sur un module RTC matériel. Il fournit une référence temporelle fiable et persistante, indépendante du redémarrage du microcontrôleur. 
+				</p>
+				<p>
+					L’initialisation consiste en la configuration du bus <span class="chip">I2C</span>, la détection du périphérique via scan et la validation de sa présence à l’adresse standard <span class="chip">0x68</span>. En cas d’absence du composant, une exception dédiée est levée afin de bloquer explicitement l’utilisation du module temps. Une phase critique d’initialisation consiste à vérifier l’état de l’oscillateur interne du RTC. Le registre de statut est lu afin de détecter un éventuel arrêt de l’oscillateur <span class="chip">bit OSF</span>. Si un arrêt est détecté, le module procède à une réinitialisation contrôlée : nettoyage du flag, réécriture des registres temporels et redémarrage implicite de l’oscillation. Cette étape garantit la cohérence de l’horloge après une coupure d’alimentation ou un reset système.
+				</p>
+				<p>
+					L’accès au temps est réalisé via une lecture atomique des registres RTC afin d’éviter les incohérences dues aux changements de secondes pendant la lecture. Les valeurs sont lues en <span class="chip">BCD</span>, décodées en format numérique standard puis converties en une représentation complète (année, mois, jour, heure, minute, seconde). 
+				</p>
+
+				<h3>Gestion audio</h3>
+				<p>
+					Le module <span class="chip">audio.py</span> implémente une couche d’abstraction dédiée à la lecture audio sur le système embarqué, basée sur une sortie audio <span class="chip">I2S</span> pilotée par le microcontrôleur ESP32. Il assure la lecture de fichiers audio au format <span class="chip">WAV</span> stockés sur le système de fichiers, en fournissant une interface simple de contrôle (lecture, pause, reprise, arrêt) tout en gérant les contraintes temps réel et les limitations matérielles du bus audio.
+				</p>
+				<p>
+					La lecture audio est implémentée sous forme de flux séquentiel directement depuis le fichier <span class="chip">WAV</span>. Le module saute l’en-tête standard (44 octets) puis alimente le périphérique I2S par blocs successifs, limités à une taille fixe pour respecter les contraintes mémoire du microcontrôleur. Le contrôle d’état est protégé par un mécanisme de verrou (lock) afin de garantir la cohérence entre les threads ou interruptions éventuelles. 
+				</p>
+				<p>
+					Les transitions d’état (play, pause, stop) sont gérées de manière atomique pour éviter les conditions de course. En cas d’erreur de lecture fichier ou d’écriture I2S, le module capture et journalise précisément l’anomalie sans interrompre le système global. Enfin, le module intègre une machine d’état simple permettant de superviser l’état de lecture en cours (<span class="chip">_playing</span>, <span class="chip">_paused</span>) et d’exposer cet état au reste du firmware. 
+				</p>
+
+				<h3>Journalisation</h3>
+				<p>
+					Un système de logs permet de suivre l’état interne du système et de faciliter
+					le diagnostic en cas de problème.
+				</p>
+			</div>
+		</section>
+	<section class="section">
+		<div class="container">
+
+			<h2>Gestion des alarmes</h2>
+
+			<h3>Rôle du module</h3>
+			<p>
+				Le module <span class="chip">scheduler.py</span> constitue le cœur logique du système embarqué.
+				Il assure l’exécution autonome des alarmes sans dépendance externe.
+			</p>
+
+			<ul class="doc-list">
+				<li>Lecture des événements (appelés <span class="chip">memos</span>) stockés en mémoire persistante</li>
+				<li>Comparaison avec l’heure fournie par le RTC</li>
+				<li>Détection des conditions de déclenchement</li>
+				<li>Exécution de la lecture audio</li>
+			</ul>
+
+
+			<h3>Représentation d’un événement</h3>
+
+			<p>Chaque alarme est définie par une structure de données :</p>
+
+			<ul class="doc-list">
+				<li><span class="chip">startDate</span> : date de début (YYYY-MM-DD)</li>
+				<li><span class="chip">time</span> : heure de déclenchement (HH:MM)</li>
+				<li><span class="chip">audioFile</span> : fichier audio associé</li>
+				<li><span class="chip">recurrence</span> : configuration optionnelle de répétition</li>
+			</ul>
+
+			<p>Types de récurrence :</p>
+
+			<ul class="doc-list">
+				<li><span class="chip">one-shot</span> (aucune récurrence)</li>
+				<li><span class="chip">DAILY</span></li>
+				<li><span class="chip">WEEKLY</span></li>
+				<li><span class="chip">MONTHLY</span></li>
+			</ul>
+
+			<p>Options avancées :</p>
+
+			<ul class="doc-list">
+				<li><span class="chip">interval</span> (ex : tous les 2 jours)</li>
+				<li><span class="chip">count</span> (nombre de répétitions)</li>
+				<li><span class="chip">until</span> (date de fin)</li>
+				<li><span class="chip">byWeekday</span> : [1..7]</li>
+				<li><span class="chip">byMonthDay</span> : [1..31]</li>
+			</ul>
+
+			<h3>Cycle d’exécution du scheduler</h3>
+
+			<p>
+				Le système repose sur une discrétisation du temps en minutes.
+				Le RTC fournit une mesure continue convertie en structure :
+				(année, mois, jour, heure, minute, seconde).
+			</p>
+
+			<div class="doc-block">
+				<p>
+					Le scheduler ne s’exécute qu’une fois par minute via une clé temporelle :
+					(année, mois, jour, heure, minute).
+				</p>
+			</div>
+
+			<p>
+				Si cette clé n’évolue pas, aucune exécution n’est déclenchée. Cela évite les calculs redondants et optimise les performances. En cas d’arrêt ou de latence, aucun mécanisme de rattrapage n’est implémenté. Les événements manqués ne sont pas rejoués.
+			</p>
+
+			<h3>Logique de comparaison temporelle</h3>
+
+			<p>
+				Un événement est déclenché uniquement si deux conditions sont simultanément vérifiées :
+			</p>
+
+			<p>Égalité horaire :</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						H<sub>current</sub> = H<sub>memo</sub>
+					</div>
+					<div class="math-operator">∧</div>
+					<div class="math-line">
+						M<sub>current</sub> = M<sub>memo</sub>
+					</div>
+				</div>
+			</div>
+
+			<p>Condition de déclenchement :</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						date<sub>current</sub> ≥ date<sub>start</sub>
+					</div>
+				</div>
+			</div>
+
+			<h3>Gestion du temps sous forme mathématique</h3>
+
+			<p>
+				Pour simplifier les calculs, les dates sont converties en une valeur ordinale.
+			</p>
+
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						ordinal(date) → ℤ (nombre de jours écoulés)
+					</div>
+				</div>
+			</div>
+
+			<p>
+				Cette transformation permet de remplacer des comparaisons complexes par une
+				simple différence :
+			</p>
+
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						Δjours = ordinal(date<sub>courante</sub>) − ordinal(date<sub>départ</sub>)
+					</div>
+				</div>
+			</div>
+
+			<p>
+				Cette approche évite les problèmes liés aux changements de mois,
+				d’années ou de calendrier.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+
+			<h2>Système de récurrence</h2>
+
+			<h3>Récurrence quotidienne</h3>
+			<p>
+				La récurrence quotidienne repose sur le calcul du nombre de jours écoulés
+				depuis la date de départ.
+			</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						Δjours mod interval = 0
+					</div>
+				</div>
+			</div>
+			<p>
+				Le temps est découpé en segments réguliers de longueur <span class="chip">interval</span>.
+				L’événement se déclenche uniquement aux bornes de ces segments.
+			</p>
+			<p>
+				Exemple : un intervalle de 2 correspond à un déclenchement tous les 2 jours.
+			</p>
+
+			<h3>Récurrence hebdomadaire</h3>
+			<p>
+				La récurrence hebdomadaire combine deux contraintes :
+				une périodicité en semaines et une sélection de jours.
+			</p>
+			<p>
+				Le système aligne les dates sur le lundi de leur semaine puis calcule :
+			</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						Δsemaines = (lundi courant − lundi départ) / 7
+					</div>
+				</div>
+			</div>
+			<p>Conditions de déclenchement :</p>
+			<div class="doc-block">
+			<div class="math-block">
+				<div class="math-line">
+					Δsemaines mod interval = 0
+				</div>
+				<div class="math-op">∧</div>
+				<div class="math-line">
+					jour ∈ byWeekday
+				</div>
+			</div>
+		</div>
+			<p>
+				Le système fonctionne sur deux dimensions :
+			</p>
+			<ul class="doc-list">
+				<li>dimension lente : semaines</li>
+				<li>dimension cyclique : jours</li>
+			</ul>
+			<p>
+				Les semaines sont alignées sur le calendrier (lundi → dimanche),
+				et non sur des intervalles glissants.
+			</p>
+
+			<h3>Récurrence mensuelle</h3>
+			<p>
+				La récurrence mensuelle repose sur le nombre de mois écoulés :
+			</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						Δmois = (année courante − année départ) × 12 + (mois courant − mois départ)
+					</div>
+				</div>
+			</div>
+			<p>Condition de déclenchement :</p>
+			<div class="doc-block">
+				<div class="math-block">
+					<div class="math-line">
+						Δmois mod interval = 0
+					</div>
+				</div>
+			</div>
+			<p>
+				Une contrainte supplémentaire peut être appliquée via <span class="chip">byMonthDay</span>.
+			</p>
+			<p>
+				Exemple : déclenchement le 1er et le 15 de chaque mois.
+			</p>
+
+			<p>
+				Si un jour n’existe pas (ex : 31 en février), l’événement est ignoré
+				pour ce mois sans report.
+			</p>
+
+
+			<h3>Contraintes de fin de vie</h3>
+			<p>
+				Deux mécanismes permettent de limiter la durée d’un événement :
+			</p>
+
+			<ul class="doc-list">
+				<li>
+					<span class="chip">until</span> :
+					événement valide uniquement si <span class="chip">startDate</span> ≤ <span class="chip">date</span> ≤ <span class="chip">until</span>
+				</li>
+				<li>
+					<span class="chip">count</span> :
+					nombre maximal de déclenchements
+				</li>
+			</ul>
+
+			<p>
+				Le compteur associé à <span class="chip">count</span> est actuellement stocké
+				en mémoire volatile et n’est pas persistant.
+			</p>
+
+
+			<h3>Gestion des données</h3>
+			<p>
+				Les alarmes sont stockées sous forme de fichiers JSON simples.
+			</p>
+			<div class="card">
+				<pre>
+Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odio culpa distinctio provident, quae blanditiis neque.
+				</pre>
+			</div>
+
+			<p>
+				Ce format permet une lecture directe, une maintenance simplifiée
+				et une compatibilité maximale avec le système embarqué.
+			</p>
+
+		</div>
+	</section>
+
+		<section class="section">
+			<div class="container">
+
+				<h2>Déploiement du firmware</h2>
+
+				<h3>Objectif et principe</h3>
+				<p>
+					Le déploiement du firmware vise à garantir une installation fiable, reproductible et contrôlée sur une carte ESP32 exécutant MicroPython. Le script <a href="https://github.com/LeoLeman555/Memo/blob/main/deploy.ps1" class="link" target="_blank" rel="noopener noreferrer">PowerShell</a>
+					permet de supprimer des opérations manuelles et d’assurer que chaque déploiement respecte le processus strict.
+				</p>
+				<p>
+					Le système repose sur l’utilisation de l’outil 
+					<a href="https://docs.micropython.org/en/latest/reference/mpremote.html" class="link" target="_blank" rel="noopener noreferrer">mpremote</a> 
+					pour communiquer avec la carte via une interface série. Le script PowerShell agit comme un orchestrateur qui enchaîne les étapes nécessaires : validation de l’environnement, détection du périphérique, transfert des fichiers et gestion des erreurs.
+				</p>
+
+				<h3>Paramétrage du script</h3>
+								<p>
+					Le script est entièrement paramétrable afin de s’adapter à différents contextes d’utilisation :
+				</p>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Paramètre</th>
+							<th>Type</th>
+							<th>Défaut</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td><span class="chip">FirmwarePath</span></td>
+							<td><span class="chip">string</span></td>
+							<td><span class="chip">firmware/src</span></td>
+							<td>Répertoire contenant les fichiers du firmware à déployer</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">Files</span></td>
+							<td><span class="chip">string []</span></td>
+							<td><span class="chip">all</span></td>
+							<td>Liste des fichiers MicroPython à transférer sur la carte</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">Port</span></td>
+							<td><span class="chip">string</span></td>
+							<td><span class="chip">auto</span></td>
+							<td>Port série de la carte ESP32 (COMx)</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">AutoSelect</span></td>
+							<td><span class="chip">switch</span></td>
+							<td><span class="chip">false</span></td>
+							<td>Sélection automatique du premier ESP32 détecté</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">Force</span></td>
+							<td><span class="chip">switch</span></td>
+							<td><span class="chip">false</span></td>
+							<td>Ignore la confirmation utilisateur avant déploiement</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">SetRTC</span></td>
+							<td><span class="chip">switch</span></td>
+							<td><span class="chip">false</span></td>
+							<td>Synchronise l’horloge RTC après déploiement</td>
+						</tr>
+
+						<tr>
+							<td><span class="chip">LogFile</span></td>
+							<td><span class="chip">string</span></td>
+							<td><span class="chip">logs/deploy.log</span></td>
+							<td>Fichier de journalisation du déploiement</td>
+						</tr>
+					</tbody>
+				</table>
+
+			<h3>Processus de déploiement</h3>
+
+			<p>
+				Le déploiement du firmware est entièrement automatisé via un script dédié.
+			</p>
+			<p>Celui-ci enchaîne les étapes suivantes :</p>
+
+			<ul class="doc-list">
+				<li>Vérification de l’environnement (présence de mpremote)</li>
+				<li>Validation des fichiers</li>
+				<li>Détection du périphérique via identifiants USB</li>
+				<li>Test de communication</li>
+				<li>Transfert du firmware</li>
+				<li>Redémarrage de la carte</li>
+				<li>Synchronisation RTC (optionnelle)</li>
+			</ul>
+
+			<div class="doc-block">
+				<p>
+					Le processus est séquentiel et s’arrête immédiatement en cas d’erreur critique.
+				</p>
+			</div>
+
+			<h3>Bénéfices</h3>
+			<p>
+				Le script intègre un système de journalisation structuré permettant de tracer
+				précisément chaque étape du déploiement.
+			</p>
+
+			<ul class="doc-list">
+				<li>Horodatage de chaque action</li>
+				<li>Niveaux de gravité (<span class="chip">INFO</span>, <span class="chip">WARNING</span>, <span class="chip">ERROR</span>)</li>
+				<li>Affichage en console</li>
+				<li>Enregistrement dans un fichier de log</li>
+			</ul>
+
+			<p>
+				En cas d’erreur critique, l’exécution est interrompue afin d’éviter
+				tout état incohérent sur la carte.
+			</p>
+
+			<div class="doc-block">
+				<p>
+					Cette automatisation réduit fortement les erreurs humaines et
+					accélère les cycles de développement et de test.
+				</p>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
