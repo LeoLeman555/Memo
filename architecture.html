@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MEMO - Architecture Technique</title>
+  <title>MEMO - Architecture</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -12,77 +12,78 @@
 
 <div id="header"></div>
 
-<main class="doc-layout">
+<main>
 
-  <!-- SIDEBAR NAVIGATION -->
-  <aside class="sidebar">
-  <nav>
-    <h3>Sommaire</h3>
-    <ul id="toc"></ul>
-  </nav>
-</aside>
+  <!-- INTRO -->
+  <section class="section">
+    <div class="container">
 
-  <!-- MAIN CONTENT -->
-  <div class="doc-content container">
+      <h1 class="section-title">Architecture du système</h1>
+      <div class="section-divider"></div>
 
-    <section id="intro">
-      <h1>Architecture Technique</h1>
-    </section>
+      <p>
+        Voici l’architecture logicielle complète du système Memo, telle qu’implémentée et versionnée sur GitHub.
+        Le projet est structuré en deux parties principales : une application mobile en React Native
+        et un firmware embarqué en MicroPython sur ESP32.
+      </p>
 
-		<section id="architecture">
-      <h2>Architecture du système</h2>
-			<figure class="doc-figure">
-        <img src="assets/architecture_globale.png" alt="Schéma solution">
-        <figcaption>
-          Schéma global de l'application qui controle MEMO.
-        </figcaption>
-      </figure>
-    </section>
+      <p>
+        L’application mobile permet de configurer les rappels et d’envoyer les données,
+        tandis que l’ESP32 exécute le système de manière autonome via un stockage local
+        et un RTC matériel.
+      </p>
 
-    <section id="problem">
-      <h2>ESP32</h2>
-			<figure class="doc-figure">
-        <img src="assets/esp32.png" alt="Schéma solution">
-        <figcaption>
-          Schéma global de du firmware avec ESP32.
-        </figcaption>
-      </figure>
+      <p>
+        Le code source est versionné sur GitHub, garantissant une architecture modulaire,
+        maintenable et traçable.
+      </p>
+
+    </div>
+  </section>
 
 
-    </section>
+  <!-- CARDS -->
+  <section class="section">
+    <div class="container grid grid-3">
 
-    <section id="solution">
-      <h2>Application Mobile</h2>
-      <!-- IMAGE AVEC LEGENDE -->
-      <figure class="doc-figure">
-        <img src="assets/appli_mobile.png" alt="Schéma solution">
-        <figcaption>
-          Schéma global de l'application qui controle MEMO.
-        </figcaption>
-      </figure>
+      <!-- HARDWARE -->
+      <a href="hardware.html" class="card arch-card">
+        <img src="assets/hardware.jpg" alt="Hardware MEMO">
+        <div class="arch-content">
+          <h2>Hardware</h2>
+          <p>
+            ESP32, alimentation, carte SD et module audio.
+            Conception physique robuste adaptée à l’usage quotidien.
+          </p>
+        </div>
+      </a>
 
-    </section>
+      <!-- FIRMWARE -->
+      <a href="firmware.html" class="card arch-card">
+        <img src="assets/firmware.jpg" alt="Firmware ESP32">
+        <div class="arch-content">
+          <h2>Firmware</h2>
+          <p>
+            MicroPython embarqué : gestion BLE, stockage,
+            RTC et déclenchement autonome des alarmes.
+          </p>
+        </div>
+      </a>
 
-    <section id="tech">
-      <h2>Fonctionnalités</h2>
+      <!-- APP -->
+      <a href="app.html" class="card arch-card">
+        <img src="assets/mobile.jpg" alt="Application mobile">
+        <div class="arch-content">
+          <h2>Application mobile</h2>
+          <p>
+            Application React Native : interface utilisateur,
+            génération TTS et transfert BLE vers l’ESP32.
+          </p>
+        </div>
+      </a>
 
-      <h3>Création Reminder</h3>
-			<figure class="doc-figure">
-        <img src="assets/creation_reminder.png" alt="BLE schema">
-        <figcaption>
-        </figcaption>
-      </figure>
-
-      <h3>Text-to-Speech</h3>
-      <figure class="doc-figure">
-        <img src="assets/tts.png" alt="BLE schema">
-        <figcaption>
-        </figcaption>
-      </figure>
-
-    </section>
-
-  </div>
+    </div>
+  </section>
 
 </main>
 
