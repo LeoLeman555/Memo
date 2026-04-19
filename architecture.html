@@ -13,77 +13,76 @@
 <div id="header"></div>
 
 <main>
+  <div class="content">
+    <section class="section">
+      <div class="container">
+        <h1 class="section-title">Architecture du système</h1>
+        <div class="section-divider"></div>
+      </div>
+    </section>
 
-  <!-- INTRO -->
-  <section class="section">
-    <div class="container">
+    <section class="section">
+      <div class="container">
+        <h2>Documentation technique</h2>
+        <p>
+          Voici l’architecture logicielle complète du système Memo, telle qu’implémentée et versionnée sur GitHub.
+          Le projet est structuré en deux parties principales : une application mobile en React Native
+          et un firmware embarqué en MicroPython sur ESP32.
+        </p>
+        <p>
+          L’application mobile permet de configurer les rappels et d’envoyer les données,
+          tandis que l’ESP32 exécute le système de manière autonome via un stockage local
+          et un RTC matériel.
+        </p>
+        <p>
+          Le code source est versionné sur GitHub, garantissant une architecture modulaire,
+          maintenable et traçable.
+        </p>
+      </div>
+    </section>
 
-      <h1 class="section-title">Architecture du système</h1>
-      <div class="section-divider"></div>
+    <section class="section">
+      <div class="container grid grid-3">
 
-      <p>
-        Voici l’architecture logicielle complète du système Memo, telle qu’implémentée et versionnée sur GitHub.
-        Le projet est structuré en deux parties principales : une application mobile en React Native
-        et un firmware embarqué en MicroPython sur ESP32.
-      </p>
+        <!-- HARDWARE -->
+        <a href="hardware.html" class="card arch-card">
+          <img src="assets/hardware.jpg" alt="Hardware MEMO">
+          <div class="arch-content">
+            <h2>Hardware</h2>
+            <p>
+              ESP32, alimentation, carte SD et module audio.
+              Conception physique robuste adaptée à l’usage quotidien.
+            </p>
+          </div>
+        </a>
 
-      <p>
-        L’application mobile permet de configurer les rappels et d’envoyer les données,
-        tandis que l’ESP32 exécute le système de manière autonome via un stockage local
-        et un RTC matériel.
-      </p>
+        <!-- FIRMWARE -->
+        <a href="firmware.html" class="card arch-card">
+          <img src="assets/firmware.jpg" alt="Firmware ESP32">
+          <div class="arch-content">
+            <h2>Firmware</h2>
+            <p>
+              MicroPython embarqué : gestion BLE, stockage,
+              RTC et déclenchement autonome des alarmes.
+            </p>
+          </div>
+        </a>
 
-      <p>
-        Le code source est versionné sur GitHub, garantissant une architecture modulaire,
-        maintenable et traçable.
-      </p>
+        <!-- APP -->
+        <a href="app.html" class="card arch-card">
+          <img src="assets/mobile.jpg" alt="Application mobile">
+          <div class="arch-content">
+            <h2>Application mobile</h2>
+            <p>
+              Application React Native : interface utilisateur,
+              génération TTS et transfert BLE vers l’ESP32.
+            </p>
+          </div>
+        </a>
 
-    </div>
-  </section>
-
-
-  <!-- CARDS -->
-  <section class="section">
-    <div class="container grid grid-3">
-
-      <!-- HARDWARE -->
-      <a href="hardware.html" class="card arch-card">
-        <img src="assets/hardware.jpg" alt="Hardware MEMO">
-        <div class="arch-content">
-          <h2>Hardware</h2>
-          <p>
-            ESP32, alimentation, carte SD et module audio.
-            Conception physique robuste adaptée à l’usage quotidien.
-          </p>
-        </div>
-      </a>
-
-      <!-- FIRMWARE -->
-      <a href="firmware.html" class="card arch-card">
-        <img src="assets/firmware.jpg" alt="Firmware ESP32">
-        <div class="arch-content">
-          <h2>Firmware</h2>
-          <p>
-            MicroPython embarqué : gestion BLE, stockage,
-            RTC et déclenchement autonome des alarmes.
-          </p>
-        </div>
-      </a>
-
-      <!-- APP -->
-      <a href="app.html" class="card arch-card">
-        <img src="assets/mobile.jpg" alt="Application mobile">
-        <div class="arch-content">
-          <h2>Application mobile</h2>
-          <p>
-            Application React Native : interface utilisateur,
-            génération TTS et transfert BLE vers l’ESP32.
-          </p>
-        </div>
-      </a>
-
-    </div>
-  </section>
+      </div>
+    </section>
+  </div>
 
 </main>
 
