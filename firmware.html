@@ -72,20 +72,20 @@ firmware/src/
 				<br>
 				<p>
 					Le module 
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/start.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/start.py" class="link" target="_blank" rel="noopener noreferrer">
 						start.py
 					</a> 
 					constitue le point d’entrée du système. Il orchestre le démarrage du firmware, initialise les différents services et exécute la boucle principale.
 				</p>
 				<p>
 					Le module 
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/ble.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/ble.py" class="link" target="_blank" rel="noopener noreferrer">
 						ble.py
 					</a> 
 					gère la communication Bluetooth Low Energy. Il prend en charge la réception des données, leur reconstruction ainsi que la gestion du protocole d’échange avec l’application mobile. Les modules
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/storage.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/storage.py" class="link" target="_blank" rel="noopener noreferrer">
 						storage.py
-					</a> et <a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/sdcard.py"" class="link" target="_blank" rel="noopener noreferrer">
+					</a> et <a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/sdcard.py" class="link" target="_blank" rel="noopener noreferrer">
 						sdcard.py
 					</a> 
 					assurent donc la gestion du stockage persistant. Ils permettent l’écriture des fichiers audio ainsi que des données de configuration.
@@ -96,20 +96,20 @@ firmware/src/
 						rtc.py
 					</a> 
 					fournit une abstraction de la gestion du temps. Il permet d’accéder à une référence temporelle fiable utilisée pour la planification des événements. Tandis que le module 
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/scheduler.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/scheduler.py" class="link" target="_blank" rel="noopener noreferrer">
 						scheduler.py
 					</a>  implémente la logique de planification. Il compare les événements programmés avec l’heure courante et déclenche les actions correspondantes.
 				</p>
 				<p>
 					Le module 
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/audio.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/audio.py" class="link" target="_blank" rel="noopener noreferrer">
 					audio.py
 					</a>
 					est quant à lui responsable de la lecture des fichiers audio et du contrôle des opérations associées.
 				</p>
 				<p>
 					Enfin, le module 
-					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/logger.py"" class="link" target="_blank" rel="noopener noreferrer">
+					<a href="https://github.com/LeoLeman555/Memo/blob/main/firmware/src/logger.py" class="link" target="_blank" rel="noopener noreferrer">
 						logger.py
 					</a>
 					centralise la journalisation du système, facilitant le suivi des événements et le diagnostic en cas d’erreur.
