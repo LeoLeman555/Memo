@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO - Hardware</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="layout">
+
+	<aside class="sidebar">
+    <nav>
+      <h3>Sommaire</h3>
+      <ul id="toc"></ul>
+    </nav>
+  </aside>
+
+	<div class="content">
+
+		<section class="section">
+			<div class="container">
+				<h1 class="section-title">Hardware</h1>
+				<div class="section-divider"></div>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+      <h2>Rôle et fonctionnement</h2>
+			<p>
+				<span class="chip">Memo</span> est un boîtier portable conçu pour émettre des rappels vocaux à des moments définis. Il fonctionne de manière autonome, sans connexion Internet, et exécute localement les instructions préalablement configurées via l’application mobile.
+			</p>
+			<p>
+				Le système repose sur une architecture embarquée intégrant plusieurs modules électroniques interconnectés, permettant la gestion du temps, le stockage des données et la restitution audio.
+			</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+      <h2>Composants électroniques</h2>
+			<h3>Schéma électronique</h3>
+			<p>
+				Vous pouvez trouver le schéma du montage <a href="https://app.cirkitdesigner.com/project/f150ebe6-57b1-494a-b68f-2e3295aea869" class="link" target="_blank" rel="noopener noreferrer">
+						ici
+					</a>
+			</p>
+
+			<h3>Carte principale ESP32</h3>
+			<p>
+				La carte <a href="https://www.upesy.fr/blogs/tutorials/upesy-esp32-wroom-low-power-devkit-board-documentation-version-latest#" class="link" target="_blank" rel="noopener noreferrer">Upesy ESP32 Wroom Low Power DevKit</a> 
+				constitue le cœur du système embarqué. Basée sur un microcontrôleur <span class="chip">ESP32-WROOM-32</span>, elle assure l’exécution du firmware, la gestion des communications et le pilotage de l’ensemble des périphériques.
+			</p>
+			<p>
+				Sur le plan technique, elle offre une architecture particulièrement adaptée au projet :
+			</p>
+			<ul class="doc-list">
+				<li>Bluetooth Low Energy</li>
+				<li>GPIO supportant <span class="chip">I2C</span>, <span class="chip">SPI</span>, <span class="chip">I2S</span>, <span class="chip">UART</span></li>
+				<li>fonctionnement en logique <span class="chip">3.3 V</span> (cohérent avec tous les modules) et <span class="chip">5V</span></li>
+			</ul>
+			<p>
+				Son intérêt principal réside dans sa capacité à gérer simultanément plusieurs bus matériels sans complexité logicielle. Cela permet une séparation claire des fonctions : <span class="chip">I2C</span> pour le temps, <span class="chip">SPI</span> pour le stockage, <span class="chip">I2S</span> pour l’audio.
+			</p>
+			<p>
+				La version Low Power intègre un mode deep sleep, exploité pour réduire drastiquement la consommation entre deux déclenchements. Ce point est déterminant pour atteindre une grande autonomie énergétique.
+			</p>
+
+			<h3>Lecteur de carte microSD</h3>
+			<p>
+				Le module <a href="https://www.upesy.fr/blogs/tutorials/upesy-micro-sd-reader-module-documentation-version-latest" class="link" target="_blank" rel="noopener noreferrer">lecteur de carte microSD Upesy</a> assure le stockage persistant des données du système, notamment :
+			</p>
+			<ul class="doc-list">
+				<li>fichiers audio générés (messages vocaux)</li>
+				<li>planning des rappels (format JSON)</li>
+			</ul>
+			<p>
+				Il communique avec l’ESP32 via une interface <span class="chip">SPI</span> (<span class="chip">MOSI</span>, <span class="chip">MISO</span>, <span class="chip">SCK</span>, <span class="chip">CS</span>), choisie pour ses performances nettement supérieures à <span class="chip">I2C</span> sur des volumes de données importants.
+			</p>
+			<p>
+				Ce choix permet une lecture fluide des fichiers audio et garantit la persistance des données même après redémarrage. Il constitue un élément critique du système, car toute la logique de rappel repose sur ces données stockées.
+			</p>
+
+			<h3>Module RTC</h3>
+			<p>
+				Le module <a href="https://www.gotronic.fr/art-module-rtc-i2c-ds3231-gt584-36063.htm" class="link" target="_blank" rel="noopener noreferrer">RTC DS3231</a> fournit une horloge temps réel indépendante et précise, indispensable pour le déclenchement des rappels.
+			</p>
+			<p>
+				Contrairement à une horloge logicielle interne à l’ESP32, ce module conserve l’heure même en cas de coupure d’alimentation. Il garantit donc un fonctionnement totalement hors ligne et fiable.
+			</p>
+			<p>
+				Dans le système, il est interrogé en continu par le microcontrôleur afin de comparer l’heure courante avec le planning stocké, et déclencher les rappels au moment exact.
+			</p>
+
+			<h3>Amplificateur audio</h3>
+			<p>
+				Le module <a href="https://wiki.dfrobot.com/dfr0954/" class="link" target="_blank" rel="noopener noreferrer">ampli audio I2S DFR0954</a> assure la conversion du signal audio numérique en signal analogique exploitable.
+			</p>
+			<p>
+				Caractéristiques techniques :
+			</p>
+			<ul class="doc-list">
+				<li>interface <span class="chip">I2S</span> (<span class="chip">BCLK</span>, <span class="chip">LRCLK</span>, <span class="chip">DIN</span>)</li>
+				<li>puissance de sortie : ~1.8 W</li>
+				<li>alimentation : 3.3 à 5 V</li>
+				<li>DAC intégré</li>
+			</ul>
+			<p>
+				L’utilisation du protocole <span class="chip">I2S</span> est essentielle : il s’agit d’un standard dédié à l’audio numérique, permettant une transmission synchronisée et stable, sans dégradation notable du signal.
+			</p>
+
+			<h3>Haut-parleur miniature</h3>
+			<p>Le haut-parleur HP4028 constitue la sortie finale du système.</p>
+			<p>Caractéristiques :</p>
+			<ul class="doc-list">
+				<li>impédance : 8 Ω</li>
+				<li>format compact adapté à l’intégration</li>
+			</ul>
+			<p>
+				Ce choix garantit une bonne efficacité de restitution sans surcharge du module d’amplification. Le compromis retenu privilégie la compacité tout en conservant un niveau sonore suffisant pour un usage quotidien.
+			</p>
+			
+			<h3>Batterie</h3>
+			<p>
+				La batterie 
+				<a href="https://www.gotronic.fr/pj2-battery-msds-2018-103048-1500-msds-pi965-967-ii-2018-xmc-3-3492.pdf" class="link" target="_blank" rel="noopener noreferrer">Accu LiPo THYM-BAT 3.7V 1500 mAh</a> assure l’alimentation autonome du dispositif.
+			</p>
+			<p>Caractéristiques techniques :</p>
+			<ul class="doc-list">
+				<li>tension nominale : 3.7 V</li>
+				<li>capacité : 1500 mAh</li>
+				<li>connecteur : <span class="chip">JST PH 2.0</span></li>
+				<li>recharge via circuit intégré (USB-C sur la carte ESP32)</li>
+			</ul>
+			<p>
+				Ce choix repose sur un compromis entre autonomie et encombrement. La capacité permet de viser une utilisation sur une journée complète, en cohérence avec les besoins identifiés.L’intégration du circuit de charge directement sur la carte simplifie fortement l’usage : un simple câble USB-C permet la recharge, sans matériel supplémentaire.
+			</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+      <h2>Choix techniques</h2>
+			<h3>Microcontrôleur</h3>
+			<p>
+				Une solution comme une <span class="chip">Raspberry Pi</span> a été écartée car elle repose sur un système Linux, impliquant un temps de démarrage élevé, une consommation importante et une complexité logicielle inutile pour un système embarqué simple. À l’inverse, une <span class="chip">BBC micro:bit</span> est trop limitée : absence de bus <span class="chip">I2S</span> pour l’audio, ressources mémoire insuffisantes et faible capacité d’extension matérielle.
+			</p>
+			<p>
+				Le choix de l’ESP32 s’impose donc comme un compromis optimal. Il permet de gérer nativement les interfaces <span class="chip">I2C</span> , <span class="chip">SPI</span> , <span class="chip">I2S</span> et <span class="chip">UART</span>, intègre le <span class="chip">BLE</span>, et propose un mode deep sleep pour l’autonomie. Il offre ainsi une puissance suffisante sans complexité excessive.
+			</p>
+
+			<h3>Référence temporelle</h3>
+			<p>
+				Une solution basée sur un <a href="https://fr.wikipedia.org/wiki/DCF77" class="link" target="_blank" rel="noopener noreferrer">module radio DCF77</a> a été envisagée, mais elle dépend fortement de la qualité de réception, souvent instable en intérieur, et nécessite une écoute continue, ce qui augmente la consommation. L’utilisation de l’horloge interne de l’ESP32 a également été écartée en raison de sa dérive dans le temps et de la perte de l’heure lors d’une coupure d’alimentation.
+			</p>
+			<p>
+				Le choix du module RTC garantit une précision élevée, une indépendance totale du réseau et une conservation de l’heure grâce à sa pile intégrée. Il constitue une solution fiable pour un déclenchement autonome des rappels.
+			</p>
+
+			<h3>Stockage</h3>
+			<p>
+				L’utilisation de la mémoire interne de l’ESP32 ou d’une <span class="chip">EEPROM</span> a été rapidement écartée en raison de leur capacité limitée et de leur inadaptation au stockage de fichiers audio. Ces solutions ne permettent pas une gestion flexible ni durable des données.
+			</p>
+			<p>
+				Le recours à un lecteur de carte microSD permet un stockage massif, une compatibilité standard <span class="chip">FAT32</span> et un débit suffisant via <span class="chip">SPI</span> pour lire des fichiers audio. Ce choix est indispensable pour garantir la persistance et l’évolutivité des données.
+			</p>
+
+			<h3>Chaîne audio</h3>
+			<p>
+				Des solutions basées sur <span class="chip">PWM</span> ou sur le <span class="chip">DAC</span> interne de l’ESP32 ont été envisagées, mais elles produisent une qualité sonore insuffisante, avec du bruit et une restitution peu claire, inadaptée à un usage vocal.
+			</p>
+			<p>
+				L’utilisation d’un amplificateur dédié comme le permet une transmission audio numérique propre, sans traitement analogique complexe. Cela garantit une restitution claire et stable, adaptée à la compréhension des messages.
+			</p>
+
+			<h3>Alimentation</h3>
+			<p>
+				L’utilisation de piles classiques (<span class="chip">AA</span>/<span class="chip">AAA</span>) a été écartée en raison de leur encombrement, de leur coût d’usage et de l’absence de recharge intégrée. Une batterie externe type powerbank n’est pas adaptée non plus, car elle alourdit le système et complique son intégration.
+			</p>
+			<p>
+				Le choix d’une batterie LiPo de 1500 mAh permet une bonne densité énergétique, un format compact et une recharge simple via USB-C. Elle répond aux contraintes de mobilité et d’autonomie du dispositif.
+			</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+      <h2>Synthèse</h2>
+			<p>
+				Les composants retenus ne sont pas seulement compatibles entre eux, ils sont choisis pour éviter :
+			</p>
+			<ul class="doc-list">
+				<li>la complexité inutile (Raspberry Pi)</li>
+				<li>les limitations matérielles (micro:bit, EEPROM)</li>
+				<li>les dépendances externes (DCF77)</li>
+			</ul>
+			<div class="doc-block">
+				<p>
+					L’ensemble des composants choisi permet d’obtenir un système autonome, fiable et optimisé pour un usage réel, avec une architecture claire et maîtrisée.
+				</p>
+			</div>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
