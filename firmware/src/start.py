@@ -8,8 +8,7 @@ from logger import Logger
 from battery import Battery
 
 MODULE = "BOOT"
-HEARTBEAT_INTERVAL = 180
-BATTERY_INTERVAL = 300
+HEARTBEAT_INTERVAL = 300
 
 
 def main():
@@ -58,7 +57,6 @@ def main():
     scheduler = MemoScheduler(rtc, storage, audio) if rtc else None
     
     battery = Battery(samples=30, calibration=1.0)
-    data = battery.read()
 
     Logger.info(
         MODULE,
@@ -68,12 +66,7 @@ def main():
             "rtc": rtc_available,
             "scheduler": scheduler is not None,
             "audio": audio is not None,
-            "battery": {
-                "voltage": round(data["voltage"], 3),
-                "state": data["state"],
-                "percent": round(data["percent"], 1),
-                "consumption_vph": round(data["consumption_v_per_h"], 4),
-            }
+            "battery": battery.read() is not None
         }
     )
 
@@ -83,7 +76,6 @@ def main():
     )
 
     last_heartbeat = time.time()
-    last_battery = time.time()
 
     while True:
         # Run scheduler only if RTC available
@@ -136,42 +128,41 @@ def main():
         now = time.time()
         if now - last_heartbeat >= HEARTBEAT_INTERVAL:
             data = battery.read()
+            Logger.log_battery(data)
+            rtc_state = "unavailable"
+            rtc_time = None
+            if rtc:
+                try:
+                    rtc_time = rtc.get_datetime()
+                    rtc_state = "ok" if rtc_time else "invalid"
+                except Exception as e:
+                    rtc_state = "error"
+                    Logger.warn(
+                        MODULE,
+                        "RTC_READ_FAILED",
+                        {
+                            "error": str(e)
+                        }
+                    )
             Logger.info(
                 MODULE,
                 "SYSTEM_HEARTBEAT",
                 {
                     "storage": storage.get_backend(),
+                    "rtc": {
+                        "state": rtc_state,
+                        "time": rtc_time
+                    },
                     "bleConnected": ble.conn_handle is not None,
                     "audioAvailable": audio.available if audio else False,
                     "memosLoaded": len(scheduler.memos) if scheduler else 0,
                     "battery": {
-                        "voltage": round(data["voltage"], 3),
-                        "percent": round(data["percent"], 1),
-                        "consumption_vph": round(data["consumption_v_per_h"], 4),
-                        "state": data["state"]
+                        "percent": data["percent"],
+                        "voltage": data["voltage"],
                     }
                 }
             )
             last_heartbeat = now
-
-        if now - last_battery >= BATTERY_INTERVAL:
-            data = battery.read()
-            Logger.log_battery(data)
-            Logger.info(
-                "BATTERY",
-                "BATTERY_STATUS",
-                {
-                    "voltage": round(data["voltage"], 3),
-                    "percent": round(data["percent"], 1),
-                    "state": data["state"],
-                    "consumption_vph": round(data["consumption_v_per_h"], 4),
-                    "raw": round(data["raw"], 1),
-                    "time": data["time"],
-                    "dt": data["dt"],
-                    "dv": data["dv"]
-                }
-            )
-            last_battery = now
 
         time.sleep(0.05)
 

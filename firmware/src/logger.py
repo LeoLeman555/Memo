@@ -10,7 +10,7 @@ class Logger:
     SOURCE = "ESP"
     SESSION = hex(urandom.getrandbits(32))[2:]
 
-    MIN_LEVEL = "DEBUG"
+    MIN_LEVEL = "INFO"
     LEVEL_PRIORITY = {
         "TRACE": 10,
         "DEBUG": 20,
@@ -126,11 +126,6 @@ class Logger:
             "time": int(data.get("time", Logger._now())),
             "voltage": round(data.get("voltage", 0), 3),
             "percent": round(data.get("percent", 0), 1),
-            "state": data.get("state"),
-            "consumption_vph": round(data.get("consumption_v_per_h", 0), 4),
-            "raw": round(data.get("raw", 0), 1),
-            "dt": data.get("dt"),
-            "dv": data.get("dv")
         }
 
         try:
