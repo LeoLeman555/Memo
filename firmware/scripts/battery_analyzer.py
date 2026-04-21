@@ -180,7 +180,7 @@ def plot(df: pd.DataFrame):
     ax.grid(True, alpha=0.3)
     ax.legend()
 
-    plt.title("Battery analysis – ESP system")
+    plt.title("Battery analysis – MEMO")
     plt.tight_layout()
 
     plt.show()
@@ -196,7 +196,7 @@ def main():
 
     log_path = fetch_log_if_needed()
     df = parse_log(log_path)
-    processed = process_signal(df, 60)
+    processed = process_signal(df, 300)
 
     plot(processed)
 
