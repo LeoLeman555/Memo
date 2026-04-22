@@ -21,30 +21,27 @@
       </div>
     </section>
 
-    <section class="section">
+    <sectio class="section">
       <div class="container">
         <h2>Documentation technique</h2>
+        <div class="doc-block">
+          <p>
+            Cette section présente l’architecture complète du système <span class="chip">MEMO</span>
+            telle qu’implémentée et versionnée en open-source sur <a href="https://github.com/LeoLeman555/Memo" class="link" target="_blank" rel="noopener noreferrer">GitHub</a>.
+          </p>
+        </div>
+        <br>
+        <a href="https://github.com/LeoLeman555/Memo"  target="_blank" rel="noopener noreferrer" class="btn">Voir le projet sur GitHub</a>
+        <br>
+        <br>
         <p>
-          Voici l’architecture logicielle complète du système Memo, telle qu’implémentée et versionnée sur GitHub.
-          Le projet est structuré en deux parties principales : une application mobile en React Native
-          et un firmware embarqué en MicroPython sur ESP32.
+          L’ensemble du projet est donc accessible publiquement, permettant à tout développeur
+          de cloner, analyser, modifier et réutiliser le système. Le dépôt GitHub contient l’intégralité du code source, l’historique des évolutions et facilite la maintenance ainsi que les contributions externes.
         </p>
-        <p>
-          L’application mobile permet de configurer les rappels et d’envoyer les données,
-          tandis que l’ESP32 exécute le système de manière autonome via un stockage local
-          et un RTC matériel.
-        </p>
-        <p>
-          Le code source est versionné sur GitHub, garantissant une architecture modulaire,
-          maintenable et traçable.
-        </p>
+        <h2>Pôles</h2>
       </div>
-    </section>
 
-    <section class="section">
       <div class="container grid grid-3">
-
-        <!-- HARDWARE -->
         <a href="hardware.html" class="card arch-card">
           <img src="assets/hardware.jpg" alt="Hardware MEMO">
           <div class="arch-content">

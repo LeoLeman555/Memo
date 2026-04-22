@@ -533,3 +533,80 @@ pre {
 .math-line {
   line-height: 1.6;
 }
+/* =========================
+   DECISION TABLE
+========================= */
+
+.decision-table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.score-dot {
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+
+  border: 2px rgba(0,0,0,0.15);
+}
+
+.score-text {
+  font-size: 13px;
+  text-align: left;
+  min-width: 140px;
+}
+
+.score-black { background: #000; }
+.score-red { background: #d32f2f; }
+.score-orange { background: #f57c00; }
+.score-yellow { background: #fbc02d; }
+.score-green-light { background: #8bc34a; }
+.score-green-dark { background: #2e7d32; }
+
+.decision-table tfoot td {
+  font-weight: 600;
+  background: rgba(0,0,0,0.03);
+}
+
+.decision-table tfoot .avg-cell {
+  padding: var(--space-sm);
+}
+
+.avg-cell-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 18px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px rgba(0,0,0,0.2);
+}

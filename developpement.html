@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO - Firmware</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="layout">
+
+	<aside class="sidebar">
+    <nav>
+      <h3>Sommaire</h3>
+      <ul id="toc"></ul>
+    </nav>
+  </aside>
+
+	<div class="content">
+
+		<section class="section">
+			<div class="container">
+				<h1 class="section-title">Développement</h1>
+				<div class="section-divider"></div>
+			</div>
+		</section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Introduction</h2>
+        <p>
+          Cette section présente les différentes phases de développement du système <span class="chip">MEMO</span> depuis la validation du concept jusqu’à l’obtention d’un prototype autonome.
+        </p>
+        <p>
+        Pour une vue d’ensemble de l’architecture du système (répartition entre application mobile, firmware et hardware), consulter la section <a href="./architecture.html" class="link">Architecture technique</a>. L’objectif ici est de détailler les choix techniques, les contraintes rencontrées et les évolutions du système au cours du développement.
+        </p>
+        <p>
+          Le développement s’organise en trois phases principales : validation du concept, structuration du système, puis préparation à un usage réel.
+        </p>
+      </div>
+    </section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Phase 1 - Communication basique App ⇔ ESP32</h2>
+				<h3>Objectif</h3>
+				<p>
+					Cette première phase avait pour objectif de valider la faisabilité d’une chaîne complète permettant de transformer un texte saisi sur une application mobile en un message audio, transmis à un ESP32 puis restitué via un haut-parleur. 
+				</p>
+				<div class="doc-block">
+					Il s’agissait d’une preuve de concept visant à tester l’ensemble des briques critiques du système, depuis la génération audio jusqu’à la lecture finale.
+				</div>
+
+				<h3>Implémentation technique</h3>
+				<p>Deux architectures ont été explorées :</p>
+				<p>
+					Dans un premier temps, une génération au format <span class="chip">MP3</span> a été envisagée avec un module externe <span class="chip">DFPlayer</span>, mais les contraintes d’intégration ont conduit à privilégier une seconde approche basée sur des fichiers <span class="chip">WAV</span> lus directement par l’ESP32 via une sortie <span class="chip">I2S</span> et un amplificateur.
+				</p>
+				<p>
+					Une fois le fichier audio généré grâce au moteur Android Text-To-Speech, l’application met en œuvre un pipeline complet : découpage du fichier en chunks puis transmission via Bluetooth Low Energy selon un protocole simple. Les fonctions principales côté application assurent la gestion de ce flux.
+				</p>
+
+				<h3>Résultat</h3>
+				<p>
+					Un scénario de test typique consiste à saisir un message simple comme « C’est l’heure de partir ». Le système génère un fichier audio d’environ 30 Ko, établit une connexion BLE avec l’ESP32, envoie les données, puis reconstruit et stocke le fichier côté embarqué. Un comportement notable observé est le crash de l’application mobile à la fin du transfert et la lenteur de la transmission des paquets (plusieurs dizaines de minutes).
+				</p>
+				<p>
+					Cependant, malgré ces instabilités, le fichier est correctement reçu, stocké et peut être lu ultérieurement sur commande, avec une qualité audio jugée satisfaisante.
+				</p>
+
+				<p>
+					Le résultat global est donc positif : la chaîne complète fonctionne de bout en bout, validant la transformation texte → audio → transmission → lecture. Cette phase valide la faisabilité du système. Cependant, le système reste à un stade de prototype, en l’état, la solution n’est pas exploitable en conditions réelles et nécessite une phase de fiabilisation.
+				</p>
+      </div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Phase 2 - Prototype système fonctionnel</h2>
+				<h3>Objectif</h3>
+				<p>
+					Cette seconde phase vise à transformer un prototype technique validé en un système embarqué autonome, structuré et fiable. Le changement fondamental introduit ici est un changement de paradigme : alors que la phase 1 consistait à envoyer un message audio à la demande, la phase 2 introduit une logique temporelle où le système exécute de manière autonome des actions planifiées.
+				</p>
+				<div class="doc-block">
+					L’application mobile n’est plus un simple émetteur, mais devient un outil de configuration, tandis que l’ESP32 devient le cœur décisionnel du système.
+				</div>
+				
+				<h3>Ajouts techniques</h3>
+				<p>
+					L’architecture cible repose sur une séparation claire des responsabilités. L’application Android permet de configurer des alarmes vocales, de générer les fichiers audio via un TTS offline fiable, et d’assurer une communication BLE bidirectionnelle robuste. L’ESP32, quant à lui, intègre un module RTC matériel pour la gestion du temps, un stockage persistant sur carte microSD, ainsi qu’un système de lecture audio via I2S et amplificateur. L’ensemble constitue un système autonome capable de fonctionner sans connexion au téléphone une fois configuré.
+				</p>
+				<p>
+					L’intégration du RTC constitue une avancée majeure. L’utilisation d’un module matériel dédié (type <span class="chip">DS3231</span>) permet une gestion fiable et indépendante du temps, garantissant le fonctionnement du système même en l’absence de connexion avec l’application. Des fonctions spécifiques assurent la récupération de l’heure et la vérification périodique des alarmes, ce qui renforce fortement l’autonomie globale du dispositif.
+				</p>
+				<p>
+					Le stockage sur carte microSD a également été structuré de manière claire, avec une séparation entre les fichiers audio et les données de configuration <span class="chip">memo.json</span>. Cette organisation améliore la persistance des données, facilite le débogage et garantit une meilleure compatibilité avec les formats audio utilisés.
+				</p>
+				<p>
+					La communication BLE a fait l’objet d’une refonte significative. Les limitations de la phase 1 ont été corrigées par la mise en place d’un transfert asynchrone, l’utilisation de chunks de taille fixe (~480 octets). La gestion mémoire côté application a été améliorée afin d’éviter les blocages et les crashs. L’objectif visé est un transfert complet en quelques secondes pour des fichiers de taille moyenne, avec une stabilité suffisante pour des usages répétés.
+				</p>
+				<p>
+					Un système de retour d’état a été introduit afin d’améliorer la visibilité et le diagnostic. L’ESP32 expose différents états (idle, receiving, ready, playing, error) transmis à l’application via des notifications BLE. Cela permet à l’utilisateur de comprendre le comportement du système en temps réel, tout en facilitant les phases de test et de débogage.
+				</p>
+				<p>
+					Le firmware a été entièrement restructuré selon une architecture modulaire, avec une séparation en sous-systèmes (BLE, audio, RTC, stockage, gestion des alarmes). 
+				</p>
+
+				<h3>Résultats</h3>
+				<p>
+					À ce stade, le système est fonctionnel dans son ensemble. L’architecture est propre, la communication est significativement plus stable mais le système n’est pas encore prêt pour un utilisateur final et nécessite encore une phase de fiabilisation et d’optimisation notamment sur l'autonomie énergétique de Memo.
+				</p>
+				<p>
+					En parallèle, une réflexion importante a été engagée sur l’autonomie énergétique du système. L’intégration d’une batterie rechargeable (Li-ion ou Li-Po) avec circuit de charge USB-C est en cours. Les critères principaux sont une autonomie minimale d’une journée, une simplicité d’usage et une intégration fiable dans le dispositif. 
+				</p>
+      </div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Phase 3 - Usage autonome réel</h2>
+				<h3>Objectif</h3>
+				<p>
+					Cette phase vise à transformer le prototype fonctionnel en un produit réellement utilisable. L’objectif est d’obtenir un système autonome, fiable et adapté à un usage quotidien.
+				</p>
+				<p>
+					La priorité est donnée aux tests utilisateurs avec Elia, afin d’ajuster l’ergonomie et valider le comportement en conditions réelles. En parallèle, la robustesse physique doit être assurée (résistance aux chutes, transport, environnement).
+				</p>
+
+				<h3>Améliorations à porter</h3>
+				<p>
+					Sur le plan logiciel, le système évolue vers une gestion complète et fiable :
+				</p>
+				<ul class="doc-list">
+					<li>suppression des fichiers audio inutiles et gestion de l’espace disque</li>
+					<li>CRUD complet des Reminders (création, modification, suppression)</li>
+					<li>gestion des conflits et protection contre les doubles déclenchements</li>
+					<li>persistance garantie après redémarrage</li>
+				</ul>
+				<p>
+					Des améliorations matérielles ont été envisagées concernant la restitution audio. Les tests réalisés en environnement calme ont montré une qualité satisfaisante, mais les performances se dégradent fortement en milieu bruyant. Une évolution vers un amplificateur plus puissant (10–15 W contre 2,5 W actuellement) est étudiée afin de garantir une intelligibilité suffisante dans des conditions réelles d’utilisation.
+				</p>
+				<p>
+					La gestion énergétique devient centrale avec l’intégration d’une batterie rechargeable (USB-C), la détection de charge, le suivi du niveau de batterie et un mode basse consommation, avec remontée des informations vers l’application.
+				</p>
+				<p>
+					Le système devra également gérer les cas critiques (carte SD absente, mémoire pleine, crash BLE, coupure d’alimentation) de manière sécurisée.
+				</p>
+      </div>
+		</section>
+		
+		<section class="section">
+			<div class="container">
+				<h2>Choix techniques</h2>
+					<p>
+						Les tableaux ci-dessous permettent de comparer nos différente solutions techniques selon différents critères pour chaque besoin.
+					</p>
+					<p>
+						Un code couleur permet une lecture rapide du niveau de pertinence de chaque solution pour un critère donné, allant du moins adapté au plus adapté.
+					</p>
+					<p>
+						Les valeurs de chaque critère sont ensuite pondérées afin de faire apparaître une moyenne globale par solution en fin de tableau.
+					</p>
+					<div class="doc-block legend">
+						<span class="legend-item"><span class="legend-dot score-black"></span> Inacceptable</span>
+						<span class="legend-item"><span class="legend-dot score-red"></span> Mauvais</span>
+						<span class="legend-item"><span class="legend-dot score-orange"></span> Moyen</span>
+						<span class="legend-item"><span class="legend-dot score-yellow"></span> Correct</span>
+						<span class="legend-item"><span class="legend-dot score-green-light"></span> Bon</span>
+						<span class="legend-item"><span class="legend-dot score-green-dark"></span> Excellent</span>
+					</div>
+
+          <h3>Développement mobile</h3>
+
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>Android natif (Kotlin)</th>
+                <th>React Native</th>
+                <th>Application Web (PWA)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Accès aux API natives nécessaires (BLE, audio, stockage)</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Accès complet et stable via API Android</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Support via librairies mais dépendances externes</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-black" data-score="0"></span>
+                    <span class="score-text">Support très limité des API natives critiques</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Performance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Exécution native offrant des performances optimales</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Bonne performance mais dépend du bridge JavaScript</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Dépend fortement du navigateur et de l’environnement</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Complexité de développement</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Développement plus long et spécifique à Android</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Développement rapide avec mutualisation du code</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très rapide à développer avec technologies web</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Portabilité</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Limité à l’écosystème Android</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Compatible Android et iOS avec un code partagé</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Accessible via navigateur mais dépend d’une connexion</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Maintenance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Stable mais fortement dépendant de la plateforme Android</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Code mutualisé facilitant les évolutions</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Dépendance aux APIs web et aux navigateurs</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <p><strong>Décision :</strong> React Native</p>
+            <p>
+              Technologie retenue pour son excellent compromis entre performance et rapidité de développement, en conservant un accès suffisant aux fonctionnalités natives nécessaires.
+            </p>
+          </div>
+
+          <h3>Technologie de communication</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>Bluetooth Low Energy</th>
+                <th>Bluetooth classique</th>
+                <th>Wi-Fi</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Consommation énergétique</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très faible, optimisé pour objets sur batterie</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Connexion continue énergivore</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Consommation élevée constante</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Simplicité d’usage</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Appairage simple via application mobile</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Simple mais gestion audio plus lourde</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Configuration réseau requise</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Autonomie / indépendance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Fonctionne sans infrastructure externe</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Fonctionne sans infrastructure externe</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Dépend d’un réseau Wi-Fi</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Débit utile</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Suffisant pour données et audio compressé</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Adapté au streaming audio</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Débit très élevé</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Intégration embarquée</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Intégré nativement (ESP32, nRF52)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Stack plus complexe à intégrer</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Stack réseau plus lourde</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <p><strong>Décision :</strong> Bluetooth Low Energy (BLE)</p>
+            <p>
+              Technologie retenue pour sa très faible consommation énergétique, sa simplicité d’utilisation et son excellente adaptation aux systèmes embarqués autonomes.
+            </p>
+          </div>
+
+          <h3>Microcontrôleur</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>ESP32</th>
+                <th>nRF52840</th>
+                <th>Raspberry Pi Zero 2 W</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Connectivité intégrée</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Wi-Fi et BLE intégrés nativement</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Bluetooth Low Energy uniquement</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Wi-Fi et Bluetooth avec environnement Linux</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Performance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Suffisant pour audio et logique embarquée</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Capacités de calcul plus limitées</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Processeur puissant avec OS Linux complet</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Consommation énergétique</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Consommation faible (deep sleep)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très faible consommation optimisée IoT</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Consommation très élevée</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Complexité système</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Firmware embarqué maîtrisé et stable</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Firmware simple et léger</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Système Linux complexe et lourd</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Support audio (I2S, DAC)</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Support audio natif complet (I2S, DAC)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Support audio limité</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Support audio complet via Linux</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <p><strong>Décision :</strong> ESP32<br></p>
+            <p>
+              Microcontrôleur retenu pour son excellent compromis entre connectivité intégrée, performances et support natif des fonctionnalités audio, sans trop de complexité.
+            </p>
+          </div>
+
+
+          <h3>Langage du firmware</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>C++</th>
+                <th>MicroPython</th>
+                <th>Rust</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Complexité de développement</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Complexe</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très simple et rapide à prototyper</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-black" data-score="0"></span>
+                    <span class="score-text">Courbe d’apprentissage élevée</span>
+                  </div>
+                </td>
+              </tr>
+              <tr data-weight="3">
+                <td>Performance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Accès bas niveau avec gestion temps réel précise</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Langage interprété induisant une latence élevée</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Performances natives équivalentes au C++</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="2">
+                <td>Consommation mémoire</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très optimisé avec une faible empreinte mémoire</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Usage mémoire lourd</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Optimisé mais avec overhead de compilation</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Accès hardware (ESP32)</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Accès complet aux périphériques (GPIO, I2S, BLE)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Abstraction limitant certaines fonctionnalités</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Accès complet via couches d’abstraction matérielle</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="2">
+                <td>Ressources de documentation</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Standard embarqué (Arduino, ESP-IDF)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Moins robuste</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Écosystème encore jeune</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <strong>Décision :</strong> MicroPython<br>
+            Langage retenu pour sa simplicité de développement et sa rapidité de prise en main, permettant à l’ensemble de l’équipe de contribuer efficacement malgré un défaut de performances.
+          </div>
+
+
+          <h3>Génération audio (TTS)</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>TTS sur ESP32</th>
+                <th>TTS sur smartphone</th>
+                <th>TTS via service en ligne</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="3">
+                <td>Ressources nécessaires</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-black" data-score="0"></span>
+                    <span class="score-text">CPU et mémoire insuffisants</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Exploite la puissance du smartphone</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Calcul externalisé côté serveur</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Qualité vocale</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Voix robotique et limitée</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Voix système suffisante</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Voix avancées basées sur IA</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Complexité firmware</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Implémentation très lourde embarquée</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Firmware simplifié, déporté côté mobile</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Gestion d’API réseau nécessaire</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Indépendance</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="5"></span>
+                    <span class="score-text">Fonctionne hors ligne</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Fonctionne hors ligne</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Dépendance au réseau</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Latence / réactivité</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Génération locale immédiate</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Réactivité rapide sur appareil local</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Latence induite par le réseau</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <strong>Décision :</strong> TTS sur smartphone<br>
+            Solution retenue pour sa faible complexité côté firmware et son excellent compromis entre performance et fiabilité sans dépendance au réseau.
+          </div>
+
+
+          <h3>Logique des Reminders</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>Logique côté ESP32 (choix retenu)</th>
+                <th>Mémo généré côté application</th>
+                <th>Logique hybride (app + ESP)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Complexité firmware</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Scheduler et récurrence à implémenter</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Firmware très simple (lecture uniquement)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Logique répartie entre app et firmware</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Autonomie système</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Fonctionne sans application externe</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Dépend des mémos générés par l’application</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Autonomie partielle</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Charge CPU ESP32</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Calcul des déclenchements en local</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Charge très faible</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Charge modérée répartie</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Flexibilité des règles</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Règles dynamiques modifiables</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Règles figées après génération</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Flexibilité partielle</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Fréquence communication BLE</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Peu de transferts nécessaires</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-red" data-score="1"></span>
+                    <span class="score-text">Transferts fréquents requis</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Compromis équilibré</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <strong>Décision :</strong> Logique côté ESP32<br>
+            Architecture retenue pour garantir l’autonomie du système et de limiter les communications dans la gestion des règles d’alarme.
+          </div>
+
+
+          <h3>Format audio</h3>
+          <table class="table decision-table">
+            <thead>
+              <tr>
+                <th>Critère</th>
+                <th>WAV</th>
+                <th>MP3</th>
+                <th>OGG</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr data-weight="5">
+                <td>Complexité décodage ESP32</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Lecture directe (PCM brut)</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Décodage nécessaire</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Décodage nécessaire</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Qualité audio</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Qualité maximale sans compression</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Bonne qualité avec pertes</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Bonne qualité avec pertes</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="5">
+                <td>Consommation CPU</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Très faible consommation</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Décodage coûteux en ressources</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Décodage coûteux en ressources</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="3">
+                <td>Taille fichier</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-orange" data-score="2"></span>
+                    <span class="score-text">Fichiers très volumineux</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Format très compact</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Format compact</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-weight="4">
+                <td>Compatibilité TTS / pipeline</td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-dark" data-score="5"></span>
+                    <span class="score-text">Génération directe sans conversion</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-green-light" data-score="4"></span>
+                    <span class="score-text">Conversion nécessaire</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="score">
+                    <span class="score-dot score-yellow" data-score="3"></span>
+                    <span class="score-text">Support variable selon outils</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="decision-average">
+                <td><strong>Moyenne</strong></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+                <td class="avg-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="doc-block">
+            <strong>Décision :</strong> WAV<br>
+            Format retenu pour sa simplicité de lecture sur ESP32 et sa compatibilité directe avec le pipeline de génération audio, malgré une taille de fichier plus importante.
+          </div>
+
+  </div>
+</section>
+
+	</div>
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>

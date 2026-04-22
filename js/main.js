@@ -116,3 +116,62 @@ function initObserver() {
 
   sections.forEach(section => observer.observe(section));
 }
+function initDecisionTables() {
+  document.querySelectorAll(".decision-table").forEach(table => {
+    computeTableAverage(table);
+  });
+}
+
+function computeTableAverage(table) {
+  const rows = table.querySelectorAll("tbody tr");
+  const colCount = table.querySelectorAll("thead th").length - 1;
+
+  let sums = Array(colCount).fill(0);
+  let weights = Array(colCount).fill(0);
+
+  rows.forEach(row => {
+    const weight = parseFloat(row.dataset.weight || "1");
+    const cells = row.querySelectorAll("td");
+
+    for (let i = 1; i <= colCount; i++) {
+      const dot = cells[i].querySelector(".score-dot");
+
+      if (dot && dot.dataset.score) {
+        const score = parseFloat(dot.dataset.score);
+
+        sums[i - 1] += score * weight;
+        weights[i - 1] += weight;
+      }
+    }
+  });
+
+  const averages = sums.map((s, i) => weights[i] ? (s / weights[i]) : 0);
+
+  const avgCells = table.querySelectorAll("tfoot .avg-cell");
+
+  avgCells.forEach((cell, i) => {
+    const avg = averages[i];
+
+    cell.innerHTML = renderAverage(avg);
+  });
+}
+
+function renderAverage(avg) {
+  return `
+    <div class="score avg-cell-inner">
+      <span class="score-dot ${getScoreClass(avg)}"></span>
+      <span class="score-text">${avg.toFixed(2)} / 5</span>
+    </div>
+  `;
+}
+
+function getScoreClass(score) {
+  if (score >= 4) return "score-green-dark";
+  if (score >= 3.5) return "score-green-light";
+  if (score >= 3) return "score-yellow";
+  if (score >= 2) return "score-orange";
+  if (score >= 1) return "score-red";
+  return "score-black";
+}
+
+document.addEventListener("DOMContentLoaded", initDecisionTables);
