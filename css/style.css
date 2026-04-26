@@ -76,12 +76,11 @@ body {
 
 .hero-text h1 {
   font-size: 38px;
-  margin-bottom: 20px;
   font-weight: bold; 
   color: white;
   text-align: left;
   margin-right: 750px;
-  margin-top : -600px;
+  margin-top : -450px;
   margin-left: 3%;
 
 }
@@ -93,7 +92,7 @@ body {
 }
 
 .hero-image img {
-  width: 130%;
+  width: 100%;
   object-fit: cover;
 }
 
@@ -114,7 +113,7 @@ body {
 /* Section 1 */
 
 .project {
-  padding-top: 20% ;
+  padding-top: 10% ;
 }
 
 .project p {
@@ -204,6 +203,72 @@ body {
   margin-right: 28%;
 }
 
+
+/* Section 4 */
+
+.conception {
+  padding-top: 10% ;
+}
+
+.conception h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: right;
+}
+
+.divider3 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: right;
+}
+
+.conception p {
+  font-size: 20px;
+  text-align: right;
+  margin-left : 50%;
+}
+
+.conception img {
+  width : 600px;
+  display: block;
+  clip-path: inset(0px 50px 0px 50px);
+  margin-top : -400px;
+  margin-left: -50px;
+}
+
+/* Section 5 */
+
+.software {
+  padding-top: 10% ;
+}
+
+.software h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: left;
+}
+
+.divider4 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.software p {
+  font-size: 20px;
+  text-align: left;
+  margin-right : 50%;
+}
+
+.software img {
+  width : 550px;
+  display: block;
+  clip-path: inset(0px 50px 0px 0px);
+  margin-left: 55%;
+  margin-top : -350px;
+}
 
 /* Section 3 */
 
