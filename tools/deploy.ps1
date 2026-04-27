@@ -3,7 +3,7 @@ param(
   [string]$FirmwarePath = "firmware/src",
   [string[]]$Files = @(
     "ble.py","audio.py","storage.py","rtc.py",
-    "scheduler.py","logger.py","battery.py",
+    "scheduler.py","logger.py",#"battery.py",
     "sdcard.py","start.py"
   ),
   [string]$Port,
