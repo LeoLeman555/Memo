@@ -19,6 +19,7 @@ class Storage:
     DATA_SUBDIR = "data"
 
     TMP_PREFIX = ".tmp_"
+    FORCE_FLASH = False  # DEBUG ONLY
 
     def __init__(self):
         self.use_sd = False
@@ -26,7 +27,16 @@ class Storage:
         self._tmp_path = None
 
         self._ensure_flash_root()
-        self._try_mount_sd()
+
+        # DEBUG SWITCH
+        if self.FORCE_FLASH:
+            Logger.warn(
+                MODULE,
+                "FORCE_FLASH_ENABLED"
+            )
+        else:
+            self._try_mount_sd()
+
         self._ensure_directories()
         self._cleanup_temp_files()
 
