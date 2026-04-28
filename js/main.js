@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadComponent("header", "components/header.html");
-  await loadComponent("footer", "components/footer.html");
+  await loadComponent("header", "../components/header.html");
+  await loadComponent("footer", "../components/footer.html");
 
   setActiveNav();
   initTOC();

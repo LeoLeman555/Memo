@@ -1,0 +1,69 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+:root {
+  --color-primary: #6a0000;
+  --color-text: #222;
+  --color-muted: #666;
+  --bg-light: #f8f8f8;
+
+  --max-width: 1200px;
+
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+}
+
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+p {
+  margin-bottom: var(--space-sm);
+}
+
+ul,
+ol {
+  margin: var(--space-xs) 0 var(--space-sm) 0;
+}
+
+p + ul,
+p + ol {
+  margin-top: var(--space-xs);
+}
+
+h2 {
+  font-size: 26px;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+h3 {
+  font-size: 20px;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
+  color: var(--color-primary);
+}
+
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+  padding: var(--space-sm);
+  border-radius: 8px;
+}

@@ -1,0 +1,25 @@
+@media (max-width: 900px) {
+
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .project-content {
+    grid-template-columns: 1fr;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero-content {
+    position: static;
+    transform: none;
+    padding: var(--space-md);
+    background: rgba(0,0,0,0.5);
+  }
+
+  .hero-image img {
+    height: 300px;
+  }
+}

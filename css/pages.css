@@ -1,0 +1,162 @@
+.hero {
+  position: relative;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  max-width: 500px;
+  color: white;
+}
+
+.hero h1 {
+  font-size: 36px;
+  margin-bottom: var(--space-md);
+}
+
+.project-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.project p {
+  font-size: 18px;
+}
+
+.video {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.team-member {
+  text-align: center;
+}
+
+.team-member img {
+  height: 250px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.team-description {
+  margin-top: var(--space-md);
+  text-align: center;
+  font-size: 18px;
+}
+
+.conception {
+  padding-top: 10% ;
+}
+
+.conception h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: right;
+}
+
+.divider3 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: right;
+}
+
+.conception p {
+  font-size: 20px;
+  text-align: right;
+  margin-left : 50%;
+}
+
+.conception img {
+  width : 600px;
+  display: block;
+  clip-path: inset(0px 50px 0px 50px);
+  margin-top : -400px;
+  margin-left: -50px;
+}
+
+/* Section 5 */
+
+.software {
+  padding-top: 10% ;
+}
+
+.software h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: left;
+}
+
+.divider4 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.software p {
+  font-size: 20px;
+  text-align: left;
+  margin-right : 50%;
+}
+
+.software img {
+  width : 550px;
+  display: block;
+  clip-path: inset(0px 50px 0px 0px);
+  margin-left: 55%;
+  margin-top : -350px;
+}
+
+/* Section 3 */
+
+.problematique {
+  padding-top: 10% ;
+}
+
+.problematique h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: left;
+}
+
+.problematique p {
+  font-size: 20px;
+  text-align: left;
+  margin-right : 50%;
+}
+
+.problematique img {
+  width : 450px;
+  display: block;
+  clip-path: inset(50px 0 50px 0);
+  margin-left: 55%;
+  margin-top : -400px;
+}
+
+
+/* Carousel */
+
+.gallery h2 {
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top : 10%;
+  color:#6a0000;
+  text-align: center;
+} 
