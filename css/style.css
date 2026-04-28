@@ -610,3 +610,157 @@ pre {
   display: inline-block;
   border: 1px rgba(0,0,0,0.2);
 }
+
+
+
+/* Section 4 */
+
+.conception {
+  padding-top: 10% ;
+}
+
+.conception h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: right;
+}
+
+.divider3 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: right;
+}
+
+.conception p {
+  font-size: 20px;
+  text-align: right;
+  margin-left : 50%;
+}
+
+.conception img {
+  width : 600px;
+  display: block;
+  clip-path: inset(0px 50px 0px 50px);
+  margin-top : -400px;
+  margin-left: -50px;
+}
+
+/* Section 5 */
+
+.software {
+  padding-top: 10% ;
+}
+
+.software h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: left;
+}
+
+.divider4 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.software p {
+  font-size: 20px;
+  text-align: left;
+  margin-right : 50%;
+}
+
+.software img {
+  width : 550px;
+  display: block;
+  clip-path: inset(0px 50px 0px 0px);
+  margin-left: 55%;
+  margin-top : -350px;
+}
+
+/* Section 3 */
+
+.problematique {
+  padding-top: 10% ;
+}
+
+.problematique h2 {
+  font-size: 50px;
+  color:#6a0000;
+  text-align: left;
+}
+
+.divider2 {
+  font-weight: bolder;
+  margin-top : -20px;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.problematique p {
+  font-size: 20px;
+  text-align: left;
+  margin-right : 50%;
+}
+
+.problematique img {
+  width : 450px;
+  display: block;
+  clip-path: inset(50px 0 50px 0);
+  margin-left: 55%;
+  margin-top : -400px;
+}
+
+
+/* Carousel */
+
+.gallery h2 {
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top : 10%;
+  color:#6a0000;
+  text-align: center;
+} 
+
+.carousel {
+  position: relative;
+  width: 700px;
+  height: 400px;
+  overflow: hidden;
+  margin: auto;
+}
+
+.slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+/* Boutons */
+button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
