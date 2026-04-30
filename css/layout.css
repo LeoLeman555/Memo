@@ -35,52 +35,158 @@
   justify-content: center;
 }
 
-header {
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
   background: var(--color-primary);
+  backdrop-filter: blur(8px);
+
   color: white;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm) 0;
+  padding: 12px 0;
 }
-
-.header img {
-  width: 80px;
-}
-
 .logo {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-weight: bold;
+
+  font-weight: 700;
   font-size: 24px;
+  letter-spacing: 1px;
+
+  color: white;
+  text-decoration: none;
+
+  transition: transform 0.25s ease;
+}
+
+.logo:hover {
+  transform: translateY(-1px);
+}
+
+.logo-image {
+  width: 74px;
+  transition: transform 0.4s ease;
+}
+
+.logo:hover .logo-image {
+  transform: rotate(-12deg) scale(1.08);
 }
 
 .navigation a {
   margin-left: var(--space-md);
+  position: relative;
+
   color: white;
   text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+
+  padding: 8px 2px;
+
+  transition: color 0.25s ease;
 }
 
 .navigation a:hover {
-  opacity: 0.8;
+  color: white;
+}
+
+.navigation a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 2px;
+
+  background: white;
+  border-radius: 2px;
+
+  transition: width 0.25s ease;
+}
+
+.navigation a:hover::after {
+  width: 100%;
+}
+
+.navigation a.active {
+  font-weight: 700;
+}
+
+.navigation a.active::after {
+  width: 100%;
 }
 
 .footer {
   background: var(--color-primary);
   color: white;
-  padding: var(--space-md) 0;
+  padding: 40px 0 20px 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 220px;
+}
+
+.footer-column h3 {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+
+.footer-column p {
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.footer-column a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 12px;
+  font-size: 14px;
+
+  transition: transform 0.2s ease, padding-left 0.2s ease;
+}
+
+.footer-column a:hover {
+  transform: translateX(4px);
+  padding-left: 4px;
+}
+
+.footer-bottom {
+  margin-top: 35px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+
   text-align: center;
+  font-size: 13px;
 }
 
 .footer-wave svg {
   display: block;
   width: 100%;
 }
-
 
 .sidebar {
   position: sticky;

@@ -1,21 +1,55 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadComponent("header", "../components/header.html");
-  await loadComponent("footer", "../components/footer.html");
+  const basePath = getBasePath();
 
-  setActiveNav();
-  initTOC();
-  initObserver();
+  await Promise.all([
+    loadComponent("header", `${basePath}components/header.html`),
+    loadComponent("footer", `${basePath}components/footer.html`)
+  ]);
+
+  requestAnimationFrame(() => {
+    setActiveNav();
+    initTOC();
+    initObserver();
+    initDecisionTables();
+    initCarousel();
+  });
 });
+
+/* =========================
+   BASE PATH DETECTOR
+========================= */
+function getBasePath() {
+  const path = window.location.pathname;
+
+  if (path.includes("/pages/")) {
+    return "../";
+  }
+
+  return "";
+}
 
 /* =========================
    COMPONENT LOADER
 ========================= */
 async function loadComponent(id, file) {
   const element = document.getElementById(id);
-  if (!element) return;
 
-  const response = await fetch(file);
-  element.innerHTML = await response.text();
+  if (!element) {
+    return;
+  }
+
+  try {
+    const response = await fetch(file);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load ${file} (${response.status})`);
+    }
+
+    const html = await response.text();
+    element.innerHTML = html;
+  } catch (error) {
+    console.error(`Component loading error for ${file}:`, error);
+  }
 }
 
 /* =========================
@@ -23,11 +57,18 @@ async function loadComponent(id, file) {
 ========================= */
 function setActiveNav() {
   const links = document.querySelectorAll(".navigation a");
-  const current = window.location.pathname.split("/").pop();
 
-  links.forEach(link => {
+  if (!links.length) {
+    return;
+  }
+
+  const current = window.location.pathname.split("/").pop() || "index.html";
+
+  links.forEach((link) => {
     const href = link.getAttribute("href");
-    if (href === current) {
+    const cleanHref = href.split("/").pop();
+
+    if (cleanHref === current) {
       link.classList.add("active");
     }
   });
@@ -38,13 +79,15 @@ function setActiveNav() {
 ========================= */
 function initTOC() {
   const toc = document.getElementById("toc");
-  const content = document.querySelector(".content"); // FIX IMPORTANT
+  const content = document.querySelector(".content");
 
-  if (!toc || !content) return;
+  if (!toc || !content) {
+    return;
+  }
 
   const headings = content.querySelectorAll("h2, h3");
 
-  toc.innerHTML = ""; // évite duplication si reload
+  toc.innerHTML = "";
 
   headings.forEach((heading, index) => {
     if (!heading.id) {
@@ -52,26 +95,28 @@ function initTOC() {
     }
 
     const li = document.createElement("li");
-    const a = document.createElement("a");
+    const link = document.createElement("a");
 
-    a.href = `#${heading.id}`;
-    a.textContent = heading.textContent;
-
-    li.appendChild(a);
+    link.href = `#${heading.id}`;
+    link.textContent = heading.textContent;
 
     if (heading.tagName === "H3") {
       li.classList.add("toc-sub");
     }
 
+    li.appendChild(link);
     toc.appendChild(li);
   });
 
-  toc.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
+  toc.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
 
       const target = document.querySelector(link.getAttribute("href"));
-      if (!target) return;
+
+      if (!target) {
+        return;
+      }
 
       const offset = 80;
 
@@ -88,22 +133,26 @@ function initTOC() {
 ========================= */
 function initObserver() {
   const sections = document.querySelectorAll(".content h2, .content h3");
-
-  if (!sections.length) return;
-
   const links = document.querySelectorAll("#toc a");
 
+  if (!sections.length || !links.length) {
+    return;
+  }
+
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
 
       const id = entry.target.id;
 
-      links.forEach(link => {
+      links.forEach((link) => {
         link.classList.remove("active");
       });
 
       const activeLink = document.querySelector(`#toc a[href="#${id}"]`);
+
       if (activeLink) {
         activeLink.classList.add("active");
       }
@@ -114,10 +163,20 @@ function initObserver() {
     threshold: 0
   });
 
-  sections.forEach(section => observer.observe(section));
+  sections.forEach((section) => observer.observe(section));
 }
+
+/* =========================
+   DECISION TABLES
+========================= */
 function initDecisionTables() {
-  document.querySelectorAll(".decision-table").forEach(table => {
+  const tables = document.querySelectorAll(".decision-table");
+
+  if (!tables.length) {
+    return;
+  }
+
+  tables.forEach((table) => {
     computeTableAverage(table);
   });
 }
@@ -129,12 +188,12 @@ function computeTableAverage(table) {
   let sums = Array(colCount).fill(0);
   let weights = Array(colCount).fill(0);
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const weight = parseFloat(row.dataset.weight || "1");
     const cells = row.querySelectorAll("td");
 
     for (let i = 1; i <= colCount; i++) {
-      const dot = cells[i].querySelector(".score-dot");
+      const dot = cells[i]?.querySelector(".score-dot");
 
       if (dot && dot.dataset.score) {
         const score = parseFloat(dot.dataset.score);
@@ -145,14 +204,11 @@ function computeTableAverage(table) {
     }
   });
 
-  const averages = sums.map((s, i) => weights[i] ? (s / weights[i]) : 0);
-
+  const averages = sums.map((sum, i) => (weights[i] ? sum / weights[i] : 0));
   const avgCells = table.querySelectorAll("tfoot .avg-cell");
 
   avgCells.forEach((cell, i) => {
-    const avg = averages[i];
-
-    cell.innerHTML = renderAverage(avg);
+    cell.innerHTML = renderAverage(averages[i]);
   });
 }
 
@@ -166,38 +222,63 @@ function renderAverage(avg) {
 }
 
 function getScoreClass(score) {
-  if (score >= 4) return "score-green-dark";
-  if (score >= 3.5) return "score-green-light";
-  if (score >= 3) return "score-yellow";
-  if (score >= 2) return "score-orange";
-  if (score >= 1) return "score-red";
+  if (score >= 4) {
+    return "score-green-dark";
+  }
+
+  if (score >= 3.5) {
+    return "score-green-light";
+  }
+
+  if (score >= 3) {
+    return "score-yellow";
+  }
+
+  if (score >= 2) {
+    return "score-orange";
+  }
+
+  if (score >= 1) {
+    return "score-red";
+  }
+
   return "score-black";
 }
 
-document.addEventListener("DOMContentLoaded", initDecisionTables);
+/* =========================
+   IMAGE CAROUSEL
+========================= */
+function initCarousel() {
+  const slides = document.querySelectorAll(".slide");
+  const nextBtn = document.querySelector(".next");
+  const prevBtn = document.querySelector(".prev");
 
-const slides = document.querySelectorAll(".slide");
-const nextBtn = document.querySelector(".next");
-const prevBtn = document.querySelector(".prev");
+  if (!slides.length || !nextBtn || !prevBtn) {
+    return;
+  }
 
-let index = 0;
+  let currentIndex = 0;
 
-function showSlide(i) {
-  slides.forEach(slide => slide.classList.remove("active"));
-  slides[i].classList.add("active");
+  function showSlide(index) {
+    slides.forEach((slide) => {
+      slide.classList.remove("active");
+    });
+
+    slides[index].classList.add("active");
+  }
+
+  nextBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  });
+
+  prevBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    showSlide(currentIndex);
+  });
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+  }, 3000);
 }
-
-nextBtn.addEventListener("click", () => {
-  index = (index + 1) % slides.length;
-  showSlide(index);
-});
-
-prevBtn.addEventListener("click", () => {
-  index = (index - 1 + slides.length) % slides.length;
-  showSlide(index);
-});
-
-setInterval(() => {
-  index = (index + 1) % slides.length;
-  showSlide(index);
-}, 3000);
