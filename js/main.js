@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadComponent("footer", `${basePath}components/footer.html`)
   ]);
 
+  normalizeInjectedPaths();
+
   requestAnimationFrame(() => {
     setActiveNav();
     initTOC();
@@ -45,11 +47,27 @@ async function loadComponent(id, file) {
       throw new Error(`Failed to load ${file} (${response.status})`);
     }
 
-    const html = await response.text();
-    element.innerHTML = html;
+    element.innerHTML = await response.text();
   } catch (error) {
     console.error(`Component loading error for ${file}:`, error);
   }
+}
+
+/* =========================
+   NORMALIZE INJECTED PATHS
+========================= */
+function normalizeInjectedPaths() {
+  const basePath = getBasePath();
+
+  document.querySelectorAll("[data-link]").forEach((element) => {
+    const target = element.dataset.link;
+    element.setAttribute("href", `${basePath}${target}`);
+  });
+
+  document.querySelectorAll("[data-src]").forEach((element) => {
+    const target = element.dataset.src;
+    element.setAttribute("src", `${basePath}${target}`);
+  });
 }
 
 /* =========================
@@ -66,6 +84,11 @@ function setActiveNav() {
 
   links.forEach((link) => {
     const href = link.getAttribute("href");
+
+    if (!href) {
+      return;
+    }
+
     const cleanHref = href.split("/").pop();
 
     if (cleanHref === current) {
@@ -75,7 +98,7 @@ function setActiveNav() {
 }
 
 /* =========================
-   TABLE OF CONTENT (TOC)
+   TABLE OF CONTENT
 ========================= */
 function initTOC() {
   const toc = document.getElementById("toc");
@@ -163,7 +186,9 @@ function initObserver() {
     threshold: 0
   });
 
-  sections.forEach((section) => observer.observe(section));
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
 }
 
 /* =========================
@@ -185,8 +210,8 @@ function computeTableAverage(table) {
   const rows = table.querySelectorAll("tbody tr");
   const colCount = table.querySelectorAll("thead th").length - 1;
 
-  let sums = Array(colCount).fill(0);
-  let weights = Array(colCount).fill(0);
+  const sums = Array(colCount).fill(0);
+  const weights = Array(colCount).fill(0);
 
   rows.forEach((row) => {
     const weight = parseFloat(row.dataset.weight || "1");
@@ -204,11 +229,14 @@ function computeTableAverage(table) {
     }
   });
 
-  const averages = sums.map((sum, i) => (weights[i] ? sum / weights[i] : 0));
+  const averages = sums.map((sum, index) => (
+    weights[index] ? sum / weights[index] : 0
+  ));
+
   const avgCells = table.querySelectorAll("tfoot .avg-cell");
 
-  avgCells.forEach((cell, i) => {
-    cell.innerHTML = renderAverage(averages[i]);
+  avgCells.forEach((cell, index) => {
+    cell.innerHTML = renderAverage(averages[index]);
   });
 }
 
