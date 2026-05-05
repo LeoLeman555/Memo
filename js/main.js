@@ -278,38 +278,67 @@ function getScoreClass(score) {
    IMAGE CAROUSEL
 ========================= */
 function initCarousel() {
-  const slides = document.querySelectorAll(".slide");
-  const nextBtn = document.querySelector(".next");
-  const prevBtn = document.querySelector(".prev");
+  const items = document.querySelectorAll(".gallery-item");
+  const nextBtn = document.querySelector(".gallery-btn.next");
+  const prevBtn = document.querySelector(".gallery-btn.prev");
 
-  if (!slides.length || !nextBtn || !prevBtn) {
+  if (!items.length || !nextBtn || !prevBtn) {
     return;
   }
 
   let currentIndex = 0;
+  let intervalId = null;
 
-  function showSlide(index) {
-    slides.forEach((slide) => {
-      slide.classList.remove("active");
+  function showItem(index) {
+    items.forEach((item, i) => {
+      item.classList.toggle("active", i === index);
     });
+  }
 
-    slides[index].classList.add("active");
+  function next() {
+    currentIndex = (currentIndex + 1) % items.length;
+    showItem(currentIndex);
+  }
+
+  function prev() {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    showItem(currentIndex);
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+
+    intervalId = setInterval(() => {
+      next();
+    }, 5000);
+  }
+
+  function stopAutoplay() {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
   }
 
   nextBtn.addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    showSlide(currentIndex);
+    next();
+    startAutoplay();
   });
 
   prevBtn.addEventListener("click", () => {
-    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-    showSlide(currentIndex);
+    prev();
+    startAutoplay();
   });
 
-  setInterval(() => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    showSlide(currentIndex);
-  }, 3000);
+  const carousel = document.querySelector(".gallery-carousel");
+
+  if (carousel) {
+    carousel.addEventListener("mouseenter", stopAutoplay);
+    carousel.addEventListener("mouseleave", startAutoplay);
+  }
+
+  showItem(currentIndex);
+  startAutoplay();
 }
 
 function initHeroZoom() {
