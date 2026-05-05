@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initObserver();
     initDecisionTables();
     initCarousel();
+    initHeroZoom();
   });
 });
 
@@ -309,4 +310,21 @@ function initCarousel() {
     currentIndex = (currentIndex + 1) % slides.length;
     showSlide(currentIndex);
   }, 3000);
+}
+
+function initHeroZoom() {
+  const hero = document.querySelector(".hero");
+  const button = document.querySelector(".hero-btn");
+
+  if (!hero || !button) {
+    return;
+  }
+
+  button.addEventListener("mouseenter", () => {
+    hero.classList.add("zoom");
+  });
+
+  button.addEventListener("mouseleave", () => {
+    hero.classList.remove("zoom");
+  });
 }

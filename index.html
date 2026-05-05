@@ -15,130 +15,190 @@
 <div id="header"></div>
 
 <main>
-
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-image">
-        <img src="assets/main_banner.png">
-      </div>
+      <img src="assets/main_banner_2.png" alt="Bannière MEMO">
+      <div class="hero-overlay"></div>
+    </div>
 
     <div class="hero-content">
+      <a class="hero-tag" href="https://www.makeablechallenge.com/" target="_blank">
+        <span>MAKE:ABLE CHALLENGE 2026</span>
+      </a>
+
       <h1>
-        Un outil conçu pour accompagner les personnes handicapées
-        dans la gestion de leur quotidien
+        Une solution pensée pour renforcer l’autonomie
+        des personnes atteintes de troubles cognitifs
       </h1>
 
-      <a class="btn" href="solution.html">
-        Découvrir le projet
+      <a class="hero-btn" href="pages/solution.html">
+        Découvrir MEMO
       </a>
     </div>
   </section>
 
-  <!-- PROJECT -->
-  <section class="section">
+  <section class="section project-section">
     <div class="container">
+      <h2 class="project-title">Le projet</h2>
+      <div class="project-divider"></div>
 
-      <h2 class="section-title">Le projet</h2>
-      <div class="section-divider"></div>
       <div class="project-content">
-        <p>
-        Memo permet à un adulte responsable de programmer des rappels 
-        vocaux via une application mobile et de les envoyer à un appareil 
-        autonome basé sur ESP32 conçu pour soutenir la perception du temps 
-        et les routines quotidiennes des personnes ayant des troubles cognitifs.
-      </p>
-      </div>
+        <div class="project-media">
+          <img src="assets/memo_box.png" alt="Memo">
+        </div>
+        <div class="project-text">
+          <p>
+            Memo permet à un adulte responsable de programmer des rappels 
+            vocaux via une application mobile et de les envoyer à un appareil 
+            autonome basé sur ESP32 conçu pour soutenir la perception du temps 
+            et les routines quotidiennes des personnes ayant des troubles cognitifs.
+          </p>
 
-      <video class="video" src="assets/onshape_3d_model.mov" class="homepage-video" autoplay muted loop>
-      
+          <a class="project-btn" href="pages/solution.html">
+            Découvrir la solution
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- TEAM -->
-  <section class="section">
+  <section class="project-section">
     <div class="container">
+      <h2 class="project-title">La problématique</h2>
+      <div class="project-divider"></div>
 
-      <h2 class="section-title">L'équipe</h2>
-      <div class="team-grid">
+      <div class="project-content">
+        <div class="project-text">
+          <p>
+            Elia est une jeune fille de 19 ans atteinte d’hémiplégie et de troubles cognitifs, ce qui complique fortement la gestion de son emploi du temps ainsi que son autonomie au quotidien, tant pour elle que pour ses ergothérapeutes.
+          </p>
+          <p>
+            L’objectif principal de MEMO est de fournir un support technologique simple et fiable afin d’améliorer sa qualité de vie, tout en s’adaptant à ses besoins spécifiques et en restant facilement utilisable.
+          </p>
+          <a class="project-btn" href="pages/problematic.html">
+            En savoir plus
+          </a>
+        </div>
+        <div class="project-media">
+          <img src="assets/photo_elia.jpg" alt="Elia">
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="team-member">
+  <section class="project-section">
+    <div class="container">
+      <h2 class="project-title">La conception 3D</h2>
+      <div class="project-divider"></div>
+      <div class="project-content">
+        <div class="project-media">
+          <video src="assets/onshape_3d_model.mov" class="homepage-video" autoplay muted loop></video>
+        </div>
+        <div class="project-text">
+          <p>
+            Le boîtier de MEMO a été conçu à l’aide du logiciel de modélisation 3D Onshape et son design a été pensé pour être à la fois simple d’utilisation et pratique à transporter.
+          </p>
+          <p>
+            Le boîtier est également conçu pour être robuste et facile à manipuler en intégrant des couleurs vives, afin de faciliter son utilisation par des personnes présentant des troubles visuels ou cognitifs.
+          </p>
+          <a class="project-btn" href="pages/conception.html">
+            Voir la conception 3D
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="project-section">
+    <div class="container">
+      <h2 class="project-title">Application & architecture</h2>
+      <div class="project-divider"></div>
+      <div class="project-content">
+        <div class="project-text">
+          <p>
+            Le système MEMO repose sur une architecture complète articulée autour d'une application mobile et d'un firmware embarqué.
+          </p>
+          <p>
+            L’application mobile développée en React Native permet la création, la planification et l’envoi de rappels vocaux personnalisés.
+            Les messages sont convertis en audio via un service TTS puis transmis à l’ESP32.
+          </p>
+          <p>
+            Le firmware MicroPython sur ESP32 gère la réception des données, le stockage local, l’horloge temps réel et le déclenchement autonome des rappels.
+          </p>
+          <a class="project-btn" href="pages/architecture.html">
+            Voir l’architecture technique
+          </a>
+        </div>
+
+        <div class="project-media">
+          <img src="assets/memo_and_phone_2.png">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+<section class="section team-section">
+  <div class="container">
+
+    <h2 class="project-title">L'équipe</h2>
+    <div class="project-divider"></div>
+
+    <div class="team-grid">
+
+      <article class="team-card">
+        <div class="team-photo">
           <img src="assets/photo_léo.jpeg" alt="Léo">
-          <p><strong>Léo</strong><br>Chef d’équipe</p>
         </div>
-
-        <div class="team-member">
-          <img src="assets/photo_samuel.jpg" alt="Samuel">
-          <p><strong>Samuel</strong><br>Conception 3D</p>
-        </div>
-
-        <div class="team-member">
-          <img src="assets/photo_nathan.jpg" alt="Nathan">
-          <p><strong>Nathan</strong><br>Électronique</p>
-        </div>
-
-        <div class="team-member">
-          <img src="assets/photo_alix.jpeg" alt="Alix">
-          <p><strong>Alix</strong><br>Communication</p>
-        </div>
-
+        <div class="team-info">
+        <h3>Léo</h3>
+        <p>Chef d’équipe</p>
+        <p class="team-desc">Développement de l’application mobile et du firmware ESP32, coordination du projet.</p>
       </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_samuel.jpg" alt="Samuel">
+        </div>
+        <div class="team-info">
+          <h3>Samuel</h3>
+          <p>Conception 3D</p>
+          <p class="team-desc">Modélisation du boîtier et contribution polyvalente aux besoins techniques.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_nathan.jpg" alt="Nathan">
+        </div>
+        <div class="team-info">
+          <h3>Nathan</h3>
+          <p>Électronique</p>
+          <p class="team-desc">Conception hardware, intégration des composants et approche utilisateur empathique.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_alix.jpeg" alt="Alix">
+        </div>
+        <div class="team-info">
+          <h3>Alix</h3>
+          <p>Communication</p>
+          <p class="team-desc">Création de contenus et gestion de la communication visuelle du projet.</p>
+        </div>
+      </article>
 
     </div>
-  </section>
 
-  <section class="problematique">
-    <div class="container">
+  </div>
+</section>
 
-      <h2 class="section-title">La problématique</h2>
-      <div class="section-divider"></div>
-      <p>
-        Elia est une jeune fille de 19 ans atteinte d'hémiplégie et de troubles cognitifs, 
-        ce qui rend la gestion de son emploi du temps difficile pour elle et ses ergothérapeutes.
-        L'objectif premier de Memo est de fournir un soutien technologique pour améliorer la qualité de vie d'Elia,
-        en restant simple d'utilisation et en faisant façe à ses besoins spécifiques.
-      </p>
-
-      <img src="assets/photo_elia.jpg" alt="Photo de Elia" >
-    </div>
-  </section>
-
-  <section class="conception">
-    <div class="container">
-
-      <h2 class="section-title">La conception 3D</h2>
-      <div class="section-divider"></div>
-      <p>
-        Le boitier de Memo a été conçu en utilisant le logiciel de modélisation 3D Onshape par Samuel et Nathan.
-        Le design à été pensé pour être à la fois simple d'utilisation et pratique à transporter, afin de répondre
-        au besoin d'Elia de pouvoir emporter son appareil avec elle dans ses déplacements quotidiens. Le boitier 
-        est conçu pour être robuste et facile à manipuler, tout en présentant des couleurs vives et à
-        fort contraste pour faciliter son utilisation et sa reconnaissance par des personnes présentant
-        des troubles visuels. 
-      </p>
-
-      <img src="assets/memo_box.png" alt="Modèle 3D de Memo" >
-    </div>
-  </section>
-
-  <section class="software">
-    <div class="container">
-
-      <h2 class="section-title">L'application Memo</h2>
-      <div class="section-divider"></div>
-      <p>
-        L'application mobile de Memo a été développée par Léo en React Native, ce qui permetde la télécharger sur n'importe
-        quel appareil Android. L'application offre une interface simple et intuitive pour programmer des rappels vocaux, avec des fonctionnalités
-        telles que la possibilité de personnaliser les messages audios et de définir des horaires récurrents (journalier, hebdomadaire ou mensuel).
-        L'application est conçue pour être accessible et facile à utiliser, même pour les personnes ayant peu d'expérience avec la technologie.
-      </p>
-
-      <img src="assets/developement.jpg"  >
-    </div>
-  </section>
-
-  <section class="gallery">
-    <h2 class="section-title">Galerie photo</h2>
-    <div class="section-divider"></div>
+  <section class="section gallery">
+    <h2 class="gallery-title">Galerie photo</h2>
+    <div class="gallery-divider"></div>
     <div class="carousel">
       <div class="slides">
         <img src="assets/photo_1.jpeg" class="slide active">
