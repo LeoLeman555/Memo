@@ -285,3 +285,34 @@
   width: 300px;
   border-radius: 2px;
 }
+
+.project-links {
+  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.project-card {
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  max-width: 500px;
+  width: 100%;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+}
+
+.project-card img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.project-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-xs); 
+}
