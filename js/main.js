@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initDecisionTables();
     initCarousel();
     initHeroZoom();
+    initProjectGallery();
   });
 });
 
@@ -356,4 +357,185 @@ function initHeroZoom() {
   button.addEventListener("mouseleave", () => {
     hero.classList.remove("zoom");
   });
+}
+
+function initProjectGallery() {
+  const medias = document.querySelectorAll(".project-media");
+
+  if (!medias.length) {
+    return;
+  }
+
+  const galleries = {};
+
+  document
+    .querySelectorAll("[data-gallery-item]")
+    .forEach((item) => {
+      const gallery = item.dataset.galleryItem;
+
+      if (!galleries[gallery]) {
+        galleries[gallery] = [];
+      }
+
+      galleries[gallery].push({
+        type: item.tagName.toLowerCase(),
+        src: item.getAttribute("src")
+      });
+    });
+
+  createLightbox();
+
+  const lightbox = document.getElementById("lightbox");
+  const content = document.getElementById("lightbox-media");
+  const counter = document.getElementById("lightbox-counter");
+
+  let currentGallery = [];
+  let currentIndex = 0;
+
+  medias.forEach((media) => {
+    const galleryName = media.dataset.gallery;
+
+    if (!galleryName || !galleries[galleryName]) {
+      return;
+    }
+
+    media.style.cursor = "pointer";
+
+    media.addEventListener("click", () => {
+      currentGallery = galleries[galleryName];
+      currentIndex = 0;
+
+      openLightbox();
+    });
+  });
+
+  function renderSlide() {
+    const item = currentGallery[currentIndex];
+
+    content.innerHTML = "";
+
+    let element;
+
+    if (item.type === "video") {
+      element = document.createElement("video");
+
+      element.src = item.src;
+      element.controls = true;
+      element.autoplay = true;
+      element.className = "lightbox-video";
+    } else {
+      element = document.createElement("img");
+
+      element.src = item.src;
+      element.className = "lightbox-image";
+    }
+
+    content.appendChild(element);
+
+    counter.textContent =
+      `${currentIndex + 1} / ${currentGallery.length}`;
+  }
+
+  function openLightbox() {
+    lightbox.classList.add("active");
+
+    document.body.style.overflow = "hidden";
+
+    renderSlide();
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("active");
+
+    document.body.style.overflow = "";
+
+    content.innerHTML = "";
+  }
+
+  function nextSlide() {
+    currentIndex =
+      (currentIndex + 1) % currentGallery.length;
+
+    renderSlide();
+  }
+
+  function prevSlide() {
+    currentIndex =
+      (currentIndex - 1 + currentGallery.length)
+      % currentGallery.length;
+
+    renderSlide();
+  }
+
+  document
+    .querySelector(".lightbox-next")
+    .addEventListener("click", nextSlide);
+
+  document
+    .querySelector(".lightbox-prev")
+    .addEventListener("click", prevSlide);
+
+  document
+    .querySelector(".lightbox-close")
+    .addEventListener("click", closeLightbox);
+
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (!lightbox.classList.contains("active")) {
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowRight":
+        nextSlide();
+        break;
+
+      case "ArrowLeft":
+        prevSlide();
+        break;
+
+      case "Escape":
+        closeLightbox();
+        break;
+    }
+  });
+}
+
+function createLightbox() {
+  if (document.getElementById("lightbox")) {
+    return;
+  }
+
+  const lightbox = document.createElement("div");
+
+  lightbox.id = "lightbox";
+
+  lightbox.innerHTML = `
+    <div class="lightbox-overlay"></div>
+
+    <button class="lightbox-close">
+      ×
+    </button>
+
+    <button class="lightbox-prev">
+      ⟨
+    </button>
+
+    <div class="lightbox-container">
+      <div id="lightbox-media"></div>
+
+      <div id="lightbox-counter"></div>
+    </div>
+
+    <button class="lightbox-next">
+      ⟩
+    </button>
+  `;
+
+  document.body.appendChild(lightbox);
 }
