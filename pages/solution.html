@@ -24,26 +24,99 @@
   <div class="content">
 
     <section class="section">
-			<div class="container">
-				<h1 class="section-title">Notre solution</h1>
-				<div class="section-divider"></div>
-			</div>
-		</section>
+      <div class="container">
+        <h1 class="section-title">Notre solution</h1>
+        <div class="section-divider"></div>
+
+        <p class="doc-block">
+          Memo, l’assistant vocal inclusif universel
+        </p>
+      </div>
+    </section>
 
     <section class="section">
       <div class="container">
-        <h2>Fonctionnement</h2>
+        <h2>Présentation de Memo</h2>
         <p>
-          Memo a pour but de lire des rappels audio à son utilisateur. Le système complet est composé d’un boîtier et d’une application mobile conçue spécialement pour Memo.
+          Memo est un assistant vocal portable conçu pour accompagner les personnes
+          atteintes de troubles cognitifs, moteurs ou visuels dans leur quotidien.
+        </p>
+        <img src="../assets/memo_and_phone.png" class="doc-image">
+        <p>
+          L’objectif principal du projet est de proposer une aide simple,
+          accessible et compréhensible permettant à l’utilisateur
+          de mieux gérer son emploi du temps, ses routines et ses rappels importants.
         </p>
         <p>
-          Le fonctionnement est simple :
+          Contrairement à une application classique basée sur la lecture,
+          Memo repose principalement sur des rappels audio afin de s’adapter
+          à des difficultés visuelles et cognitives.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Fonctionnement du système</h2>
+        <p>
+          Le système complet est composé :
         </p>
         <ul class="doc-list">
-          <li>Un adulte programme un message sur son téléphone via l’application. Il définit le jour, l’heure, l’évènement.</li>
-          <li>Le message est envoyé au boîtier et enregistré par ce dernier.</li>
-          <li>Le boîtier va lire le rappel automatiquement à l’heure donnée.</li>
+          <li>D’un boîtier portable équipé d’un haut-parleur</li>
+          <li>D’une application mobile dédiée</li>
+          <li>D’un système de communication Bluetooth</li>
         </ul>
+        <p>
+          Le fonctionnement est volontairement simple afin de rester accessible
+          pour l’utilisateur et ses accompagnants.
+        </p>
+        <img src="../assets/global_architecture.png" class="doc-image">
+        <ul class="doc-list">
+          <li>
+            Une personne de confiance, comme un parent ou un ergothérapeute,
+            programme un rappel depuis l’application mobile.
+          </li>
+          <li>
+            Elle définit l’heure, la date et le contenu du message vocal.
+          </li>
+          <li>
+            Le texte est automatiquement converti en fichier audio grâce
+            à une synthèse vocale.
+          </li>
+          <li>
+            Le message est ensuite envoyé en Bluetooth au boîtier Memo,
+            qui le stocke localement.
+          </li>
+          <li>
+            À l’heure programmée, le boîtier diffuse automatiquement
+            le rappel à haute voix via son haut-parleur.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Architecture technique</h2>
+        <p>
+          D’un point de vue technique, Memo repose sur plusieurs sous-systèmes
+          qui communiquent entre eux :
+        </p>
+        <ul class="doc-list">
+          <li>Application Android de programmation</li>
+          <li>Conversion texte vers audio (TTS offline)</li>
+          <li>Communication Bluetooth Low Energy (BLE)</li>
+          <li>ESP32 servant de contrôleur principal</li>
+          <li>Stockage local des messages audio</li>
+          <li>Lecture audio via haut-parleur intégré</li>
+        </ul>
+        <p>
+          Cette architecture permet à Memo de fonctionner sans connexion Internet,
+          tout en garantissant une utilisation simple, rapide et fiable.
+        </p>
+        <a class="project-btn" href="architecture.html">
+          Voir l'architecture technique
+        </a>
       </div>
     </section>
 
@@ -51,19 +124,70 @@
       <div class="container">
         <h2>Cas d’usage</h2>
         <p>
-          Par exemple dans le cas d’Elia, Memo va pouvoir lui lire un rappel pour sa glycémie à vérifier quotidiennement. Également, lui rappeler ses activités ou encore les sorties et rendez-vous qui sont prévus.
+          Dans le cas d’Elia, Memo peut être utilisé pour toutes les situations du quotidien.
+        </p>
+        <ul class="doc-list">
+          <li>Rappels de rendez-vous médicaux</li>
+          <li>Organisation des activités de la journée</li>
+          <li>Gestion des routines quotidiennes</li>
+        </ul>
+        <p>
+          Ces rappels permettent de réduire sa dépendance à une assistance permanente
+          et favorisent progressivement son autonomie.
         </p>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <h2>Conclusion</h2>
+        <h2>Accessibilité et robustesse</h2>
         <p>
-          En somme, Memo permet de ne pas lire les rappels, est simple d’utilisation et permet à son utilisateur de gagner en autonomie. L’interface de l’application est adaptée pour une praticité agréable. Le boîtier a été conçu pour résister aux situations usuelles, comme la résistance aux chutes, aux coups, et même à la pluie.
+          L’ensemble du système a été pensé pour être simple d’utilisation,
+          accessible et adapté aux contraintes réelles du quotidien d’Elia.
+        </p>
+        <p>
+          Le boîtier a été conçu pour résister aux différentes situations
+          qu’une personne peut rencontrer dans une ville moderne et mobile :
+        </p>
+        <ul class="doc-list">
+          <li>Résistance aux chutes</li>
+          <li>Résistance aux coups</li>
+          <li>Résistance aux projections d’eau et à la pluie</li>
+          <li>Transport facile dans un sac</li>
+          <li>Interface simple avec forts contrastes visuels</li>
+        </ul>
+        <p>
+          Chaque choix de conception a été réalisé dans une logique d’accessibilité,
+          de fiabilité et d’inclusivité.
+        </p>
+        <a class="project-btn" href="conception.html">
+          Voir la conception 3D
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Conclusion</h2>
+        <img src="../assets/main_banner_3.png" class="doc-image">
+        <p>
+          Memo ne cherche pas seulement à diffuser des rappels vocaux.
+          Le projet vise avant tout à améliorer l’autonomie et l’indépendance
+          d’une personne dans sa vie quotidienne.
+        </p>
+        <p>
+          Grâce à une approche centrée sur l’utilisateur,
+          Memo propose une solution technologique pensée pour être réellement utile,
+          compréhensible et inclusive.
+        </p>
+        <p>
+          À travers ce projet, nous voulons montrer que la technologie de demain
+          doit être accessible à tous et capable de s’adapter aux besoins réels
+          des personnes qui composent la ville du futur.
         </p>
       </div>
     </section>
+
   </div>
 </main>
 

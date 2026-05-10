@@ -203,6 +203,28 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
+.doc-image {
+  width: 80%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  margin: 2rem auto;
+  border-radius: 20px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.doc-video {
+  width: 80%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  margin: 2rem auto;
+  border-radius: 20px;
+  background: #000;
+  object-fit: cover;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
 .decision-table td {
   vertical-align: middle;
   text-align: center;
