@@ -39,6 +39,7 @@
 				<p>
 					Afin de garantir une utilisation simple et intuitive, l’ergothérapeute d’Elia nous a orientés vers un design volontairement minimaliste, sous la forme d’un pavé droit, sans éléments visuels extérieurs. Ce choix permet à Elia de manipuler l’objet sans se soucier de son orientation, de le poser facilement, et de reconnaître immédiatement sa forme.
 				</p>
+				<img src="../assets/dimensions.png" class="doc-image">
 				<p>
 					Nous avons ainsi conçu un boîtier compact de dimensions :
 				</p>
@@ -47,9 +48,6 @@
 					<li>6 cm de large</li>
 					<li>6 cm de haut</li>
 				</ul>
-				<div class="project-media">
-  			        <img src="assets/dimensions.png" alt="boitier avec dimensions">
-		        </div>
 				<p>
 					Ces dimensions offrent un compromis entre compacité et facilité d’intégration des composants internes. Elles laissent notamment une marge suffisante pour le passage des câbles, tout en conservant la possibilité de réduire le volume dans une version ultérieure.
 				</p>
@@ -66,7 +64,7 @@
 					Dans un premier temps, nous avions envisagé l’utilisation d’inserts en laiton associés à des vis M2, afin d’obtenir une fixation robuste et démontable. Toutefois, pour assurer une fixation absolument sur-mesure, nous n'avons pas choisi cette solution.
 				</p>
 				<p>
-					Nous avons donc opté, pour une solution plus simple et bplus adaptée basée sur des compartiments internes ajustés, maintenant les composants par friction.
+					Nous avons donc opté, pour une solution plus simple et plus adaptée basée sur des compartiments internes ajustés, maintenant les composants par friction.
 				</p>
 				<p>
 					Les dimensions des composants étant souvent imprécises dans les fiches techniques des fournisseurs, plusieurs itérations physiques ont été nécessaires afin d’obtenir des logements adaptés. Cette contrainte explique une part importante du nombre de prototypes réalisés.
@@ -111,11 +109,12 @@
 					Cet outil nous a permis de travailler de manière collaborative sur le modèle, mais également de tester rapidement différentes solutions sans avoir à multiplier les impressions physiques.
 				</p>
 				<p>
-					<span class="chip">Onshape</span> intègre un module de simulation par éléments finis, qui nous a permis d’évaluer la résistance mécanique, pour la chute ou la compression, du boîtier directement en phase de conception. Grâce à ces simulations, nous avons par exemple pu ajuster l’épaisseur des parois afin de corriger les zones de faiblesse identifiées. Nous avons aussi effectué des tests pour confirmer les résultats que nous avons eu:
+					<span class="chip">Onshape</span> intègre un module de simulation par éléments finis, qui nous a permis d’évaluer la résistance mécanique, pour la chute ou la compression, du boîtier directement en phase de conception. Grâce à ces simulations, nous avons par exemple pu ajuster l’épaisseur des parois afin de corriger les zones de faiblesse identifiées.
 				</p>
-				<div class="project-media">
-  			        <img src="assets/white_logo.png" alt="MEMO en chute libre">
-		        </div>
+				<p>
+					Nous avons aussi effectué des tests de chute libre pour confirmer les résultats de simulation :
+				</p>
+				<video src="../assets/fall_test.mp4" class="doc-video" autoplay muted loop></video>
 				<p>
 					Certaines erreurs ont toutefois été rencontrées, notamment dans les tolérances des logements pour les composants électroniques. Ces problèmes, visibles sur les prototypes physiques, sont principalement liés à des données dimensionnelles imprécises fournies par les fabricants. Ils ont été corrigés progressivement par itérations.
 				</p>
@@ -156,11 +155,9 @@
 					Le haut-parleur, constituant une ouverture plus importante, a nécessité une approche différente. Nous avons choisi d’ajouter un film plastique souple placé entre la boite et le haut-parleur, afin de limiter les infiltrations tout en conservant une qualité sonore acceptable.
 				</p>
 				<p> 
-					Nous avons ainsi effectué un test pour vérifier tout ceci, qui nous a bien confirmé la résistance de notre systéme aux éclaboussures:
+					Nous avons ainsi effectué un test pour vérifier tout ceci, qui nous a bien confirmé la résistance de notre système aux éclaboussures:
 				</p>
-				<div class="project-media">
-  			        <img src="assets/eau.mp4" alt="verre d'eau jeté sur le sytème MEMO">
-		        </div>
+				<video src="../assets/water_test.mp4" class="doc-video" autoplay muted loop></video>
       </div>
 		</section>
 
@@ -168,11 +165,10 @@
 			<div class="container">
 				<h2>Matériau d’impression</h2>
 				<p>
-					Le choix du matériau d’impression a été réalisé en comparant les principales options disponibles (<span class="chip">PLA</span>, <span class="chip">ABS</span>, <span class="chip">PETG</span>), <span class="chip">ASA</span>), notamment à l’aide de ressources techniques telles que celles proposées par <a href="https://bambulab.com/fr-fr/filament/guide" class="link" target="_blank" rel="noopener noreferrer">Bambu Lab</a>.
+					Le choix du matériau d’impression a été réalisé en comparant les principales options disponibles (<span class="chip">PLA</span>, <span class="chip">ABS</span>, <span class="chip">PETG</span>, <span class="chip">ASA</span>), notamment à l’aide de ressources techniques telles que celles proposées par <a href="https://bambulab.com/fr-fr/filament/guide" class="link" target="_blank" rel="noopener noreferrer">Bambu Lab</a>.
 				</p>
-				<div class="project-media">
-  			        <img src="assets/white_logo.png" alt="tableau comparatif des principaux filaments">
-		        </div>
+				<img src="../assets/tab_filaments.png">
+				<br>
 				<p>
 					Les conclusions sont les suivantes :
 				</p>
@@ -197,9 +193,7 @@
 				<p>
 					Ce critère a été relativement simple à prendre en compte, Elia identifiant particulièrement bien le contraste rouge sur fond blanc. Le boîtier a donc été conçu en rouge, obtenu directement par le choix des filaments d’impression, pour bien se distinguer des fonds plus clairs souvent présents.
 				</p>
-				<div class="project-media">
-  			        <img src="assets/boite final.jpeg" alt="MEMO, rouge">
-		        </div>
+				<img src="../assets/memo_box.png" class="doc-image">
 				<div class="doc-block">
 					Ce choix de couleur rouge améliore significativement la visibilité du dispositif et participe à son accessibilité globale.
 				</div>
