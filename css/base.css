@@ -27,6 +27,11 @@ body {
   font-size: 16px;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 img {
   max-width: 100%;
   display: block;

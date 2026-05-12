@@ -1,18 +1,27 @@
 .layout {
   display: flex;
   align-items: flex-start;
-  min-height: 100vh;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: var(--max-width);
+
+  margin-inline: auto;
+  padding-inline: 16px;
 }
 
 .container {
-  width: 90%;
+  width: 100%;
   max-width: var(--max-width);
-  margin: auto;
+
+  margin-inline: auto;
+  padding-inline: 16px;
 }
 
 .content {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  width: 100%;
+
   padding: 0 var(--space-lg);
 }
 
@@ -191,15 +200,19 @@
 
 .sidebar {
   position: sticky;
-  top: 80px;
+  top: 100px;
+  align-self: flex-start;
+  flex-shrink: 0;
   width: 260px;
-  height: calc(100vh - 80px);
-
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
 
   padding: var(--space-md);
   border-right: 1px solid rgba(0,0,0,0.08);
   background: #fff;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 
 .sidebar h3 {
@@ -253,11 +266,6 @@
   color: var(--color-muted);
 }
 
-.sidebar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
-}
-
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -265,10 +273,6 @@
 .sidebar::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.2);
   border-radius: 10px;
-}
-
-.section {
-  padding: var(--space-sd) 0;
 }
 
 .section-title {

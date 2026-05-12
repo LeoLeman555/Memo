@@ -178,137 +178,139 @@
 
           <h3>Développement mobile</h3>
 
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>Android natif (Kotlin)</th>
-                <th>React Native</th>
-                <th>Application Web (PWA)</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>Android natif (Kotlin)</th>
+                  <th>React Native</th>
+                  <th>Application Web (PWA)</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Accès aux API natives nécessaires (BLE, audio, stockage)</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Accès complet et stable via API Android</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Support via librairies mais dépendances externes</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-black" data-score="0"></span>
-                    <span class="score-text">Support très limité des API natives critiques</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Accès aux API natives nécessaires (BLE, audio, stockage)</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Accès complet et stable via API Android</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Support via librairies mais dépendances externes</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-black" data-score="0"></span>
+                      <span class="score-text">Support très limité des API natives critiques</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Performance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Exécution native offrant des performances optimales</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Bonne performance mais dépend du bridge JavaScript</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Dépend fortement du navigateur et de l’environnement</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Performance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Exécution native offrant des performances optimales</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Bonne performance mais dépend du bridge JavaScript</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Dépend fortement du navigateur et de l’environnement</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Complexité de développement</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Développement plus long et spécifique à Android</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Développement rapide avec mutualisation du code</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très rapide à développer avec technologies web</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Complexité de développement</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Développement plus long et spécifique à Android</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Développement rapide avec mutualisation du code</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très rapide à développer avec technologies web</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Portabilité</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Limité à l’écosystème Android</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Compatible Android et iOS avec un code partagé</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Accessible via navigateur mais dépend d’une connexion</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Portabilité</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Limité à l’écosystème Android</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Compatible Android et iOS avec un code partagé</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Accessible via navigateur mais dépend d’une connexion</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Maintenance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Stable mais fortement dépendant de la plateforme Android</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Code mutualisé facilitant les évolutions</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Dépendance aux APIs web et aux navigateurs</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="3">
+                  <td>Maintenance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Stable mais fortement dépendant de la plateforme Android</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Code mutualisé facilitant les évolutions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Dépendance aux APIs web et aux navigateurs</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <p><strong>Décision :</strong> React Native</p>
@@ -318,137 +320,139 @@
           </div>
 
           <h3>Technologie de communication</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>Bluetooth Low Energy</th>
-                <th>Bluetooth classique</th>
-                <th>Wi-Fi</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>Bluetooth Low Energy</th>
+                  <th>Bluetooth classique</th>
+                  <th>Wi-Fi</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Consommation énergétique</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très faible, optimisé pour objets sur batterie</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Connexion continue énergivore</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Consommation élevée constante</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Consommation énergétique</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très faible, optimisé pour objets sur batterie</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Connexion continue énergivore</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Consommation élevée constante</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Simplicité d’usage</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Appairage simple via application mobile</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Simple mais gestion audio plus lourde</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Configuration réseau requise</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Simplicité d’usage</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Appairage simple via application mobile</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Simple mais gestion audio plus lourde</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Configuration réseau requise</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Autonomie / indépendance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Fonctionne sans infrastructure externe</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Fonctionne sans infrastructure externe</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Dépend d’un réseau Wi-Fi</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Autonomie / indépendance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Fonctionne sans infrastructure externe</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Fonctionne sans infrastructure externe</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Dépend d’un réseau Wi-Fi</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Débit utile</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Suffisant pour données et audio compressé</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Adapté au streaming audio</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Débit très élevé</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Débit utile</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Suffisant pour données et audio compressé</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Adapté au streaming audio</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Débit très élevé</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Intégration embarquée</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Intégré nativement (ESP32, nRF52)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Stack plus complexe à intégrer</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Stack réseau plus lourde</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="4">
+                  <td>Intégration embarquée</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Intégré nativement (ESP32, nRF52)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Stack plus complexe à intégrer</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Stack réseau plus lourde</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <p><strong>Décision :</strong> Bluetooth Low Energy (BLE)</p>
@@ -458,137 +462,139 @@
           </div>
 
           <h3>Microcontrôleur</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>ESP32</th>
-                <th>nRF52840</th>
-                <th>Raspberry Pi Zero 2 W</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>ESP32</th>
+                  <th>nRF52840</th>
+                  <th>Raspberry Pi Zero 2 W</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Connectivité intégrée</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Wi-Fi et BLE intégrés nativement</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Bluetooth Low Energy uniquement</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Wi-Fi et Bluetooth avec environnement Linux</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Connectivité intégrée</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Wi-Fi et BLE intégrés nativement</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Bluetooth Low Energy uniquement</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Wi-Fi et Bluetooth avec environnement Linux</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Performance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Suffisant pour audio et logique embarquée</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Capacités de calcul plus limitées</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Processeur puissant avec OS Linux complet</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Performance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Suffisant pour audio et logique embarquée</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Capacités de calcul plus limitées</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Processeur puissant avec OS Linux complet</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Consommation énergétique</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Consommation faible (deep sleep)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très faible consommation optimisée IoT</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Consommation très élevée</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Consommation énergétique</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Consommation faible (deep sleep)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très faible consommation optimisée IoT</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Consommation très élevée</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Complexité système</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Firmware embarqué maîtrisé et stable</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Firmware simple et léger</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Système Linux complexe et lourd</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Complexité système</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Firmware embarqué maîtrisé et stable</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Firmware simple et léger</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Système Linux complexe et lourd</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Support audio (I2S, DAC)</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Support audio natif complet (I2S, DAC)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Support audio limité</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Support audio complet via Linux</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="4">
+                  <td>Support audio (I2S, DAC)</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Support audio natif complet (I2S, DAC)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Support audio limité</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Support audio complet via Linux</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <p><strong>Décision :</strong> ESP32<br></p>
@@ -599,136 +605,138 @@
 
 
           <h3>Langage du firmware</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>C++</th>
-                <th>MicroPython</th>
-                <th>Rust</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>C++</th>
+                  <th>MicroPython</th>
+                  <th>Rust</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Complexité de développement</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Complexe</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très simple et rapide à prototyper</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-black" data-score="0"></span>
-                    <span class="score-text">Courbe d’apprentissage élevée</span>
-                  </div>
-                </td>
-              </tr>
-              <tr data-weight="3">
-                <td>Performance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Accès bas niveau avec gestion temps réel précise</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Langage interprété induisant une latence élevée</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Performances natives équivalentes au C++</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Complexité de développement</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Complexe</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très simple et rapide à prototyper</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-black" data-score="0"></span>
+                      <span class="score-text">Courbe d’apprentissage élevée</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr data-weight="3">
+                  <td>Performance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Accès bas niveau avec gestion temps réel précise</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Langage interprété induisant une latence élevée</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Performances natives équivalentes au C++</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="2">
-                <td>Consommation mémoire</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très optimisé avec une faible empreinte mémoire</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Usage mémoire lourd</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Optimisé mais avec overhead de compilation</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="2">
+                  <td>Consommation mémoire</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très optimisé avec une faible empreinte mémoire</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Usage mémoire lourd</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Optimisé mais avec overhead de compilation</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Accès hardware (ESP32)</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Accès complet aux périphériques (GPIO, I2S, BLE)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Abstraction limitant certaines fonctionnalités</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Accès complet via couches d’abstraction matérielle</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Accès hardware (ESP32)</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Accès complet aux périphériques (GPIO, I2S, BLE)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Abstraction limitant certaines fonctionnalités</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Accès complet via couches d’abstraction matérielle</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="2">
-                <td>Ressources de documentation</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Standard embarqué (Arduino, ESP-IDF)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Moins robuste</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Écosystème encore jeune</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="2">
+                  <td>Ressources de documentation</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Standard embarqué (Arduino, ESP-IDF)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Moins robuste</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Écosystème encore jeune</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <strong>Décision :</strong> MicroPython<br>
@@ -737,276 +745,279 @@
 
 
           <h3>Génération audio (TTS)</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>TTS sur ESP32</th>
-                <th>TTS sur smartphone</th>
-                <th>TTS via service en ligne</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>TTS sur ESP32</th>
+                  <th>TTS sur smartphone</th>
+                  <th>TTS via service en ligne</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="3">
-                <td>Ressources nécessaires</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-black" data-score="0"></span>
-                    <span class="score-text">CPU et mémoire insuffisants</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Exploite la puissance du smartphone</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Calcul externalisé côté serveur</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="3">
+                  <td>Ressources nécessaires</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-black" data-score="0"></span>
+                      <span class="score-text">CPU et mémoire insuffisants</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Exploite la puissance du smartphone</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Calcul externalisé côté serveur</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Qualité vocale</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Voix robotique et limitée</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Voix système suffisante</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Voix avancées basées sur IA</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Qualité vocale</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Voix robotique et limitée</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Voix système suffisante</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Voix avancées basées sur IA</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Complexité firmware</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Implémentation très lourde embarquée</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Firmware simplifié, déporté côté mobile</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Gestion d’API réseau nécessaire</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Complexité firmware</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Implémentation très lourde embarquée</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Firmware simplifié, déporté côté mobile</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Gestion d’API réseau nécessaire</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Indépendance</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="5"></span>
-                    <span class="score-text">Fonctionne hors ligne</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Fonctionne hors ligne</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Dépendance au réseau</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Indépendance</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Fonctionne hors ligne</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Fonctionne hors ligne</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Dépendance au réseau</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Latence / réactivité</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Génération locale immédiate</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Réactivité rapide sur appareil local</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Latence induite par le réseau</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="3">
+                  <td>Latence / réactivité</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Génération locale immédiate</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Réactivité rapide sur appareil local</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Latence induite par le réseau</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <strong>Décision :</strong> TTS sur smartphone<br>
             Solution retenue pour sa faible complexité côté firmware et son excellent compromis entre performance et fiabilité sans dépendance au réseau.
           </div>
 
-
           <h3>Logique des Reminders</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>Logique côté ESP32</th>
-                <th>Mémo généré côté application</th>
-                <th>Logique hybride (app + ESP)</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>Logique côté ESP32</th>
+                  <th>Mémo généré côté application</th>
+                  <th>Logique hybride (app + ESP)</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Complexité firmware</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Scheduler et récurrence à implémenter</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Firmware très simple (lecture uniquement)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Logique répartie entre app et firmware</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Complexité firmware</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Scheduler et récurrence à implémenter</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Firmware très simple (lecture uniquement)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Logique répartie entre app et firmware</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Autonomie système</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Fonctionne sans application externe</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Dépend des mémos générés par l’application</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Autonomie partielle</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Autonomie système</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Fonctionne sans application externe</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Dépend des mémos générés par l’application</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Autonomie partielle</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Charge CPU ESP32</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Calcul des déclenchements en local</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Charge très faible</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Charge modérée répartie</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Charge CPU ESP32</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Calcul des déclenchements en local</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Charge très faible</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Charge modérée répartie</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Flexibilité des règles</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Règles dynamiques modifiables</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Règles figées après génération</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Flexibilité partielle</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Flexibilité des règles</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Règles dynamiques modifiables</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Règles figées après génération</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Flexibilité partielle</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Fréquence communication BLE</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Peu de transferts nécessaires</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-red" data-score="1"></span>
-                    <span class="score-text">Transferts fréquents requis</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Compromis équilibré</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="5">
+                  <td>Fréquence communication BLE</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Peu de transferts nécessaires</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-red" data-score="1"></span>
+                      <span class="score-text">Transferts fréquents requis</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Compromis équilibré</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <strong>Décision :</strong> Logique côté ESP32<br>
@@ -1015,137 +1026,139 @@
 
 
           <h3>Format audio</h3>
-          <table class="table decision-table">
-            <thead>
-              <tr>
-                <th>Critère</th>
-                <th>WAV</th>
-                <th>MP3</th>
-                <th>OGG</th>
-              </tr>
-            </thead>
+          <div class="table-wrapper">
+            <table class="table decision-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>WAV</th>
+                  <th>MP3</th>
+                  <th>OGG</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              <tr data-weight="5">
-                <td>Complexité décodage ESP32</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Lecture directe (PCM brut)</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Décodage nécessaire</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Décodage nécessaire</span>
-                  </div>
-                </td>
-              </tr>
+              <tbody>
+                <tr data-weight="5">
+                  <td>Complexité décodage ESP32</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Lecture directe (PCM brut)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Décodage nécessaire</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Décodage nécessaire</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Qualité audio</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Qualité maximale sans compression</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Bonne qualité avec pertes</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Bonne qualité avec pertes</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="4">
+                  <td>Qualité audio</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Qualité maximale sans compression</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Bonne qualité avec pertes</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Bonne qualité avec pertes</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="5">
-                <td>Consommation CPU</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Très faible consommation</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Décodage coûteux en ressources</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Décodage coûteux en ressources</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="5">
+                  <td>Consommation CPU</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Très faible consommation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Décodage coûteux en ressources</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Décodage coûteux en ressources</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="3">
-                <td>Taille fichier</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-orange" data-score="2"></span>
-                    <span class="score-text">Fichiers très volumineux</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Format très compact</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Format compact</span>
-                  </div>
-                </td>
-              </tr>
+                <tr data-weight="3">
+                  <td>Taille fichier</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-orange" data-score="2"></span>
+                      <span class="score-text">Fichiers très volumineux</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Format très compact</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Format compact</span>
+                    </div>
+                  </td>
+                </tr>
 
-              <tr data-weight="4">
-                <td>Compatibilité TTS / pipeline</td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-dark" data-score="5"></span>
-                    <span class="score-text">Génération directe sans conversion</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-green-light" data-score="4"></span>
-                    <span class="score-text">Conversion nécessaire</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="score">
-                    <span class="score-dot score-yellow" data-score="3"></span>
-                    <span class="score-text">Support variable selon outils</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                <tr data-weight="4">
+                  <td>Compatibilité TTS / pipeline</td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-dark" data-score="5"></span>
+                      <span class="score-text">Génération directe sans conversion</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-green-light" data-score="4"></span>
+                      <span class="score-text">Conversion nécessaire</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="score">
+                      <span class="score-dot score-yellow" data-score="3"></span>
+                      <span class="score-text">Support variable selon outils</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
 
-            <tfoot>
-              <tr class="decision-average">
-                <td><strong>Moyenne</strong></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-                <td class="avg-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
+              <tfoot>
+                <tr class="decision-average">
+                  <td><strong>Moyenne</strong></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                  <td class="avg-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
 
           <div class="doc-block">
             <strong>Décision :</strong> WAV<br>

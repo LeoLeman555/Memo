@@ -1,25 +1,377 @@
-@media (max-width: 900px) {
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 15px;
+    scroll-behavior: smooth;
+  }
+  body {
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  h2 {
+    font-size: 1.8rem;
+    margin-top: var(--space-sm);
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
+  p,
+  li {
+    font-size: 0.98rem;
+  }
+  pre {
+    font-size: 12px;
+    padding: var(--space-xs);
+  }
+  :root {
+    --space-md: 24px;
+    --space-lg: 48px;
+  }
+}
 
+@media screen and (max-width: 1170px) {
+  .header {
+    position: relative;
+  }
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+  .logo {
+    font-size: 1.4rem;
+  }
+  .logo-image {
+    width: 56px;
+  }
+  .navigation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .navigation a {
+    margin-left: 0;
+    font-size: 0.95rem;
+    padding: 6px 0;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .content {
+    padding-inline: 12px;
+  }
   .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .project-links {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .footer-content {
+    gap: 40px;
+  }
+  .sidebar {
+    width: 220px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .container {
+    width: 92%;
+  }
+  .content {
+    padding: 0;
+  }
+  .grid,
+  .grid-3,
+  .project-links {
     grid-template-columns: 1fr;
   }
+  .section-title {
+    font-size: 2rem;
+  }
+  .section-divider {
+    width: 140px;
+  }
+  .sidebar {
+    position: relative;
+    top: 0;
 
+    width: 100%;
+    height: auto;
+
+    border-right: none;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+
+    padding: var(--space-sm);
+  }
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .sidebar li {
+    margin-bottom: 0;
+  }
+  .sidebar a {
+    font-size: 13px;
+  }
+  .toc-sub {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+  .footer {
+    padding-top: 20px;
+  }
+  .footer-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .footer-column {
+    width: 100%;
+    min-width: unset;
+  }
+  .footer-column h3 {
+    margin-bottom: 12px;
+  }
+  .footer-bottom {
+    font-size: 12px;
+  }
+  .project-card {
+    max-width: 100%;
+  }
+  .project-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .card {
+    padding: var(--space-sm);
+    border-radius: 8px;
+  }
+  .table {
+    min-width: 700px;
+  }
+  .table th,
+  .table td {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .table-compact th,
+  .table-compact td {
+    font-size: 13px;
+    padding: 8px;
+  }
+  .chip {
+    font-size: 12px;
+  }
+  .math-block {
+    font-size: 16px;
+    padding: var(--space-xs);
+  }
+  .score {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .score-text {
+    min-width: unset;
+    font-size: 12px;
+  }
+  .legend {
+    gap: 12px;
+  }
+  .legend-item {
+    font-size: 13px;
+  }
+  .arch-content h2 {
+    font-size: 1.4rem;
+  }
+  .arch-content p {
+    font-size: 13px;
+  }
+  .doc-image,
+  .doc-video {
+    width: 100%;
+    margin: 1.5rem auto;
+    border-radius: 14px;
+  }
+  .doc-block {
+    padding: var(--space-sm);
+  }
+  .doc-list {
+    padding-left: 16px;
+  }
+  .doc-list li {
+    padding-left: 8px;
+  }
+  .avg-cell-inner {
+    gap: 6px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .hero-content h1 {
+    font-size: 3rem;
+  }
   .project-content {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
-
   .team-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 
-  .hero-content {
-    position: static;
-    transform: none;
-    padding: var(--space-md);
-    background: rgba(0,0,0,0.5);
+@media screen and (max-width: 768px) {
+  .hero {
+    height: 85vh;
+    min-height: 620px;
   }
-
   .hero-image img {
-    height: 300px;
+    object-fit: cover;
+    object-position: 82% 85%;
+  }
+  .hero-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.78),
+      rgba(0, 0, 0, 0.25)
+    );
+  }
+  .hero-content {
+    position: absolute;
+    top: auto;
+    left: 0;
+    transform: none;
+    bottom: 35%;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+  }
+  .hero-tag {
+    margin-left: 0;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .hero-content h1 {
+    font-size: 1.85rem;
+    line-height: 1.25;
+  }
+  .hero-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .hero-btn {
+    margin-left: 0;
+    width: fit-content;
+    margin: 0 auto;
+    display: inline-flex;
+  }
+  .project-section {
+    padding: 50px 0;
+  }
+  .project-title {
+    font-size: 2rem;
+  }
+  .project-divider {
+    width: 300px;
+    height: 3px;
+  }
+  .project-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .project-text p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+  .project-media {
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .project-media img,
+  .project-media video {
+    border-radius: 8px;
+  }
+  .project-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .team-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .team-photo {
+    height: 220px;
+  }
+  .team-info {
+    padding: 14px;
+  }
+  .team-info h3 {
+    font-size: 1.1rem;
+  }
+  .team-desc {
+    font-size: 12px;
+  }
+  .gallery-carousel {
+    margin-top: 24px;
+  }
+  .gallery-track {
+    min-height: 60vw;
+  }
+  .gallery-item {
+    width: 92vw;
+    border-radius: 10px;
+  }
+  .gallery-item figcaption {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+  .gallery-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  .gallery-btn.prev {
+    left: -6px;
+  }
+  .gallery-btn.next {
+    right: -6px;
+  }
+  .lightbox-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 70px 12px;
+  }
+  .lightbox-image,
+  .lightbox-video {
+    border-radius: 10px;
+  }
+  .lightbox-prev,
+  .lightbox-next,
+  .lightbox-close {
+    width: 38px;
+    height: 38px;
+  }
+  .lightbox-prev {
+    left: 10px;
+  }
+  .lightbox-next {
+    right: 10px;
+  }
+  .lightbox-close {
+    top: 14px;
+    right: 14px;
+  }
+  #lightbox-counter {
+    bottom: 14px;
+    font-size: 12px;
   }
 }
