@@ -55,6 +55,7 @@
 				<p>
 					L’architecture logicielle du firmware repose sur une organisation modulaire, conçue pour séparer clairement les responsabilités et garantir une maintenabilité élevée. Chaque composant logiciel est dédié à une fonction précise, on retrouve : la communication, gestion des données, gestion du temps, planification et restitution audio.
 				</p>
+				<img src="../assets/esp32_firmware.png" class="doc-image">
 				<p>Le firmware est structuré de la manière suivante :</p>
 				<div class="card">
 					<pre>
@@ -145,7 +146,7 @@ firmware/src/
 					</a>
 					complète en s’appuyant sur l’API bas niveau de MicroPython. Il définit un service GATT propriétaire structuré autour de trois caractéristiques : une caractéristique d’initialisation, une caractéristique de transfert de données <span class="chip">CHUNK</span> et une caractéristique de retour d’état <span class="chip">STATUS</span>. La configuration inclut une augmentation du MTU et des buffers spécifiques par caractéristique afin d’optimiser le débit et permettre le transfert de fichiers de taille significative dans un environnement contraint.
 				</p>
-
+				<img src="../assets/ble_communication.png" class="doc-image">
 				<p>
 					Le protocole repose sur une machine d’état explicite et sur un enchaînement strict de commandes. La trame <span class="chip">START</span> initialise un transfert en encapsulant les métadonnées critiques : nombre total de fragments, taille totale du fichier, taille des blocs, nom du fichier et empreinte partielle (SHA). Cette trame est validée de manière stricte (taille, format, bornes), garantissant la cohérence du transfert dès son initialisation. Les données sont ensuite transmises via une série de chunks contenant chacun un identifiant de séquence sur 32 bits et une charge utile. Le contrôle de séquence permet de détecter toute désynchronisation (perte, duplication ou inversion de paquet), entraînant immédiatement une erreur bloquante afin d’éviter toute corruption des données. La trame <span class="chip">END</span> déclenche la phase de finalisation, incluant la validation d’intégrité via comparaison de hash avec la valeur attendue.
 				</p>
@@ -198,9 +199,7 @@ firmware/src/
 		</section>
 	<section class="section">
 		<div class="container">
-
 			<h2>Gestion des alarmes</h2>
-
 			<h3>Rôle du module</h3>
 			<p>
 				Le module <span class="chip">scheduler.py</span> constitue le cœur logique du système embarqué.
@@ -213,6 +212,7 @@ firmware/src/
 				<li>Détection des conditions de déclenchement</li>
 				<li>Exécution de la lecture audio</li>
 			</ul>
+			<img src="../assets/time_scheduler.png" class="doc-image">
 
 
 			<h3>Représentation d’un événement</h3>
@@ -450,7 +450,35 @@ firmware/src/
 			</p>
 			<div class="card">
 				<pre>
-Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odio culpa distinctio provident, quae blanditiis neque.
+{
+  "version": 1,
+  "items": [
+    {
+      "reminderId": "...",
+      "category": "ACTIVITY",
+      "title": "Test",
+      "message": "Message",
+      "startDate": "2026-01-01",
+      "time": "08:00",
+      "recurrence": {
+        "frequency": "DAILY",
+        "interval": 1,
+        "count": null,
+        "until": "2026-02-21",
+        "byWeekday": [],
+        "byMonthDay": []
+      }
+    }
+
+  "audioHash": "sha256",
+  "audioId": "uuid-v4",
+
+  "status": "VALID",
+  "syncStatus": "NOT_SENT",
+
+  "createdAt": "2026-01-01T10:15:00Z",
+  "updatedAt": "2026-01-01T10:15:00Z"
+}
 				</pre>
 			</div>
 

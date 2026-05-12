@@ -46,6 +46,7 @@
 			<div class="container">
       <h2>Composants électroniques</h2>
 			<h3>Schéma électronique</h3>
+			<img src="../assets/gpio_ble.png" class="doc-image">
 			<p>
 				Vous pouvez trouver le schéma du montage <a href="https://app.cirkitdesigner.com/project/f150ebe6-57b1-494a-b68f-2e3295aea869" class="link" target="_blank" rel="noopener noreferrer">
 						ici
@@ -57,6 +58,7 @@
 				La carte <a href="https://www.upesy.fr/blogs/tutorials/upesy-esp32-wroom-low-power-devkit-board-documentation-version-latest#" class="link" target="_blank" rel="noopener noreferrer">Upesy ESP32 Wroom Low Power DevKit</a> 
 				constitue le cœur du système embarqué. Basée sur un microcontrôleur <span class="chip">ESP32-WROOM-32</span>, elle assure l’exécution du firmware, la gestion des communications et le pilotage de l’ensemble des périphériques.
 			</p>
+			<img src="../assets/esp32_2.png" class="doc-image">
 			<p>
 				Sur le plan technique, elle offre une architecture particulièrement adaptée au projet :
 			</p>
@@ -80,6 +82,7 @@
 				<li>fichiers audio générés (messages vocaux)</li>
 				<li>planning des rappels (format JSON)</li>
 			</ul>
+			<img src="../assets/sd.png" class="doc-image">
 			<p>
 				Il communique avec l’ESP32 via une interface <span class="chip">SPI</span> (<span class="chip">MOSI</span>, <span class="chip">MISO</span>, <span class="chip">SCK</span>, <span class="chip">CS</span>), choisie pour ses performances nettement supérieures à <span class="chip">I2C</span> sur des volumes de données importants.
 			</p>
@@ -91,6 +94,7 @@
 			<p>
 				Le module <a href="https://www.gotronic.fr/art-module-rtc-i2c-ds3231-gt584-36063.htm" class="link" target="_blank" rel="noopener noreferrer">RTC DS3231</a> fournit une horloge temps réel indépendante et précise, indispensable pour le déclenchement des rappels.
 			</p>
+			<img src="../assets/rtc.png" class="doc-image">
 			<p>
 				Contrairement à une horloge logicielle interne à l’ESP32, ce module conserve l’heure même en cas de coupure d’alimentation. Il garantit donc un fonctionnement totalement hors ligne et fiable.
 			</p>
@@ -102,6 +106,7 @@
 			<p>
 				Le module <a href="https://wiki.dfrobot.com/dfr0954/" class="link" target="_blank" rel="noopener noreferrer">ampli audio I2S DFR0954</a> assure la conversion du signal audio numérique en signal analogique exploitable.
 			</p>
+			<img src="../assets/ampli.png" class="doc-image">
 			<p>
 				Caractéristiques techniques :
 			</p>
@@ -117,6 +122,7 @@
 
 			<h3>Haut-parleur miniature</h3>
 			<p>Le haut-parleur HP4028 constitue la sortie finale du système.</p>
+			<img src="../assets/speaker.png" class="doc-image">
 			<p>Caractéristiques :</p>
 			<ul class="doc-list">
 				<li>impédance : 8 Ω</li>
@@ -131,6 +137,7 @@
 				La batterie 
 				<a href="https://www.gotronic.fr/pj2-battery-msds-2018-103048-1500-msds-pi965-967-ii-2018-xmc-3-3492.pdf" class="link" target="_blank" rel="noopener noreferrer">Accu LiPo THYM-BAT 3.7V 1500 mAh</a> assure l’alimentation autonome du dispositif.
 			</p>
+			<img src="../assets/battery.png" class="doc-image">
 			<p>Caractéristiques techniques :</p>
 			<ul class="doc-list">
 				<li>tension nominale : 3.7 V</li>
@@ -139,8 +146,17 @@
 				<li>recharge via circuit intégré (USB-C sur la carte ESP32)</li>
 			</ul>
 			<p>
-				Ce choix repose sur un compromis entre autonomie et encombrement. La capacité permet de viser une utilisation sur une journée complète, en cohérence avec les besoins identifiés.L’intégration du circuit de charge directement sur la carte simplifie fortement l’usage : un simple câble USB-C permet la recharge, sans matériel supplémentaire.
+				Une simulation de la courbe de décharge de la batterie LiPo a été réalisée à partir des mesures de tension récupérées par l’ESP32 :
 			</p>
+			<img src="../assets/battery_analysis.png" class="doc-image">
+			<p>
+				L’analyse met en évidence une autonomie d’environ 30 heures en fonctionnement continu, ce qui répond aux besoins d’une utilisation quotidienne sans recharge intermédiaire.
+			</p>
+			<div class="doc-block">
+				<p>
+					Le système peut être rechargé directement via le port USB-C intégré à la carte uPesy ESP32, sans démontage ni chargeur externe.
+				</p>
+			</div>
 			</div>
 		</section>
 

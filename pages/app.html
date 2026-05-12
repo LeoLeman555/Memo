@@ -48,6 +48,7 @@
 					</a>
 					, permettant de d’associer la logique applicative nécessaire tout en conservant un accès aux fonctionnalités natives nécessaires, notamment pour la synthèse vocale et la communication BLE.
 				</p>
+				<img src="../assets/app_5.png" class="doc-image">
 				<p>
 					L’interface utilisateur a été conçue pour être simple, lisible et structurée autour des actions principales. Elle s’organise autour de plusieurs écrans fonctionnels, notamment une vue liste des rappels, un écran de création/édition et une vue de détail. L’objectif est de limiter la complexité des interactions tout en garantissant un accès rapide aux fonctionnalités essentielles.
 				</p>
@@ -57,11 +58,10 @@
 		<section class="section">
 			<div class="container">
 				<h2>Architecture frontend</h2>
-				<div class="doc-block">
-					<p>
-						Le frontend repose sur une architecture modulaire, organisée en couches distinctes afin de garantir une séparation claire des responsabilités et un développement plus facile.
-					</p>
-				</div>
+				<p>
+					Le frontend repose sur une architecture modulaire, organisée en couches distinctes afin de garantir une séparation claire des responsabilités et un développement plus facile.
+				</p>
+				<img src="../assets/mobile_app.png" alt="">
 				<p>
 					L’application est structuré de la manière suivante :
 				</p>
@@ -123,6 +123,7 @@ src/
 				<p>
 					La création d’un <span class="chip">Reminder</span> suit un cycle de vie structuré, conçu pour garantir la cohérence des données à chaque étape. Le processus débute par la saisie des informations par l’utilisateur, suivie d’une phase de validation stricte. Une fois les données validées, le <span class="chip">Reminder</span> est créé et enregistré localement. Le système déclenche ensuite la génération du fichier audio via le module de Text-to-Speech <span class="chip">TTS</span>, puis associe ce fichier au <span class="chip">Reminder</span>. Enfin, l’ensemble est préparé pour la synchronisation avec l’ESP32.
 				</p>
+				<img src="../assets/pipeline_reminder.png" class="doc-image">
 				<p>
 					Ce flux garantit qu’un <span class="chip">Reminder</span> ne peut exister que sous une forme complète et exploitable, évitant ainsi toute incohérence entre les données, l’audio et l’état système.
 				</p>
@@ -148,6 +149,7 @@ src/
 				<p>
 					La validation des données constitue une étape essentielle du système, elle est centralisée dans un module dédié, situé dans la couche métier <span class="chip">domain</span>. Ce processus de validation ne se limite pas à une simple vérification de formats.
 				</p>
+				<img src="../assets/app_4.png" class="doc-image">
 				<p>
 					Dans un premier temps, les champs sont vérifiés individuellement afin de s’assurer de leur conformité. Cela inclut notamment la validité des formats de date et d’heure, la présence des champs obligatoires et la cohérence des types utilisés. Cette étape permet d’éliminer les erreurs simples utilisateur dès l’entrée des données.
 				</p>
@@ -189,6 +191,7 @@ src/
 				<p>
 					Le TTS repose sur une architecture en trois couches distinctes, conçue pour isoler les responsabilités et faciliter la maintenance du système.
 				</p>
+				<img src="../assets/text_to_speech.png" class="doc-image">
 				<p>
 					La première couche correspond à la logique applicative, implémentée en 
 					<a href="https://www.typescriptlang.org/docs/" class="link" target="_blank" rel="noopener noreferrer">
@@ -266,6 +269,7 @@ src/
 						Bluetooth Low Energy
 					</a> (BLE). Ce choix permet d’assurer un échange de données local, sans dépendance à une infrastructure réseau, tout en conservant une consommation énergétique maîtrisée.
 				</p>
+				<img src="../assets/ble_communication.png" class="doc-image">
 				<p>
 					Dans cette architecture, le smartphone agit en tant que <span class="chip">client GATT</span>, tandis que l’ESP32 joue le rôle de <span class="chip">serveur GATT</span>. Cette organisation permet à l’application de piloter entièrement les échanges et d’initier les transferts de données vers le système embarqué.
 				</p>
@@ -289,6 +293,7 @@ src/
 				<p>
 					Ce mécanisme rend possible le transfert fiable de fichiers audio et de configuration de plusieurs dizaines de kilooctets.
 				</p>
+				<img src="../assets/pipeline_app.png" class="doc-image">
 				<p>
 					Pendant toute la durée du transfert, l’ESP32 émet des messages de statut <span class="chip">STATUS</span> via une caractéristique de notification. Ces messages reflètent l’état interne du système, la progression de l’écriture en mémoire et la détection éventuelle d’erreurs. 
 				</p>

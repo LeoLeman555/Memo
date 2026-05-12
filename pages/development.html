@@ -61,6 +61,7 @@
 				<p>
 					Dans un premier temps, une génération au format <span class="chip">MP3</span> a été envisagée avec un module externe <span class="chip">DFPlayer</span>, mais les contraintes d’intégration ont conduit à privilégier une seconde approche basée sur des fichiers <span class="chip">WAV</span> lus directement par l’ESP32 via une sortie <span class="chip">I2S</span> et un amplificateur.
 				</p>
+        <img src="../assets/architecture_2.png" class="doc-image">
 				<p>
 					Une fois le fichier audio généré grâce au moteur Android Text-To-Speech, l’application met en œuvre un pipeline complet : découpage du fichier en chunks puis transmission via Bluetooth Low Energy selon un protocole simple. Les fonctions principales côté application assurent la gestion de ce flux.
 				</p>
@@ -100,6 +101,7 @@
 				<p>
 					Le stockage sur carte microSD a également été structuré de manière claire, avec une séparation entre les fichiers audio et les données de configuration <span class="chip">memo.json</span>. Cette organisation améliore la persistance des données, facilite le débogage et garantit une meilleure compatibilité avec les formats audio utilisés.
 				</p>
+        <img src="../assets/photo_10.jpg" class="doc-image">
 				<p>
 					La communication BLE a fait l’objet d’une refonte significative. Les limitations de la phase 1 ont été corrigées par la mise en place d’un transfert asynchrone, l’utilisation de chunks de taille fixe (~480 octets). La gestion mémoire côté application a été améliorée afin d’éviter les blocages et les crashs. L’objectif visé est un transfert complet en quelques secondes pour des fichiers de taille moyenne, avec une stabilité suffisante pour des usages répétés.
 				</p>
