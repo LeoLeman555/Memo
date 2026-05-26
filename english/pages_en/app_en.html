@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO - Mobile Application</title>
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="layout">
+
+	<aside class="sidebar">
+    <nav>
+      <h3>Table of Contents</h3>
+      <ul id="toc"></ul>
+    </nav>
+  </aside>
+
+	<div class="content">
+
+		<section class="section">
+			<div class="container">
+				<h1 class="section-title">Mobile application</h1>
+				<div class="section-divider"></div>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Interface and role</h2>
+				<p>
+                    The mobile app serves as the primary interface between the user and the system. It allows users to configure all of the device’s features, from creating a reminder to sending it to the ESP32.
+				</p>
+				<div class="doc-block">
+					<p>
+                        Specifically, the user can enter a message, set a trigger date and time, and configure any repeat settings.
+					</p>
+				</div>
+				<p>
+					The application, called <span class="chip">Memo Controller</span>, is déveloped in 
+					<a href="https://reactnative.dev/" class="link" target="_blank" rel="noopener noreferrer">
+						React Native
+					</a>
+                    , allowing you to integrate the necessary application logic while retaining access to the required native features, particularly for text-to-speech and BLE communication.
+				</p>
+				<img src="../assets/app_5.png" class="doc-image">
+				<p>
+                    The user interface was designed to be simple, easy to read, and organized around key actions. It is structured around several functional screens, including a list view of reminders, 
+                    a creation/edit screen, and a detail view. The goal is to minimize the complexity of interactions while ensuring quick access to essential features.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Frontend architecture</h2>
+				<p>
+                    The frontend is based on a modular architecture, organized into distinct layers to ensure a clear separation of responsibilities and facilitate development.
+				</p>
+				<img src="../assets/mobile_app.png" alt="">
+				<p>
+					The application is structured in the following manner :
+				</p>
+				<div class="card">
+					<pre>
+src/
+  components/
+  screens/
+  services/
+  domain/
+  hooks/
+  utils/
+					</pre>
+				</div>
+				<br>
+				<p>
+					The 
+					<a href="https://github.com/LeoLeman555/Memo/tree/main/src/components" class="link" target="_blank" rel="noopener noreferrer">
+						components
+					</a> contain reusable interface elements, such as buttons, progress indicators, and formatting elements. This layer ensures visual consistency and minimizes code duplication.
+				</p>
+				<p>
+					The 
+					<a href="https://github.com/LeoLeman555/Memo/tree/main/src/screens" class="link" target="_blank" rel="noopener noreferrer">
+						screens
+                    </a> correspond to the application's functional screens. Each screen encapsulates specific business logic, such as managing the list of reminders, editing them, or viewing them in detail.
+				</p>
+				<p>
+					The 
+					<a href="https://github.com/LeoLeman555/Memo/tree/main/src/domain" class="link" target="_blank" rel="noopener noreferrer">
+						domain
+					</a> layer centralises the definition of data models and validation mechanisms. It serves as the logical foundation of the application and ensures the consistency of the data being processed.
+				</p>
+				<p>
+					The
+					<a href="https://github.com/LeoLeman555/Memo/tree/main/src/services" class="link" target="_blank" rel="noopener noreferrer">
+						services
+					</a> handle the orchestration of core functionalities. They encapsulate the business logic related to managing <span class="chip">Reminders</span>, generating audio via text-to-speech, BLE communication, and other system operations. This layer plays a central role in coordinating between the user interface and the technical modules.
+				</p>
+				<p>
+					Finally, the 
+					<a href="https://github.com/LeoLeman555/Memo/tree/main/src/hooks" class="link" target="_blank" rel="noopener noreferrer">
+						hooks
+					</a> and the <a href="https://github.com/LeoLeman555/Memo/tree/main/src/utils" class="link" target="_blank" rel="noopener noreferrer">
+						utils
+					</a> provide complementary abstractions that facilitate state management, the reuse of logic, and the implementation of utility functions.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Gestion des Reminders</h2>
+				<h3>Modèle et cycle de vie</h3>
+				<p>
+					Le modèle <span class="chip">Reminders</span> constitue l’élément central de l’application. Il représente un rappel complet, intégrant à la fois les données saisies par l’utilisateur, le fichier audio associé ainsi que son état de synchronisation avec le système embarqué.
+				</p>
+				<p>
+					La création d’un <span class="chip">Reminder</span> suit un cycle de vie structuré, conçu pour garantir la cohérence des données à chaque étape. Le processus débute par la saisie des informations par l’utilisateur, suivie d’une phase de validation stricte. Une fois les données validées, le <span class="chip">Reminder</span> est créé et enregistré localement. Le système déclenche ensuite la génération du fichier audio via le module de Text-to-Speech <span class="chip">TTS</span>, puis associe ce fichier au <span class="chip">Reminder</span>. Enfin, l’ensemble est préparé pour la synchronisation avec l’ESP32.
+				</p>
+				<img src="../assets/pipeline_reminder.png" class="doc-image">
+				<p>
+					Ce flux garantit qu’un <span class="chip">Reminder</span> ne peut exister que sous une forme complète et exploitable, évitant ainsi toute incohérence entre les données, l’audio et l’état système.
+				</p>
+
+				<h3>Structure d’un Reminder</h3>
+				<p>
+					Un <span class="chip">Reminder</span> est conçu comme une structure de données complète, pensée pour être directement exploitable par l’application mobile et transférable vers le système embarqué sans transformation complexe (en <span class="chip">memo</span>).
+				</p>
+				<p>
+					Chaque instance est identifiée de manière unique par un identifiant <span class="chip">reminderId</span>, utilisé comme référence dans l’ensemble du système. Elle contient aussi les métadonnées principales du rappel, telles que le titre et le message, ainsi que les informations temporelles définissant son déclenchement. Ces dernières incluent une date de départ et une heure précise, auxquelles peuvent s’ajouter des règles de récurrence.
+				</p>
+				<p>
+					Le modèle intègre également une référence vers le fichier audio généré, assurant le lien direct entre le contenu textuel et sa représentation sonore. Enfin, des informations de synchronisation sont associées au <span class="chip">Reminder</span>, permettant de suivre son état vis-à-vis de l’ESP32. 
+				</p>
+				<p>
+					L’ensemble de ces données est structuré de manière à être sérialisable sous forme 
+					<a href="https://www.json.org/json-en.html" class="link" target="_blank" rel="noopener noreferrer">
+					JSON
+					</a> , afin de faciliter la persistance locale et la communication avec le système embarqué.
+				</p>
+
+				<h3>Validation des données</h3>
+				<p>
+					La validation des données constitue une étape essentielle du système, elle est centralisée dans un module dédié, situé dans la couche métier <span class="chip">domain</span>. Ce processus de validation ne se limite pas à une simple vérification de formats.
+				</p>
+				<img src="../assets/app_4.png" class="doc-image">
+				<p>
+					Dans un premier temps, les champs sont vérifiés individuellement afin de s’assurer de leur conformité. Cela inclut notamment la validité des formats de date et d’heure, la présence des champs obligatoires et la cohérence des types utilisés. Cette étape permet d’éliminer les erreurs simples utilisateur dès l’entrée des données.
+				</p>
+				<p>
+					Puis, des règles métier sont appliquées afin de garantir la cohérence fonctionnelle du <span class="chip">Reminder</span>. Par exemple, une date de déclenchement ne peut pas être définie dans le passé, un message ne peut pas être vide, et les paramètres de récurrence doivent être compatibles entre eux. 
+				</p>
+				<p>
+					La validation est conçue comme une étape bloquante : aucune création ou modification ne peut être effectuée sans validation complète. En cas d’erreur, le module la retourne et fournit une information exploitable par l’utilisateur pour corriger la saisie.
+				</p>
+				<div class="doc-block">
+					<p>
+						Ce mécanisme garantit que toutes les données persistées sont cohérentes, exploitables et compatibles avec l’ensemble du système.
+					</p>
+				</div>
+
+				<h3>Système de répétition</h3>
+				<p>
+					Le système prend en charge les rappels récurrents selon trois modes principaux : quotidien, hebdomadaire et mensuel. Ces modes permettent de couvrir la grande majorité des cas d’usage tout en conservant une structure simple.
+				</p>
+				<p>
+					Les règles de récurrence sont encapsulées dans une structure dédiée:  <span class="chip">RecurrenceRule</span>, conçue pour être directement interprétable par le firmware de l’ESP32. Cette normalisation évite toute transformation supplémentaire lors de la synchronisation et garantit une cohérence parfaite entre l’application mobile et le système embarqué.
+				</p>
+				<p>
+					Une règle de récurrence définit notamment une fréquence, un intervalle de répétition, ainsi que des paramètres spécifiques selon le mode choisi, comme les jours de la semaine ou les jours du mois. Une condition d’arrêt peut également être définie, soit sous forme d’un nombre maximal d’occurrences <span class="chip">count</span>, soit sous forme d’une date limite  <span class="chip">until</span>.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Synthèse vocale</h2>
+				<h3>Objectif</h3>
+				<p>
+					Le système de Text-to-Speech (TTS) permet de générer automatiquement un fichier audio à partir d’un texte saisi par l’utilisateur dans l’application mobile.
+					L’objectif principal est de produire des fichiers audio entièrement exploitables par le système embarqué, tout en garantissant un fonctionnement hors ligne et une génération fiable afin d’éviter toute dépendance à un service externe.
+				</p>
+				
+				<h3>Architecture du système</h3>
+				<p>
+					Le TTS repose sur une architecture en trois couches distinctes, conçue pour isoler les responsabilités et faciliter la maintenance du système.
+				</p>
+				<img src="../assets/text_to_speech.png" class="doc-image">
+				<p>
+					La première couche correspond à la logique applicative, implémentée en 
+					<a href="https://www.typescriptlang.org/docs/" class="link" target="_blank" rel="noopener noreferrer">
+						TypeScript
+					</a>. Elle est portée par le service <span class="chip">TtsService</span>, qui constitue le point d’entrée unique pour l’ensemble des opérations de synthèse vocale. Ce service est responsable de la validation des paramètres, de l’orchestration du processus de génération et de la gestion des retours vers l’interface utilisateur.
+				</p>
+				<p>
+					La deuxième couche repose sur un module natif Android, <a href="https://github.com/LeoLeman555/Memo/blob/main/android/app/src/main/java/com/talkingboxapp/tts/AndroidTtsModule.java" class="link" target="_blank" rel="noopener noreferrer">
+						AndroidTtsModule
+					</a>, qui encapsule le moteur de synthèse vocale fourni par le système Android. Cette couche assure la conversion effective du texte en audio, en s’appuyant directement sur l’API native.
+				</p>
+				<p>
+					Enfin, une troisième couche est dédiée à la gestion de l’ensemble des fichiers audio. Elle prend en charge l’organisation des fichiers générés, la construction des chemins d’accès et le stockage local dans l’environnement de l’application.
+				</p>
+
+				<h3>Pipeline de génération audio</h3>
+				<p>
+					Le processus débute par la réception du texte depuis l’interface utilisateur. Ce texte est ensuite normalisé afin d’assurer une cohérence dans le traitement, notamment en vue du calcul d’un identifiant unique. Un identifiant audio déterministe est alors généré à partir de ce texte, avant de déclencher la génération via le service TTS.
+				</p>
+				<p>
+					Le service applicatif appelle ensuite le module natif Android, qui invoque le moteur de synthèse vocale. Celui-ci génère directement un fichier audio dans le stockage local de l’application, sans passer par une phase de lecture intermédiaire.
+				</p>
+				<p>
+					Une fois le fichier produit, le système vérifie son existence, sa taille et son format. Les métadonnées associées sont ensuite remontées vers l’application, où le fichier est rendu disponible pour les étapes suivantes, notamment la synchronisation avec l’ESP32.
+				</p>
+
+				<h3>Implémentation technique</h3>
+				<p>
+					Le choix d’un module natif Android permet de conserver un contrôle complet sur la génération audio, ce qui n’est pas possible avec les solutions JavaScript standards.
+				</p>
+				<p>
+					Le module <span class="chip">AndroidTtsModule</span> encapsule le moteur <a href="https://developer.android.com/reference/android/speech/tts/TextToSpeech" class="link" target="_blank" rel="noopener noreferrer">
+						TextToSpeech
+					</a>. fourni par Android. Lors de son initialisation, le moteur est configuré pour utiliser une voix française (fr-FR) en mode hors ligne, garantissant ainsi l’indépendance vis-à-vis du réseau.
+				</p>
+				<p>
+					La génération audio repose sur l’utilisation de la méthode native <a href="https://developer.android.com/reference/android/speech/tts/TextToSpeech#synthesizeToFile(java.lang.CharSequence,%20android.os.Bundle,%20java.io.File,%20java.lang.String)" class="link" target="_blank" rel="noopener noreferrer">TextToSpeech.synthesizeToFile()</a>, qui permet de produire directement un fichier audio sur le stockage local. Cette approche évite toute latence liée à la lecture audio et garantit un accès immédiat au fichier généré.
+				</p>
+				<p>
+					Afin de garantir la stabilité du système, une seule génération audio est autorisée à la fois, ce qui évite les conflits d’accès au moteur TTS et les incohérences de fichiers.
+				</p>
+
+				<h3>Format des fichiers audio</h3>
+				<p>
+					Le système utilise principalement le format <a href="https://en.wikipedia.org/wiki/WAV" class="link" target="_blank" rel="noopener noreferrer">WAV</a>, qui constitue le format final exploité par le système embarqué. Ce choix est motivé par sa simplicité de décodage et sa compatibilité avec les contraintes matérielles de l’ESP32.
+				</p>
+				<p>
+					Le format <a href="https://en.wikipedia.org/wiki/MP3" class="link" target="_blank" rel="noopener noreferrer">MP3</a> est également utilisé durant certaines phases de développement et de test, mais n’est pas retenu comme format final.
+				</p>
+
+				<h3>Identifiant audio déterministe</h3>
+				<div class="doc-block">
+					<p>
+						Chaque fichier audio est associé à un identifiant unique, calculé de manière déterministe à partir du texte du message.
+					</p>
+				</div>
+				<p>
+					Le processus consiste d’abord à normaliser le texte, puis à appliquer une fonction de hachage (<a href="https://github.com/LeoLeman555/Memo/blob/main/src/utils/audioHash.ts" class="link" target="_blank" rel="noopener noreferrer">audioHash</a>) 
+					de type <a href="https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function" class="link" target="_blank" rel="noopener noreferrer">FNV</a>. 
+					Le résultat de ce calcul est utilisé pour générer le nom du fichier audio.
+				</p>
+				<p>
+					Cette approche garantit qu’un même message produira systématiquement le même identifiant, et donc le même fichier audio. Elle permet d’éviter la duplication de fichiers identiques et simplifie la gestion du stockage ainsi que la synchronisation avec le système embarqué.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Communication Bluetooth</h2>
+				<h3>Principe de fonctionnement</h3>
+				<p>
+					La communication entre l’application mobile et le microcontrôleur repose sur la technologie 
+					<a href="https://www.bluetooth.com/wp-content/uploads/2022/05/the-bluetooth-le-primer-v1.2.0.pdf" class="link" target="_blank" rel="noopener noreferrer">
+						Bluetooth Low Energy
+					</a> (BLE). Ce choix permet d’assurer un échange de données local, sans dépendance à une infrastructure réseau, tout en conservant une consommation énergétique maîtrisée.
+				</p>
+				<img src="../assets/ble_communication.png" class="doc-image">
+				<p>
+					Dans cette architecture, le smartphone agit en tant que <span class="chip">client GATT</span>, tandis que l’ESP32 joue le rôle de <span class="chip">serveur GATT</span>. Cette organisation permet à l’application de piloter entièrement les échanges et d’initier les transferts de données vers le système embarqué.
+				</p>
+				<p>
+					Le processus de communication suit une séquence bien définie. L’application commence par scanner les périphériques BLE à proximité afin d’identifier l’ESP32, puis établit une connexion avec celui-ci. Une fois connecté, le système procède à une découverte des services, suivie d’une négociation de la <span class="chip">MTU</span> (Maximum Transmission Unit). Cette étape permet d’augmenter la taille des paquets transmis et d’optimiser le débit global. Les données à transmettre sont ensuite adaptées à cette contrainte en étant découpées en blocs de taille compatible avec la <span class="chip">MTU</span> effective.
+				</p>
+
+				<h3>Protocole de transfert</h3>
+				<p>
+					Le protocole implémenté repose sur un transfert structuré en plusieurs phases, garantissant à la fois l’intégrité et la reconstruction correcte des données côté ESP32.
+				</p>
+				<p>
+					Le transfert débute par l’envoi d’une trame d’initialisation, appelée <span class="chip">START</span>. Cette trame contient les métadonnées du fichier à transmettre, notamment sa taille totale, le nombre de blocs attendus, le nom du fichier ainsi qu’une empreinte de contrôle calculée à l’aide d’un hash 
+					<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf" class="link" target="_blank" rel="noopener noreferrer">
+						SHA-256
+					</a>. Ces informations permettent à l’ESP32 de préparer la réception et de disposer des éléments nécessaires à la vérification finale.
+				</p>
+				<p>
+					Une fois cette phase d’initialisation terminée, le fichier est transmis séquentiellement sous forme de blocs de données, appelés chunks. Chaque bloc est associé à un numéro de séquence, ce qui permet au système embarqué de reconstituer le fichier dans le bon ordre, même en cas de réception partiellement désynchronisée. 
+				</p>
+				<p>
+					Ce mécanisme rend possible le transfert fiable de fichiers audio et de configuration de plusieurs dizaines de kilooctets.
+				</p>
+				<img src="../assets/pipeline_app.png" class="doc-image">
+				<p>
+					Pendant toute la durée du transfert, l’ESP32 émet des messages de statut <span class="chip">STATUS</span> via une caractéristique de notification. Ces messages reflètent l’état interne du système, la progression de l’écriture en mémoire et la détection éventuelle d’erreurs. 
+				</p>
+				<p>
+					Une fois l’ensemble des blocs transmis, l’application envoie une trame de finalisation <span class="chip">END</span>. À réception de cette trame, l’ESP32 procède à une vérification complète de l’intégrité du fichier en recalculant le hash et en le comparant à celui transmis lors de l’initialisation. Si la vérification est valide, le fichier est finalisé et le système revient dans un état prêt à recevoir de nouvelles données.
+				</p>
+			</div>
+		</section>
+
+		<section class="section">
+			<div class="container">
+				<h2>Conclusion</h2>
+				<p>
+					L’application mobile constitue une interface complète et autonome permettant de configurer, générer et transférer des rappels vocaux vers un système embarqué, sans dépendance à une infrastructure externe.
+				</p>
+				<p>
+					Le fonctionnement entièrement hors ligne représente un avantage déterminant et fiable, en garantissant une utilisation possible en toutes circonstances. Cette caractéristique, combinée à un protocole de communication optimisé et à une génération audio déterministe, permet d’obtenir un système stable et prévisible.
+				</p>
+			</div>
+		</section>
+	</div>
+
+</main>
+
+<div id="footer"></div>
+
+<script src="../js/main.js"></script>
+
+</body>
+</html>

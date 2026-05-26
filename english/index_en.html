@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEMO</title>
+  <meta name="description" content="MEMO is a system that sends voice reminders to a standalone device to assist people with cognitive impairments.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/white_logo.png">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main>
+  <section class="hero">
+    <div class="hero-image">
+      <img src="assets/main_banner_2.jpg" alt="MEMO banner">
+      <div class="hero-overlay"></div>
+    </div>
+
+    <div class="hero-content">
+      <a class="hero-tag" href="https://www.makeablechallenge.com/" target="_blank">
+        <span>MAKE:ABLE CHALLENGE 2026</span>
+      </a>
+
+      <h1>
+        A solution designed to strengthen the autonomy
+        of people with cognitive disabilities
+      </h1>
+
+      <a class="hero-btn" href="pages/solution.html">
+        Discover MEMO
+      </a>
+    </div>
+  </section>
+
+  <section class="section project-section">
+    <div class="container">
+      <h2 class="project-title">The project</h2>
+      <div class="project-divider"></div>
+
+      <div class="project-content">
+        <div class="project-media" data-gallery="project">
+          <img src="assets/memo_and_phone.png" alt="Memo">
+        </div>
+        <div class="gallery-data" hidden>
+          <img src="assets/memo_and_phone.png" data-gallery-item="project">
+          <img src="assets/global_architecture.png" data-gallery-item="project">
+          <img src="assets/ibd.png" data-gallery-item="project">
+          <img src="assets/commits.png" data-gallery-item="project">
+        </div>
+        <div class="project-text">
+          <p>
+            MEMO allows a responsible person to program audio reminders through a mobile application and send them to an ESP32 based autonomous device created to aid individuals with 
+            intellectual impairments in their time management and daily routines.
+          </p>
+
+          <a class="project-btn" href="pages/solution.html">
+            Discover our solution
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="project-section">
+    <div class="container">
+      <h2 class="project-title">The issue to solve</h2>
+      <div class="project-divider"></div>
+
+      <div class="project-content">
+        <div class="project-text">
+          <p>
+            Elia is a 19 year old woman who suffers from hemiplegia, which causes cognitive issues, and therefore complicates the management of her schedule as well as her daily autonomy, 
+            for her as much as for her occupational therapists.
+          </p>
+          <p>
+            The main objective of MEMO is to provide her with a simple and reliable technological support, to add to her quality of life, while adapting itself to her needs and conserving ease of use. 
+          </p>
+          <a class="project-btn" href="pages/problematic.html">
+            Learn more
+          </a>
+        </div>
+        <div class="project-media" data-gallery="problematic">
+          <video
+            src="assets/video_elia.mov"
+            data-gallery-item="problematic"
+            class="homepage-video" autoplay muted loop>
+          </video>
+        </div>
+        <div class="gallery-data" hidden>
+          <img src="assets/photo_elia_1.jpg" data-gallery-item="problematic">
+          <img src="assets/photo_elia_2.jpg" data-gallery-item="problematic">
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="project-section">
+  <div class="container">
+    <h2 class="project-title">Inclusive and universal</h2>
+    <div class="project-divider"></div>
+    <div class="project-text">
+      <p>
+        MEMO is entirely open source so that anyone can recreate Memo, adapt it to individual needs, and help people with disabilities become more independent in their daily lives. 
+        All the technical details as well as our history and work process are available on our website.
+      </p>
+    </div>
+    <div class="container grid grid-2 project-links">
+      <a
+        href="https://github.com/LeoLeman555/Memo"
+        target="_blank"
+        class="card project-card"
+      >
+        <div class="project-card-content">
+          <h3>Source code</h3>
+        </div>
+        <img src="assets/repo_github.png">
+      </a>
+      <a
+        href="https://cad.onshape.com/documents/c61afa62c2ba916dad213dbf/w/ad65fd35b4d57c5c9c84b99c/e/8dd39dfc92dac304ddd25cdb"
+        target="_blank"
+        class="card project-card"
+      >
+        <div class="project-card-content">
+          <h3>3D model</h3>
+        </div>
+        <img src="assets/modele_3d.png">
+      </a>
+    </div>
+  </div>
+</section>
+
+  <section class="project-section">
+    <div class="container">
+      <h2 class="project-title">Application & architecture</h2>
+      <div class="project-divider"></div>
+      <div class="project-content">
+        <div class="project-text">
+          <p>
+            The MEMO system’s architecture is based around a smartphone application and embedded firmware.
+          </p>
+          <p>
+            The mobile application, developed in React Native, allows the user to create, schedule, and send personalised voice messages. The messages are transformed into audio through a Text To Speech service 
+            then sent via Bluetooth to the ESP32 microcontroller inside MEMO.
+          </p>
+          <p>
+            The MicroPython firmware on the ESP32 controls file reception, local storage, the real time clock, and triggering the reminders.
+          </p>
+          <a class="project-btn" href="pages/architecture.html">
+            See the technical architecture
+          </a>
+        </div>
+        <div class="project-media" data-gallery="architecture">
+          <img src="assets/memo_and_phone_2.png">
+        </div>
+        <div class="gallery-data" hidden>
+          <img src="assets/memo_and_phone_2.png" data-gallery-item="architecture">
+          <img src="assets/esp32_firmware.png" data-gallery-item="architecture">
+          <img src="assets/gpio_ble.png" data-gallery-item="architecture">
+          <img src="assets/mobile_app.png" data-gallery-item="architecture">
+        </div>
+      </div>
+
+    </div>
+  </section>
+  
+  <section class="project-section">
+    <div class="container">
+      <h2 class="project-title">3D design</h2>
+      <div class="project-divider"></div>
+      <div class="project-content">
+        <div class="project-media" data-gallery="conception">
+          <video src="assets/onshape_3d_model.mov" class="homepage-video" autoplay muted loop></video>
+        </div>
+        <div class="gallery-data" hidden>
+          <video
+            src="assets/onshape_3d_model.mov"
+            data-gallery-item="conception">
+          </video>
+          <img src="assets/dimensions.png" data-gallery-item="conception">
+          <video src="assets/tests.mov" data-gallery-item="conception" autoplay muted loop></video>
+          <img src="assets/tab_filaments.png" data-gallery-item="conception">
+        </div>
+        <div class="project-text">
+          <p>
+            The enclosure for MEMO was conceived thanks to the Computer Aided Design software Onshape, and designed to favor ease of use as well as transportability.
+          </p>
+          <p>
+            It was also designed to be robust and easy to handle, as well as integrating bright colours, to help people with visual or cognitive impairments to recognise it.
+          </p>
+          <a class="project-btn" href="pages/conception.html">
+            The 3D design process
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+<section class="section team-section">
+  <div class="container">
+
+    <h2 class="project-title">The team</h2>
+    <div class="project-divider"></div>
+
+    <div class="team-grid">
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_léo.jpeg" alt="Léo">
+        </div>
+        <div class="team-info">
+        <h3>Léo</h3>
+        <p>Team leader</p>
+        <p class="team-desc">Development of the mobile app and ESP32 firmware, project coordination.</p>
+      </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_samuel.jpg" alt="Samuel">
+        </div>
+        <div class="team-info">
+          <h3>Samuel</h3>
+          <p>3D design</p>
+          <p class="team-desc">Enclosure design and versatile support for technical needs.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_nathan.jpg" alt="Nathan">
+        </div>
+        <div class="team-info">
+          <h3>Nathan</h3>
+          <p>Electronics</p>
+          <p class="team-desc">Hardware design, component integration, and user-centered approach.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo">
+          <img src="assets/photo_alix.jpeg" alt="Alix">
+        </div>
+        <div class="team-info">
+          <h3>Alix</h3>
+          <p>Communication</p>
+          <p class="team-desc">Content creation and management of the project's visual communications.</p>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="section gallery">
+  <div class="container">
+
+    <h2 class="project-title">Photo gallery</h2>
+    <div class="project-divider"></div>
+
+    <div class="gallery-carousel">
+
+      <button class="gallery-btn prev">⟨</button>
+
+      <div class="gallery-track">
+        <figure class="gallery-item active">
+          <img src="assets/photo_1.jpeg" alt="Photo 1">
+          <figcaption>3D model during a review with our teacher.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_2.jpeg" alt="Photo 2">
+          <figcaption>Real-world firmware testing for embedded hardware integration.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_3.jpeg" alt="Photo 3">
+          <figcaption>Brainstorming to resolve a bug related to MicroPython.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_4.jpeg" alt="Photo 4">
+          <figcaption>Verification and integration of the system's electronic components.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_5.jpeg" alt="Photo 5">
+          <figcaption>Successive iterations on the technical architecture of the MEMO system.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_6.jpg" alt="Photo 6">
+          <figcaption>Mobile app development on-the-go.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_7.jpg" alt="Photo 7">
+          <figcaption>Smudge, participating to the work effort.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_8.jpg" alt="Photo 8">
+          <figcaption>Phase 1 prototype presented during the school's open day.</figcaption>
+        </figure>
+
+        <figure class="gallery-item">
+          <img src="assets/photo_9.jpg" alt="Photo 9">
+          <figcaption>MEMO team during the presentation at the school's open day.</figcaption>
+        </figure>
+
+      <button class="gallery-btn next">⟩</button>
+
+    </div>
+  </div>
+</section>
+      
+  
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
