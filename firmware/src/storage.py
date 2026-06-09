@@ -8,6 +8,8 @@ from logger import Logger
 
 MODULE = "STORAGE"
 
+class StorageFullError(Exception):
+    """Raised when storage capacity is exhausted."""
 
 class Storage:
     """Persistent storage handler with SD fallback to flash."""
@@ -20,6 +22,7 @@ class Storage:
 
     TMP_PREFIX = ".tmp_"
     FORCE_FLASH = False  # DEBUG ONLY
+    MIN_FREE_SPACE = 256 * 1024  # 256 KB safety margin
 
     def __init__(self):
         self.use_sd = False
@@ -39,6 +42,11 @@ class Storage:
 
         self._ensure_directories()
         self._cleanup_temp_files()
+        Logger.info(
+            MODULE,
+            "STORAGE_STATS",
+            self.get_storage_stats()
+        )
 
         Logger.info(
             MODULE,
@@ -48,6 +56,135 @@ class Storage:
                 "root": self.root
             }
         )
+
+    def get_storage_stats(self):
+        """Return storage statistics."""
+        try:
+            stat = os.statvfs(self.root)
+            total_bytes = stat[0] * stat[2]
+            free_bytes = stat[0] * stat[3]
+            used_bytes = total_bytes - free_bytes
+            used_percent = round(
+                (used_bytes * 100) / total_bytes,
+                1
+            ) if total_bytes else 0.0
+            if used_percent >= 95:
+                health = "critical"
+            elif used_percent >= 85:
+                health = "warning"
+            else:
+                health = "ok"
+            return {
+                "totalBytes": total_bytes,
+                "freeBytes": free_bytes,
+                "usedBytes": used_bytes,
+                "usedPercent": used_percent,
+                "health": health
+            }
+
+        except Exception as e:
+            Logger.error(
+                MODULE,
+                "STORAGE_STATS_FAILED",
+                {
+                    "error": str(e)
+                }
+            )
+            raise
+
+    def get_free_space(self):
+        """Return available storage space in bytes."""
+        try:
+            stat = os.statvfs(self.root)
+            free_bytes = stat[0] * stat[3]
+            Logger.trace(
+                MODULE,
+                "FREE_SPACE_CHECK",
+                {
+                    "root": self.root,
+                    "freeBytes": free_bytes
+                }
+            )
+            return free_bytes
+        except Exception as e:
+            Logger.error(
+                MODULE,
+                "FREE_SPACE_CHECK_FAILED",
+                {
+                    "error": str(e)
+                }
+            )
+            raise
+
+    def get_total_space(self):
+        """Return total storage space in bytes."""
+        try:
+            stat = os.statvfs(self.root)
+            total_bytes = stat[0] * stat[2]
+            Logger.trace(
+                MODULE,
+                "TOTAL_SPACE_CHECK",
+                {
+                    "root": self.root,
+                    "totalBytes": total_bytes
+                }
+            )
+            return total_bytes
+        except Exception as e:
+            Logger.error(
+                MODULE,
+                "TOTAL_SPACE_CHECK_FAILED",
+                {
+                    "error": str(e)
+                }
+            )
+            raise
+
+    def can_store_file(self, size):
+        """Check whether a file can be stored safely."""
+        free_bytes = self.get_free_space()
+        required_bytes = size + self.MIN_FREE_SPACE
+        allowed = free_bytes >= required_bytes
+        Logger.info(
+            MODULE,
+            "STORAGE_CAPACITY_CHECK",
+            {
+                "fileSize": size,
+                "safetyMargin": self.MIN_FREE_SPACE,
+                "requiredBytes": required_bytes,
+                "freeBytes": free_bytes,
+                "allowed": allowed
+            }
+        )
+        return allowed
+
+    def abort_temp_file(self):
+        """Delete active temporary file."""
+        if not self._tmp_path:
+            return
+
+        try:
+            os.remove(self._tmp_path)
+
+            Logger.warn(
+                MODULE,
+                "TEMP_FILE_ABORTED",
+                {
+                    "path": self._tmp_path
+                }
+            )
+
+        except OSError as e:
+            Logger.error(
+                MODULE,
+                "TEMP_FILE_ABORT_FAILED",
+                {
+                    "path": self._tmp_path,
+                    "error": str(e)
+                }
+            )
+
+        self._tmp_path = None
 
     def _ensure_flash_root(self):
         """Ensure flash root exists."""
@@ -175,16 +312,33 @@ class Storage:
         """Append binary chunk to temp file."""
         if not self._tmp_path:
             raise RuntimeError("No temp file started")
-        with self._safe_open(self._tmp_path, "ab") as f:
-            f.write(data)
-            Logger.trace(
+        free_bytes = self.get_free_space()
+        if free_bytes < (len(data) + self.MIN_FREE_SPACE):
+            Logger.error(
                 MODULE,
-                "CHUNK_WRITTEN",
+                "STORAGE_FULL",
                 {
-                    "size": len(data),
+                    "chunkSize": len(data),
+                    "safetyMargin": self.MIN_FREE_SPACE,
+                    "requiredBytes": len(data) + self.MIN_FREE_SPACE,
+                    "freeBytes": free_bytes,
                     "tempPath": self._tmp_path
                 }
             )
+
+            raise StorageFullError()
+
+        with self._safe_open(self._tmp_path, "ab") as f:
+            f.write(data)
+
+        Logger.trace(
+            MODULE,
+            "CHUNK_WRITTEN",
+            {
+                "size": len(data),
+                "tempPath": self._tmp_path
+            }
+        )
 
     def finalize_temp_file(self, filename):
         """Finalize temp file and route to audio or data directory."""

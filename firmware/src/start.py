@@ -131,6 +131,8 @@ def main():
             Logger.log_battery(data)
             rtc_state = "unavailable"
             rtc_time = None
+            storage_stats = storage.get_storage_stats()
+            storage_stats["backend"] = storage.get_backend()
             if rtc:
                 try:
                     rtc_time = rtc.get_datetime()
@@ -148,7 +150,7 @@ def main():
                 MODULE,
                 "SYSTEM_HEARTBEAT",
                 {
-                    "storage": storage.get_backend(),
+                    "storage": storage_stats,
                     "rtc": {
                         "state": rtc_state,
                         "time": rtc_time

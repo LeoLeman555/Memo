@@ -4,6 +4,7 @@ import ujson as json
 import ubinascii
 from micropython import const
 from logger import Logger
+from storage import StorageFullError
 
 MODULE = "BLE"
 
@@ -103,6 +104,22 @@ class BleService:
             )
 
         elif event == self._IRQ_CENTRAL_DISCONNECT:
+            if self.metadata:
+                Logger.warn(
+                    MODULE,
+                    "TRANSFER_ABORTED_DISCONNECT",
+                    {
+                        "filename": self.metadata["filename"],
+                        "bytesWritten": self.bytes_written
+                    }
+                )
+
+                self.storage.abort_temp_file()
+
+                self.metadata = None
+                self.bytes_written = 0
+                self.expected_seq = 0
+                self.end_requested = False
             self.conn_handle = None
             Logger.warn(
                 MODULE,
@@ -240,6 +257,29 @@ class BleService:
             self._emit_state("error")
             return
 
+        if not self.storage.can_store_file(total_size):
+            free_space = self.storage.get_free_space()
+
+            Logger.error(
+                MODULE,
+                "INSUFFICIENT_STORAGE",
+                {
+                    "filename": filename,
+                    "requiredBytes": total_size,
+                    "freeBytes": free_space
+                }
+            )
+
+            self._emit_error(
+                subsystem="storage",
+                code="NO_SPACE_LEFT",
+                message="insufficient_storage",
+                fatal=True
+            )
+
+            self._emit_state("error")
+            return
+
         self.metadata = {
             "filename": filename,
             "total_chunks": total_chunks,
@@ -323,7 +363,36 @@ class BleService:
             self._emit_state("error")
             return
 
-        self.storage.append_chunk(payload)
+        try:
+            self.storage.append_chunk(payload)
+
+        except StorageFullError:
+            Logger.error(
+                MODULE,
+                "TRANSFER_ABORTED_STORAGE_FULL",
+                {
+                    "filename": self.metadata["filename"],
+                    "bytesWritten": self.bytes_written,
+                    "expectedSize": self.metadata["total_size"]
+                }
+            )
+
+            self.storage.abort_temp_file()
+
+            self._emit_error(
+                subsystem="storage",
+                code="NO_SPACE_LEFT",
+                message="storage_full",
+                fatal=True
+            )
+
+            self._emit_state("error")
+
+            self.metadata = None
+            self.bytes_written = 0
+            self.expected_seq = 0
+
+            return
 
         self.bytes_written += len(payload)
         self.expected_seq += 1
@@ -370,6 +439,13 @@ class BleService:
                     "expectedSize": self.metadata["total_size"]
                 }
             )
+            try:
+                self.storage.delete_audio(
+                    self.metadata["filename"]
+                )
+            except Exception:
+                pass
+
             self._emit_error(
                 subsystem="storage",
                 code="HASH_MISMATCH",
